@@ -191,8 +191,15 @@ function useMedicsIfRelevant() {
 
 // Use Good Luck Charm if doable
 function useGoodLuckCharmIfRelevant() {
+
+	// check if Crits is purchased and cooled down
+	if (hasOneUseAbility(18) && !isAbilityCoolingDown(18)){
+		// Crits is purchased, cooled down, and needed. Trigger it.
+		console.log('Crit chance is always good.');
+		triggerAbility(18);
+	
 	// check if Good Luck Charms is purchased and cooled down
-	if (hasPurchasedAbility(6)) {
+	} else if (hasPurchasedAbility(6)) {
 		if (isAbilityCoolingDown(6)) {
 			return;
 		}
@@ -215,6 +222,11 @@ function isAbilityCoolingDown(abilityId) {
 	return g_Minigame.CurrentScene().GetCooldownForAbility(abilityId) > 0;
 }
 
+function hasOneUseAbility(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	return elem != null;
+}
+
 function hasPurchasedAbility(abilityId) {
 	// each bit in unlocked_abilities_bitfield corresponds to an ability.
 	// the above condition checks if the ability's bit is set or cleared. I.e. it checks if
@@ -223,10 +235,7 @@ function hasPurchasedAbility(abilityId) {
 }
 
 function triggerAbility(abilityId) {
-	var elem = document.getElementById('ability_' + abilityId);
-	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_' + abilityId).childElements()[0]);
-	}
+	g_Minigame.CurrentScene().m_rgAbilityQueue.push({'ability': abilityId})
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
