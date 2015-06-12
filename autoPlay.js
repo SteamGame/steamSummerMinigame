@@ -10,12 +10,12 @@ function doTheThing() {
 	
 	goToLaneWithBestTarget();
 	
+	useGoodLuckCharmIfRelevant();
 	useMedicsIfRelevant();
 	
 	// TODO use abilities if available and a suitable target exists
 	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
 	// - Cluster Bomb and Napalm if the current lane has a spawner and 2+ creeps
-	// - Good Luck if available
 	// - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
 	// - Morale Booster if available and lane has > 2 live enemies
 	// - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
@@ -23,6 +23,8 @@ function doTheThing() {
 	// TODO purchase abilities and upgrades intelligently
 	
 	attemptRespawn();
+	
+	
 	
 	isAlreadyRunning = false;
 }
@@ -101,6 +103,22 @@ function useMedicsIfRelevant() {
 		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
 		if (document.getElementById('ability_7')) {
 			g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_7').childElements()[0]);
+		}
+	}
+}
+
+// Use Good Luck Charm if doable
+function useGoodLuckCharmIfRelevant() {
+	// check if Good Luck Charms is purchased and cooled down
+	if ((1 << 6) & g_Minigame.CurrentScene().m_rgPlayerTechTree.unlocked_abilities_bitfield) {
+		if (hasCooldown(6)) {
+			return;
+		}
+
+		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
+		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
+		if (document.getElementById('ability_6')) {
+			g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_6').childElements()[0]);
 		}
 	}
 }
