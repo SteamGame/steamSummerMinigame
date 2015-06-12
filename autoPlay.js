@@ -14,8 +14,10 @@ var clickRate = 20; // change to number of desired clicks per second
 
 var isAlreadyRunning = false;
 
+var disableParticleEffects = true; // Set to false to keep particle effects
+
 // disable particle effects - this drastically reduces the game's memory leak
-if (window.g_Minigame !== undefined) {
+if (window.g_Minigame !== undefined && disableParticleEffects) {
 	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
 	window.g_Minigame.CurrentScene().SpawnEmitter = function() {};
 }
