@@ -27,40 +27,83 @@ function doTheThing() {
 }
 
 function goToLaneWithLowest() {
-	// TODO check if it's a boss level, handle boss levels differently
-	var isBossLevel = g_Minigame.m_CurrentScene().level != 0 && (1 + g_Minigame.m_CurrentScene().level) % 10 == 0;
-	// stop jumping lanes on boss levels, since the current version will always jump AWAY from the boss monster.
-	// Note that this is a temporary workaround, not intended as an actual solution to boss levels.
-	if (isBossLevel) { return; }
+	var targetFound = false;
+	var lowHP = 0;
+	var lowLane = 0;
+	var lowTarget = 0;
 	
+	// determine if it's a boss level
+	var isBossLevel = g_Minigame.CurrentScene().level != 0 && (1 + g_Minigame.CurrentScene().level) % 10 == 0;
+	
+	// if it's a boss level, prefer the lane with the boss, then the lane with the miniboss closest to dying.
+	if (isBossLevel) {
+		// determine which lane the boss is in, if still alive
+		
+		// find the boss
+		for (var i = 0; i < 3; i++) {
+			for (var j = 0; j < 4; j++) {
+				var boss = g_Minigame.m_CurrentScene().GetEnemy(i, j);
+				if (boss && boss.m_strSkinName.indexOf('_boss', m_skin.length - 5) > 0) {
+					// found the boss monster.
+					targetFound = true;
+					lowLane = boss.m_nLane;
+					lowTarget = boss.m_nID;
+					break;
+				}
+			}
+		}
+		
+		if (!targetFound) {
+			// if no boss, find the weakest miniboss
+			var minibosses = [];
+			for (var i = 0; i < 3; i++) {
+				for (var j = 0; j < 4; j++) {
+					var miniboss = g_Minigame.m_CurrentScene().GetEnemy(i, j);
+					if (miniboss) {
+						minibosses[minibosses.length] = miniboss;
+					}
+				}
+			}
+			
+			for (var i = 0; i < minibosses.length; i++) {
+				if (minibosses[i] && !minibosses[i].m_bIsDestroyed) {
+					if(lowHP < 1 || minibosses[i].m_flDisplayedHP < lowHP) {
+						lowHP = minibosses[i].m_flDisplayedHP;
+						lowLane = minibosses[i].m_nLane;
+						lowTarget = minibosses[i].m_nID;
+					}
+				}
+			}
+		}
+	}
 	
 	// TODO prefer lane with a dying creep as long as all living spawners have >50% health
 	
 	// determine which living spawner has lowest hp
-	var spawners = [];
-	for (var i = 0; i < 3; i++) {
-		for (var j = 0; j < 4; j++) {
-			var enemy = g_Minigame.CurrentScene().GetEnemy(i, j);
-			if (enemy && enemy.GetName() == 'Spawner') {
-				spawners[spawners.length] = g_Minigame.CurrentScene().GetEnemy(i, j);
+	if (!targetFound) {
+		var spawners = [];
+		for (var i = 0; i < 3; i++) {
+			for (var j = 0; j < 4; j++) {
+				var enemy = g_Minigame.CurrentScene().GetEnemy(i, j);
+				if (enemy && enemy.GetName() == 'Spawner') {
+					spawners[spawners.length] = g_Minigame.CurrentScene().GetEnemy(i, j);
+				}
 			}
 		}
-	}
-	var lowHP = 0;
-	var lowLane = 0;
-	var lowTarget = 0;
-	for (var i = 0; i < spawners.length; i++) {
-		if(spawners[i] && !spawners[i].m_bIsDestroyed) {
-			if(lowHP < 1 || spawners[i].m_flDisplayedHP < lowHP) {
-				lowHP = spawners[i].m_flDisplayedHP;
-				lowLane = spawners[i].m_nLane;
-				lowTarget = spawners[i].m_nID;
+		for (var i = 0; i < spawners.length; i++) {
+			if (spawners[i] && !spawners[i].m_bIsDestroyed) {
+				if (lowHP < 1 || spawners[i].m_flDisplayedHP < lowHP) {
+					targetFound = true;
+					lowHP = spawners[i].m_flDisplayedHP;
+					lowLane = spawners[i].m_nLane;
+					lowTarget = spawners[i].m_nID;
+				}
 			}
 		}
 	}
 	
 	// if no spawners remain, determine which lane has a creep with the lowest health
-	if (lowHP < 1) {
+	if (!targetFound) {
 		// determine which living creep has the lowest hp
 		var creeps = [];
 		for (var i = 0; i < 3; i++) {
