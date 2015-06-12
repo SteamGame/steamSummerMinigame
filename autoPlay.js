@@ -17,7 +17,6 @@ if (thingTimer !== undefined) {
 }
 
 function doTheThing() {
-	tion doTheThing() {
 	if (isAlreadyRunning || g_Minigame === undefined || !g_Minigame.CurrentScene().m_bRunning || !g_Minigame.CurrentScene().m_rgPlayerTechTree) {
 		return;
 	}
