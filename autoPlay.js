@@ -21,6 +21,13 @@ if (window.g_Minigame !== undefined) {
 	}
 }
 
+// disable enemy flinching animation when they get hit
+if (window.CEnemy !== undefined) {
+	window.CEnemy.prototype.TakeDamage = function() {};
+	window.CEnemySpawner.prototype.TakeDamage = function() {};
+	window.CEnemyBoss.prototype.TakeDamage = function() {};
+}
+
 if (thingTimer !== undefined) {
 	window.clearTimeout(thingTimer);
 }
