@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script
 // @namespace https://github.com/wchill/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you. Modified from mouseas's original version to include autoclick.
-// @version 1.01
+// @version 1.011
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
@@ -19,7 +19,10 @@ var disableParticleEffects = true; // Set to false to keep particle effects
 // disable particle effects - this drastically reduces the game's memory leak
 if (window.g_Minigame !== undefined && disableParticleEffects) {
 	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
-	window.g_Minigame.CurrentScene().SpawnEmitter = function() {};
+	window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
+		emitter.emit = false;
+		return emitter;
+	}
 }
 
 if (thingTimer !== undefined) {
