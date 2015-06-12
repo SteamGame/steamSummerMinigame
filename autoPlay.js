@@ -1,4 +1,6 @@
 var isAlreadyRunning = false;
+var myMaxHealth = 0;
+
 function doTheThing() {
 	if (isAlreadyRunning || g_Minigame === undefined) {
 		return;
@@ -7,7 +9,7 @@ function doTheThing() {
 	
 	goToLaneWithLowest();
 	
-	// TODO check health, use Medics ability if available and health below 50%
+	useMedicsIfRelevant();
 	
 	// TODO use abilities if available and a suitable target exists
 	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
@@ -20,6 +22,8 @@ function doTheThing() {
 	// TODO purchase abilities and upgrades intelligently
 	
 	// TODO click the current target a few times (<= 10/sec, so as not to cheat)
+	
+	// TODO respawn if dead and respawn button is available
 	
 	isAlreadyRunning = false;
 }
@@ -69,6 +73,36 @@ function goToLaneWithLowest() {
 	// TODO only try to change if it's not the current lane
 	if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
 		g_Minigame.CurrentScene().TryChangeLane(lowLane);
+	}
+}
+
+function useMedicsIfRelevant() {
+	// regularly check HP to try to determine max health (I haven't found the variable for it yet)
+	if (g_Minigame.CurrentScene().m_rgPlayerData.hp > myMaxHealth) {
+		myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerData.hp
+	}
+	
+	// check if health is below 50%
+	var hpPercent = g_Minigame.CurrentScene().m_rgPlayerData.hp / myMaxHealth;
+	if (hpPercent > 0.5) {
+		return; // no need to heal - HP is above 50%
+	}
+	
+	// check if Medics is purchased and cooled down
+	if ((1 << 7) & g_Minigame.CurrentScene().m_rgPlayerTechTree.unlocked_abilities_bitfield) {
+		// each bit in unlocked_abilities_bitfield corresponds to an ability. Medics is ability 7.
+		// the above condition checks if the Medics bit is set or cleared. I.e. it checks if
+		// the player has the Medics ability.
+		
+		var abilitiesInCooldown = g_Minigame.CurrentScene().m_rgPlayerData;
+		for (var i = 1; i < abilitiesInCooldown.length; i++) {
+			if (abilitiesInCooldown[i].ability == 7) {
+				return; // Medics is in cooldown, can't use it.
+			}
+		}
+		
+		// Medics is purchased, cooled down, and needed. Trigger it.
+		g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_7'));
 	}
 }
 
