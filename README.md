@@ -41,3 +41,6 @@ To stop the script, type `window.clearTimeout(thingTimer);` into the console and
 	 - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
 	
 - purchase abilities and upgrades intelligently
+
+- automatically update the script by periodically checking https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+     - Simplify the Greasemonkey/Tampermonkey code so it just loads from ^. Add a separate .js file for this purpose, and obviously update the README.
