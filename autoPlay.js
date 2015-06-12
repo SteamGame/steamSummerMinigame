@@ -42,7 +42,7 @@ function goToLaneWithLowest() {
 		// find the boss
 		for (var i = 0; i < 3; i++) {
 			for (var j = 0; j < 4; j++) {
-				var boss = g_Minigame.m_CurrentScene().GetEnemy(i, j);
+				var boss = g_Minigame.CurrentScene().GetEnemy(i, j);
 				if (boss && boss.m_strSkinName.indexOf('_boss', m_skin.length - 5) > 0) {
 					// found the boss monster.
 					targetFound = true;
@@ -58,7 +58,7 @@ function goToLaneWithLowest() {
 			var minibosses = [];
 			for (var i = 0; i < 3; i++) {
 				for (var j = 0; j < 4; j++) {
-					var miniboss = g_Minigame.m_CurrentScene().GetEnemy(i, j);
+					var miniboss = g_Minigame.CurrentScene().GetEnemy(i, j);
 					if (miniboss) {
 						minibosses[minibosses.length] = miniboss;
 					}
@@ -127,15 +127,17 @@ function goToLaneWithLowest() {
 	}
 	
 	// go to the chosen lane
-	if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
-		//console.log('switching langes');
-		g_Minigame.CurrentScene().TryChangeLane(lowLane);
-	}
-	
-	// target the chosen enemy
-	if (g_Minigame.CurrentScene().m_nTarget != lowTarget) {
-		//console.log('switching targets');
-		g_Minigame.CurrentScene().TryChangeTarget(lowTarget);
+	if (targetFound) {
+		if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
+			//console.log('switching langes');
+			g_Minigame.CurrentScene().TryChangeLane(lowLane);
+		}
+		
+		// target the chosen enemy
+		if (g_Minigame.CurrentScene().m_nTarget != lowTarget) {
+			//console.log('switching targets');
+			g_Minigame.CurrentScene().TryChangeTarget(lowTarget);
+		}
 	}
 }
 
