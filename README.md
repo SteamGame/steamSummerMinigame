@@ -1,4 +1,4 @@
-# Steam Summer Minigame 2015 Auto-play Optimizer #
+# Steam Summer Monster Minigame Auto-script
 
 ## Purpose ##
 
