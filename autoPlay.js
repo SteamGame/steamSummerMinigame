@@ -87,7 +87,7 @@ function goToLaneWithBestTarget() {
 					lowTarget = enemies[i].m_nID;
 				}
 				var percentageHP = enemies[i].m_flDisplayedHP / enemies[i].m_data.max_hp;
-				if(lowPercentageHP < 1 || percentageHP < lowPercentageHP) {
+				if(lowPercentageHP == 0 || percentageHP < lowPercentageHP) {
 					lowPercentageHP = percentageHP;
 				}
 			}
