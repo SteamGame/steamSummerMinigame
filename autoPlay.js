@@ -47,6 +47,7 @@ function goToLaneWithBestTarget() {
 			}
 		}
 	
+		// target the enemy of the specified type with the lowest hp
 		for (var i = 0; i < enemies.length; i++) {
 			if (enemies[i] && !enemies[i].m_bIsDestroyed) {
 				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
@@ -59,7 +60,7 @@ function goToLaneWithBestTarget() {
 		}
 	}
 	
-	// TODO prefer lane with a dying creep as long as all living spawners have >50% health
+	// TODO maybe: Prefer lane with a dying creep as long as all living spawners have >50% health
 	
 	// go to the chosen lane
 	if (targetFound) {
