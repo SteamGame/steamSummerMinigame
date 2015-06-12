@@ -136,7 +136,7 @@ function attemptRespawn()
 	//Player died over 5 seconds ago
 	//((g_Minigame.CurrentScene().m_rgPlayerData.time_died *1000)+5000)<(new Date.getTime())
 	if((g_Minigame.CurrentScene().m_bIsDead)&&
-	((g_Minigame.CurrentScene().m_rgPlayerData.time_died *1000)+5000)<(new Date.getTime()))
+	((g_Minigame.CurrentScene().m_rgPlayerData.time_died *1000)+5000)<(new Date().getTime()))
 	{
 		RespawnPlayer();
 	}
