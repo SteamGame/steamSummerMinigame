@@ -193,6 +193,20 @@ function attemptRespawn() {
 	}
 }
 
+function isAbilityActive(abilityId) {
+	return g_Minigame.CurrentScene().bIsAbilityActive(abilityId);
+}
+
+function hasItem(itemId) {
+	for ( var i = 0; i < g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items.length; ++i ) {
+		var abilityItem = g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items[i];
+		if (abilityItem.ability == itemId) {
+			return true;
+		}
+	}
+	return false;
+}
+
 function isAbilityCoolingDown(abilityId) {
 	return g_Minigame.CurrentScene().GetCooldownForAbility(abilityId) > 0;
 }
