@@ -23,7 +23,7 @@ function doTheThing() {
 	
 	// TODO click the current target a few times (<= 10/sec, so as not to cheat)
 	
-	// TODO respawn if dead and respawn button is available
+	attemptRespawn();
 	
 	isAlreadyRunning = false;
 }
@@ -123,6 +123,22 @@ function useMedicsIfRelevant() {
 		if (document.getElementById('ability_7')) {
 			g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_7').childElements()[0]);
 		}
+	}
+}
+
+//If player health is 0 (or negative), call respawn method
+function attemptRespawn()
+{
+	//Player health <0 
+	//g_Minigame.CurrentScene().m_rgPlayerData.hp<=0
+	//Player is Dead
+	//g_Minigame.CurrentScene().m_bIsDead
+	//Player died over 5 seconds ago
+	//((g_Minigame.CurrentScene().m_rgPlayerData.time_died *1000)+5000)<(new Date.getTime())
+	if((g_Minigame.CurrentScene().m_bIsDead)&&
+	((g_Minigame.CurrentScene().m_rgPlayerData.time_died *1000)+5000)<(new Date().getTime()))
+	{
+		RespawnPlayer();
 	}
 }
 
