@@ -52,6 +52,20 @@ function doTheThing() {
 	isAlreadyRunning = false;
 }
 
+var ABILITYS = {
+	"GOOD_LUCK": 6,
+	"MEDIC": 7,
+	"METAL_DETECTOR": 8,
+	"COOLDOWN": 9,
+	"NUKE": 10,
+	"CLUSTER_BOMB": 11,
+	"NAPALM": 12,
+	"REVIVE": 13,
+	"GOLD_RAIN": 17,
+	"GOD_MODE": 21,
+	"REFLECT_DAMAGE":24
+};
+
 function goToLaneWithBestTarget() {
 	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
 	var spawnerOKThreshold = 0.4;
@@ -159,29 +173,29 @@ function useMedicsIfRelevant() {
 	}
 	
 	// check if Medics is purchased and cooled down
-	if (hasPurchasedAbility(7)) {
-
-		if (isAbilityCoolingDown(7)) {
-			return;
-		}
+	if (hasPurchasedAbility(ABILITYS.MEDIC) && !isAbilityCoolingDown(ABILITYS.MEDIC)) {
 
 		// Medics is purchased, cooled down, and needed. Trigger it.
 		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
-		triggerAbility(7);
+		triggerAbility(ABILITYS.MEDIC);
+	} else if (hasItem(ABILITYS.GOD_MODE) && !isAbilityCoolingDown(ABILITYS.GOD_MODE)) {
+		
+		console.log('We have god mode, cooled down, and needed. Trigger it.');
+		triggerAbility(ABILITYS.GOD_MODE);
 	}
-}
+};
 
 // Use Good Luck Charm if doable
 function useGoodLuckCharmIfRelevant() {
 	// check if Good Luck Charms is purchased and cooled down
-	if (hasPurchasedAbility(6)) {
-		if (isAbilityCoolingDown(6)) {
+	if (hasPurchasedAbility(ABILITYS.GOOD_LUCK)) {
+		if (isAbilityCoolingDown(ABILITYS.GOOD_LUCK)) {
 			return;
 		}
 
 		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
 		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
-		triggerAbility(6);
+		triggerAbility(ABILITYS.GOOD_LUCK);
 	}
 }
 
