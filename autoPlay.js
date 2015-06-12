@@ -1,3 +1,5 @@
+var clickRate = 20; // change to number of desired clicks per second
+
 var isAlreadyRunning = false;
 var myMaxHealth = 0;
 
@@ -127,3 +129,25 @@ function useMedicsIfRelevant() {
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
+
+function clickTheThing() {
+    g_Minigame.m_CurrentScene.DoClick(
+        {
+            data: {
+                getLocalPosition: function() {
+                    var enemy = g_Minigame.m_CurrentScene.GetEnemy(
+                                      g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane,
+                                      g_Minigame.m_CurrentScene.m_rgPlayerData.target),
+                        laneOffset = enemy.m_nLane * 440;
+
+                    return {
+                        x: enemy.m_Sprite.position.x - laneOffset,
+                        y: enemy.m_Sprite.position.y - 52
+                    }
+                }
+            }
+        }
+    );
+}
+
+var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
