@@ -1,5 +1,5 @@
 var isAlreadyRunning = false;
-var clickRate = 20;
+var clickRate = 25;
 var myMaxHealth = 0;
 
 function doTheThing() {
