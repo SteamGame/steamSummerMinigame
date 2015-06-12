@@ -1,9 +1,31 @@
+// ==UserScript== 
+// @name Monster Minigame Auto-script
+// @namespace https://github.com/mouseas/steamSummerMinigame
+// @description A script that runs the Steam Monster Minigame for you.
+// @version 1.0
+// @match http://steamcommunity.com/minigame/towerattack*
+// @updateURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+// @downloadURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+// ==/UserScript==
+
+// IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
+
 var isAlreadyRunning = false;
 var clickRate = 25;
 
 
+// disable particle effects - this drastically reduces the game's memory leak
+if (window.g_Minigame !== undefined) {
+	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
+	window.g_Minigame.CurrentScene().SpawnEmitter = function() {};
+}
+
+if (thingTimer !== undefined) {
+	window.clearTimeout(thingTimer);
+}
+
 function doTheThing() {
-	if (isAlreadyRunning || g_Minigame === undefined) {
+	if (isAlreadyRunning || g_Minigame === undefined || !g_Minigame.CurrentScene().m_bRunning || !g_Minigame.CurrentScene().m_rgPlayerTechTree) {
 		return;
 	}
 	isAlreadyRunning = true;
@@ -16,9 +38,9 @@ function doTheThing() {
 	// TODO use abilities if available and a suitable target exists
 	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
 	// - Cluster Bomb and Napalm if the current lane has a spawner and 2+ creeps
-	// - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
+	// - Metal Detector if a boss, miniboss, or spawner death is imminent (predicted in > 2 and < 7 seconds)
 	// - Morale Booster if available and lane has > 2 live enemies
-	// - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
+	// - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago (any ability but Medics or a consumable)
 	
 	// TODO purchase abilities and upgrades intelligently
 	
@@ -53,13 +75,38 @@ var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
 
 
 function goToLaneWithBestTarget() {
+	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
+	var spawnerOKThreshold = 0.4;
+	var creepSnagThreshold = 0.1;
+	
 	var targetFound = false;
 	var lowHP = 0;
 	var lowLane = 0;
 	var lowTarget = 0;
+	var lowPercentageHP = 0;
+	
+	var ENEMY_TYPE = {
+		"SPAWNER":0,
+		"CREEP":1,
+		"BOSS":2,
+		"MINIBOSS":3,
+		"TREASURE":4
+	}
+	
 	
 	// determine which lane and enemy is the optimal target
-	var enemyTypePriority = [4, 2, 3, 0, 1];
+	var enemyTypePriority = [
+		ENEMY_TYPE.TREASURE, 
+		ENEMY_TYPE.BOSS, 
+		ENEMY_TYPE.MINIBOSS,
+		ENEMY_TYPE.SPAWNER, 
+		ENEMY_TYPE.CREEP
+		];
+		
+	var skippingSpawner = false;
+	var skippedSpawnerLane = 0;
+	var skippedSpawnerTarget = 0;
+	
 	for (var k = 0; !targetFound && k < enemyTypePriority.length; k++) {
 		var enemies = [];
 		
@@ -82,11 +129,32 @@ function goToLaneWithBestTarget() {
 					lowLane = enemies[i].m_nLane;
 					lowTarget = enemies[i].m_nID;
 				}
+				var percentageHP = enemies[i].m_flDisplayedHP / enemies[i].m_data.max_hp;
+				if(lowPercentageHP == 0 || percentageHP < lowPercentageHP) {
+					lowPercentageHP = percentageHP;
+				}
 			}
 		}
+		
+		// If we just finished looking at spawners, 
+		// AND none of them were below our threshold,  
+		// remember them and look for low creeps (so don't quit now)
+		if (enemyTypePriority[k] == ENEMY_TYPE.SPAWNER && lowPercentageHP > spawnerOKThreshold) {
+			skippedSpawnerLane = lowLane;
+			skippedSpawnerTarget = lowTarget;
+			skippingSpawner = true;
+			targetFound = false;
+		}
+		
+		// If we skipped a spawner and just finished looking at creeps,
+		// AND the lowest was above our snag threshold,
+		// just go back to the spawner!
+		if (skippingSpawner && enemyTypePriority[k] == ENEMY_TYPE.CREEP && lowPercentageHP > creepSnagThreshold ) {
+			lowLane = skippedSpawnerLane;
+			lowTarget = skippedSpawnerTarget;
+		}
 	}
-	
-	// TODO maybe: Prefer lane with a dying creep as long as all living spawners have >50% health
+
 	
 	// go to the chosen lane
 	if (targetFound) {
