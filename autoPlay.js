@@ -32,9 +32,9 @@ function doTheThing() {
 }
 
 function goToLaneWithBestTarget() {
-	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 20% hp
+	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
 	var spawnerOKThreshold = 0.4;
-	var creepSnagThreshold = 0.2;
+	var creepSnagThreshold = 0.1;
 	
 	var targetFound = false;
 	var lowHP = 0;
