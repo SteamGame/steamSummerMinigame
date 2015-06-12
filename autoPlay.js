@@ -21,8 +21,6 @@ function doTheThing() {
 	
 	// TODO purchase abilities and upgrades intelligently
 	
-	// TODO click the current target a few times (<= 10/sec, so as not to cheat)
-	
 	attemptRespawn();
 	
 	isAlreadyRunning = false;
