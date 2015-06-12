@@ -61,6 +61,23 @@ function doTheThing() {
 	isAlreadyRunning = false;
 }
 
+var ABILITIES = {
+	"GOOD_LUCK": 6,
+	"MEDIC": 7,
+	"METAL_DETECTOR": 8,
+	"COOLDOWN": 9,
+	"NUKE": 10,
+	"CLUSTER_BOMB": 11,
+	"NAPALM": 12
+};
+
+var ITEMS = {
+	"REVIVE": 13,
+	"GOLD_RAIN": 17,
+	"GOD_MODE": 21,
+	"REFLECT_DAMAGE":24
+}
+
 function goToLaneWithBestTarget() {
 	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
 	var spawnerOKThreshold = 0.4;
@@ -168,29 +185,29 @@ function useMedicsIfRelevant() {
 	}
 	
 	// check if Medics is purchased and cooled down
-	if (hasPurchasedAbility(7)) {
-
-		if (isAbilityCoolingDown(7)) {
-			return;
-		}
+	if (hasPurchasedAbility(ABILITIES.MEDIC) && !isAbilityCoolingDown(ABILITIES.MEDIC)) {
 
 		// Medics is purchased, cooled down, and needed. Trigger it.
 		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
-		triggerAbility(7);
+		triggerAbility(ABILITIES.MEDIC);
+	} else if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
+		
+		console.log('We have god mode, cooled down, and needed. Trigger it.');
+		triggerItem(ITEMS.GOD_MODE);
 	}
-}
+};
 
 // Use Good Luck Charm if doable
 function useGoodLuckCharmIfRelevant() {
 	// check if Good Luck Charms is purchased and cooled down
-	if (hasPurchasedAbility(6)) {
-		if (isAbilityCoolingDown(6)) {
+	if (hasPurchasedAbility(ABILITIES.GOOD_LUCK)) {
+		if (isAbilityCoolingDown(ABILITIES.GOOD_LUCK)) {
 			return;
 		}
 
 		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
 		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
-		triggerAbility(6);
+		triggerAbility(ABILITIES.GOOD_LUCK);
 	}
 }
 
@@ -258,6 +275,20 @@ function attemptRespawn() {
 	}
 }
 
+function isAbilityActive(abilityId) {
+	return g_Minigame.CurrentScene().bIsAbilityActive(abilityId);
+}
+
+function hasItem(itemId) {
+	for ( var i = 0; i < g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items.length; ++i ) {
+		var abilityItem = g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items[i];
+		if (abilityItem.ability == itemId) {
+			return true;
+		}
+	}
+	return false;
+}
+
 function isAbilityCoolingDown(abilityId) {
 	return g_Minigame.CurrentScene().GetCooldownForAbility(abilityId) > 0;
 }
@@ -267,6 +298,13 @@ function hasPurchasedAbility(abilityId) {
 	// the above condition checks if the ability's bit is set or cleared. I.e. it checks if
 	// the player has purchased the specified ability.
 	return (1 << abilityId) & g_Minigame.CurrentScene().m_rgPlayerTechTree.unlocked_abilities_bitfield;
+}
+
+function triggerItem(itemId) {
+	var elem = document.getElementById('abilityitem_' + itemId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		g_Minigame.CurrentScene().TryAbility(document.getElementById('abilityitem_' + itemId).childElements()[0]);
+	}
 }
 
 function triggerAbility(abilityId) {
