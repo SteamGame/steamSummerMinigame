@@ -1,7 +1,6 @@
 var clickRate = 20; // change to number of desired clicks per second
 
 var isAlreadyRunning = false;
-var myMaxHealth = 0;
 
 function doTheThing() {
 	if (isAlreadyRunning || g_Minigame === undefined) {
@@ -80,10 +79,7 @@ function goToLaneWithBestTarget() {
 }
 
 function useMedicsIfRelevant() {
-	// regularly check HP to try to determine max health (I haven't found the variable for it yet)
-	if (g_Minigame.CurrentScene().m_rgPlayerData.hp > myMaxHealth) {
-		myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerData.hp;
-	}
+	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
 	
 	// check if health is below 50%
 	var hpPercent = g_Minigame.CurrentScene().m_rgPlayerData.hp / myMaxHealth;
@@ -96,14 +92,11 @@ function useMedicsIfRelevant() {
 		// each bit in unlocked_abilities_bitfield corresponds to an ability. Medics is ability 7.
 		// the above condition checks if the Medics bit is set or cleared. I.e. it checks if
 		// the player has the Medics ability.
-		
-		var abilitiesInCooldown = g_Minigame.CurrentScene().m_rgPlayerData.active_abilities;
-		for (var i = 1; i < abilitiesInCooldown.length; i++) {
-			if (abilitiesInCooldown[i].ability == 7) {
-				return; // Medics is in cooldown, can't use it.
-			}
+
+		if (hasCooldown(7)) {
+			return;
 		}
-		
+
 		// Medics is purchased, cooled down, and needed. Trigger it.
 		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
 		if (document.getElementById('ability_7')) {
@@ -118,6 +111,10 @@ function attemptRespawn() {
 			((g_Minigame.CurrentScene().m_rgPlayerData.time_died * 1000) + 5000) < (new Date().getTime())) {
 		RespawnPlayer();
 	}
+}
+
+function hasCooldown(abilityId) {
+	return g_Minigame.CurrentScene().GetCooldownForAbility(abilityId) > 0;
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
