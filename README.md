@@ -8,7 +8,16 @@ It goes beyond the autoclicker scripts already out there. It will keep you in th
 most money, activate abilities as they are available and best apply, and possibly purchase upgrades and
 powerups for you.
 
-### How to use ###
+### How to use in Tampermonkey / Greasemonkey ###
+
+1. Open `autoPlay.js` in a text editor.
+2. Select All, Copy
+3. Open a new script in Tampermonkey or Greasemonkey.
+4. Paste into the main text area.
+5. Press Ctrl + S, or press the Save button.
+6. It now will run automatically whenever the game is running in any tab.
+
+### How to use manually ###
 
 1. Open `autoPlay.js` in a text editor.
 2. Select All, Copy
