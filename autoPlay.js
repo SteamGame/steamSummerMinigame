@@ -65,7 +65,6 @@ function goToLaneWithBestTarget() {
 	var lowTarget = 0;
 	var lowPercentageHP = 0;
 	var preferredLane = -1;
-	var preferredEnemy = -1;
 	
 	var ENEMY_TYPE = {
 		"SPAWNER":0,
@@ -104,30 +103,24 @@ function goToLaneWithBestTarget() {
 	
 		//Prefer lane with raining gold, unless current enemy target is a treasure or boss.
 		if(lowTarget != ENEMY_TYPE.TREASURE || lowTarget != ENEMY_TYPE.BOSS ){
-			var potential = 0;
-			for (i = 0; i < 3; i++) {
-				//Ignore if lane is empty
-    				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps == 0)
+			for(i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes.length; i++){
+				// ignore if lane is empty
+				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps == 0)
 					continue;
-    				if (g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17]) {
-					var stacks = g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17];
-    					for(k = 0; k < g_Minigame.m_CurrentScene.m_rgEnemies.length; k++) {
-				 		var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[k].m_data.gold;
-        					if (stacks * enemyGold > potential) {
-        						preferredLane = i;
-                					potential = stacks * enemyGold;
-                					preferredEnemy = g_Minigame.m_CurrentScene.m_rgEnemies[k].m_nID;
-                					console.log('switching to lane with raining gold and best enemy');
-            					}
-    					}
-    				}
+				for(j = 0; j < g_Minigame.CurrentScene().m_rgGameData.lanes[i].active_player_abilities.length; j++){
+					if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].active_player_abilities[j].ability == 17){
+						preferredLane = i;
+						console.log('switching to lane with raining gold');
+					}
+				}
 			}
 		}
 		
 		// target the enemy of the specified type with the lowest hp
 		for (var i = 0; i < enemies.length; i++) {
 			if (enemies[i] && !enemies[i].m_bIsDestroyed) {
-				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
+				// Only select enemy and lane if the preferedLane matches the potential enemy lane
+				if((lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) && ((preferredLane != -1 && preferredLane == enemies[i].m_nLane) || preferredLane == -1)) {
 					targetFound = true;
 					lowHP = enemies[i].m_flDisplayedHP;
 					lowLane = enemies[i].m_nLane;
@@ -139,12 +132,6 @@ function goToLaneWithBestTarget() {
 				}
 			}
 		}
-		
-		//Override lane and target choice (Raining Gold)
-		if(preferredLane != -1)
-			lowLane = preferredLane;	
-		if(preferredEnemy != -1)
-			lowTarget = preferredEnemy;
 		
 		// If we just finished looking at spawners, 
 		// AND none of them were below our threshold,  
