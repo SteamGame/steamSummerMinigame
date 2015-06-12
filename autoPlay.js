@@ -17,7 +17,10 @@ var clickRate = 25;
 // disable particle effects - this drastically reduces the game's memory leak
 if (window.g_Minigame !== undefined) {
 	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
-	window.g_Minigame.CurrentScene().SpawnEmitter = function() {};
+	window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
+		emitter.emit = false;
+		return emitter;
+	}
 }
 
 if (thingTimer !== undefined) {
