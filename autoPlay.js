@@ -129,7 +129,14 @@ function useMedicsIfRelevant() {
 //If player health is 0 (or negative), call respawn method
 function attemptRespawn()
 {
-	if(g_Minigame.CurrentScene().m_rgPlayerData.hp<=0)
+	//Player health <0 
+	//g_Minigame.CurrentScene().m_rgPlayerData.hp<=0
+	//Player is Dead
+	//g_Minigame.CurrentScene().m_bIsDead
+	//Player died over 5 seconds ago
+	//((g_Minigame.CurrentScene().m_rgPlayerData.time_died *1000)+5000)<(new Date.getTime())
+	if((g_Minigame.CurrentScene().m_bIsDead)&&
+	((g_Minigame.CurrentScene().m_rgPlayerData.time_died *1000)+5000)<(new Date.getTime()))
 	{
 		RespawnPlayer();
 	}
