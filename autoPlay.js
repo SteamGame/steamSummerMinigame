@@ -1,19 +1,23 @@
 var isAlreadyRunning = false;
 
+if (thingTimer !== undefined) {
+	window.clearTimeout(thingTimer);
+}
+
 function doTheThing() {
 	if (isAlreadyRunning || g_Minigame === undefined) {
 		return;
 	}
 	isAlreadyRunning = true;
 	
-	goToLaneWithLowest();
+	goToLaneWithBestTarget();
 	
+	useGoodLuckCharmIfRelevant();
 	useMedicsIfRelevant();
 	
 	// TODO use abilities if available and a suitable target exists
 	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
 	// - Cluster Bomb and Napalm if the current lane has a spawner and 2+ creeps
-	// - Good Luck if available
 	// - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
 	// - Morale Booster if available and lane has > 2 live enemies
 	// - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
@@ -22,105 +26,46 @@ function doTheThing() {
 	
 	attemptRespawn();
 	
+	
+	
 	isAlreadyRunning = false;
 }
 
-function goToLaneWithLowest() {
+function goToLaneWithBestTarget() {
 	var targetFound = false;
 	var lowHP = 0;
 	var lowLane = 0;
 	var lowTarget = 0;
 	
-	// determine which lane the boss is in, if still alive
-	
-	// find the boss
-	for (var i = 0; i < 3; i++) {
-		for (var j = 0; j < 4; j++) {
-			var boss = g_Minigame.CurrentScene().GetEnemy(i, j);
-			if (boss && boss.m_data.type == 2) {
-				// found the boss monster.
-				targetFound = true;
-				lowHP = boss.m_flDisplayedHP;
-				lowLane = boss.m_nLane;
-				lowTarget = boss.m_nID;
-				break;
-			}
-		}
-	}
-	
-	if (!targetFound) {
-		// if no boss, find the weakest miniboss
-		var minibosses = [];
-		for (var i = 0; i < 3; i++) {
-			for (var j = 0; j < 4; j++) {
-				var miniboss = g_Minigame.CurrentScene().GetEnemy(i, j);
-				if (miniboss && miniboss.m_data.type == 3) {
-					minibosses[minibosses.length] = miniboss;
-				}
-			}
-		}
+	// determine which lane and enemy is the optimal target
+	var enemyTypePriority = [4, 2, 3, 0, 1];
+	for (var k = 0; !targetFound && k < enemyTypePriority.length; k++) {
+		var enemies = [];
 		
-		for (var i = 0; i < minibosses.length; i++) {
-			if (minibosses[i] && !minibosses[i].m_bIsDestroyed) {
-				if(lowHP < 1 || minibosses[i].m_flDisplayedHP < lowHP) {
-					targetFound = true;
-					lowHP = minibosses[i].m_flDisplayedHP;
-					lowLane = minibosses[i].m_nLane;
-					lowTarget = minibosses[i].m_nID;
-				}
-			}
-		}
-	}
-	
-	// TODO prefer lane with a dying creep as long as all living spawners have >50% health
-	
-	// determine which living spawner has lowest hp
-	if (!targetFound) {
-		var spawners = [];
+		// gather all the enemies of the specified type.
 		for (var i = 0; i < 3; i++) {
 			for (var j = 0; j < 4; j++) {
 				var enemy = g_Minigame.CurrentScene().GetEnemy(i, j);
-				if (enemy && enemy.m_data.type == 0) {
-					spawners[spawners.length] = g_Minigame.CurrentScene().GetEnemy(i, j);
+				if (enemy && enemy.m_data.type == enemyTypePriority[k]) {
+					enemies[enemies.length] = enemy;
 				}
 			}
 		}
-		for (var i = 0; i < spawners.length; i++) {
-			if (spawners[i] && !spawners[i].m_bIsDestroyed) {
-				if (lowHP < 1 || spawners[i].m_flDisplayedHP < lowHP) {
+	
+		// target the enemy of the specified type with the lowest hp
+		for (var i = 0; i < enemies.length; i++) {
+			if (enemies[i] && !enemies[i].m_bIsDestroyed) {
+				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
 					targetFound = true;
-					lowHP = spawners[i].m_flDisplayedHP;
-					lowLane = spawners[i].m_nLane;
-					lowTarget = spawners[i].m_nID;
+					lowHP = enemies[i].m_flDisplayedHP;
+					lowLane = enemies[i].m_nLane;
+					lowTarget = enemies[i].m_nID;
 				}
 			}
 		}
 	}
 	
-	// if no spawners remain, determine which lane has a creep with the lowest health
-	if (!targetFound) {
-		// determine which living creep has the lowest hp
-		var creeps = [];
-		for (var i = 0; i < 3; i++) {
-			for (var j = 0; j < 4; j++) {
-				var enemy = g_Minigame.CurrentScene().GetEnemy(i, j);
-				if (enemy && enemy.m_data.type == 1) {
-					creeps[creeps.length] = g_Minigame.CurrentScene().GetEnemy(i, j);
-				}
-			}
-		}
-		
-		for (var i = 0; i < creeps.length; i++) {
-			if (creeps[i] && !creeps[i].m_bIsDestroyed) {
-				if (lowHP < 1 || creeps[i].m_flDisplayedHP < lowHP) {
-					targetFound = true;
-					lowHP = creeps[i];
-					lowLane = creeps[i].m_nLane;
-					lowTarget = creeps[i].m_nID;
-				}
-			}
-		}
-	}
+	// TODO maybe: Prefer lane with a dying creep as long as all living spawners have >50% health
 	
 	// go to the chosen lane
 	if (targetFound) {
@@ -147,20 +92,29 @@ function useMedicsIfRelevant() {
 	}
 	
 	// check if Medics is purchased and cooled down
-	if ((1 << 7) & g_Minigame.CurrentScene().m_rgPlayerTechTree.unlocked_abilities_bitfield) {
-		// each bit in unlocked_abilities_bitfield corresponds to an ability. Medics is ability 7.
-		// the above condition checks if the Medics bit is set or cleared. I.e. it checks if
-		// the player has the Medics ability.
+	if (hasPurchasedAbility(7)) {
 
-		if (hasCooldown(7)) {
+		if (isAbilityCoolingDown(7)) {
 			return;
 		}
 
 		// Medics is purchased, cooled down, and needed. Trigger it.
 		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
-		if (document.getElementById('ability_7')) {
-			g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_7').childElements()[0]);
+		triggerAbility(7);
+	}
+}
+
+// Use Good Luck Charm if doable
+function useGoodLuckCharmIfRelevant() {
+	// check if Good Luck Charms is purchased and cooled down
+	if (hasPurchasedAbility(6)) {
+		if (isAbilityCoolingDown(6)) {
+			return;
 		}
+
+		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
+		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
+		triggerAbility(6);
 	}
 }
 
@@ -172,8 +126,22 @@ function attemptRespawn() {
 	}
 }
 
-function hasCooldown(abilityId) {
+function isAbilityCoolingDown(abilityId) {
 	return g_Minigame.CurrentScene().GetCooldownForAbility(abilityId) > 0;
+}
+
+function hasPurchasedAbility(abilityId) {
+	// each bit in unlocked_abilities_bitfield corresponds to an ability.
+	// the above condition checks if the ability's bit is set or cleared. I.e. it checks if
+	// the player has purchased the specified ability.
+	return (1 << abilityId) & g_Minigame.CurrentScene().m_rgPlayerTechTree.unlocked_abilities_bitfield;
+}
+
+function triggerAbility(abilityId) {
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_' + abilityId).childElements()[0]);
+	}
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
