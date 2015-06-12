@@ -1,5 +1,4 @@
 var isAlreadyRunning = false;
-var myMaxHealth = 0;
 
 function doTheThing() {
 	if (isAlreadyRunning || g_Minigame === undefined) {
@@ -78,10 +77,7 @@ function goToLaneWithBestTarget() {
 }
 
 function useMedicsIfRelevant() {
-	// regularly check HP to try to determine max health (I haven't found the variable for it yet)
-	if (g_Minigame.CurrentScene().m_rgPlayerData.hp > myMaxHealth) {
-		myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerData.hp;
-	}
+	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
 	
 	// check if health is below 50%
 	var hpPercent = g_Minigame.CurrentScene().m_rgPlayerData.hp / myMaxHealth;
