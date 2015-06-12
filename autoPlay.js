@@ -101,8 +101,8 @@ function useMedicsIfRelevant() {
 	
 	// check if health is below 50%
 	var hpPercent = g_Minigame.CurrentScene().m_rgPlayerData.hp / myMaxHealth;
-	if (hpPercent > 0.5) {
-		return; // no need to heal - HP is above 50%
+	if (hpPercent > 0.5 || g_Minigame.CurrentScene().m_rgPlayerData.hp < 1) {
+		return; // no need to heal - HP is above 50% or already dead
 	}
 	
 	// check if Medics is purchased and cooled down
