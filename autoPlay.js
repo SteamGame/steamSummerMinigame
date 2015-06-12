@@ -102,7 +102,10 @@ function useMedicsIfRelevant() {
 		}
 		
 		// Medics is purchased, cooled down, and needed. Trigger it.
-		g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_7'));
+		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
+		if (document.getElementById('ability_7')) {
+			g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_7').childElements()[0]);
+		}
 	}
 }
 

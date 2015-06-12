@@ -16,4 +16,6 @@ powerups for you.
 4. For your sanity, turn off sound and music.
 5. Hit F12 to bring up the developer console.
 6. Navigate to the Console or Script section, where you can enter javascript and see javascript output.
-7. Paste into the javascript input, and hit Enter. The game should now play itself, you can leave it running in the background.
+7. Paste into the javascript input, and hit Enter.
+8. The game should now play itself, you should leave it running in the background. If you're not sure if it
+is auto-playing, try changing lanes. If it jumps back almost immediately, it's working.
