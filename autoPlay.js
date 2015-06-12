@@ -67,7 +67,9 @@ function goToLaneWithLowest() {
 	
 	// go to the chosen lane.
 	// TODO only try to change if it's not the current lane
-	g_Minigame.CurrentScene().TryChangeLane(lowLane);
+	if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
+		g_Minigame.CurrentScene().TryChangeLane(lowLane);
+	}
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
