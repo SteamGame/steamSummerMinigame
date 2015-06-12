@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 1.0
+// @version 1.2
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
@@ -23,6 +23,13 @@ if (window.g_Minigame !== undefined) {
 	}
 }
 
+// disable enemy flinching animation when they get hit
+if (window.CEnemy !== undefined) {
+	window.CEnemy.prototype.TakeDamage = function() {};
+	window.CEnemySpawner.prototype.TakeDamage = function() {};
+	window.CEnemyBoss.prototype.TakeDamage = function() {};
+}
+
 if (thingTimer !== undefined) {
 	window.clearTimeout(thingTimer);
 }
@@ -37,6 +44,8 @@ function doTheThing() {
 	
 	useGoodLuckCharmIfRelevant();
 	useMedicsIfRelevant();
+	useClusterBombIfRelevant();
+	useNapalmIfRelevant();
 	
 	// TODO use abilities if available and a suitable target exists
 	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
@@ -76,6 +85,23 @@ function clickTheThing() {
 var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
 
 
+var ABILITIES = {
+	"GOOD_LUCK": 6,
+	"MEDIC": 7,
+	"METAL_DETECTOR": 8,
+	"COOLDOWN": 9,
+	"NUKE": 10,
+	"CLUSTER_BOMB": 11,
+	"NAPALM": 12
+};
+
+var ITEMS = {
+	"REVIVE": 13,
+	"GOLD_RAIN": 17,
+	"GOD_MODE": 21,
+	"REFLECT_DAMAGE":24
+}
+>>>>>>> upstream/master
 
 function goToLaneWithBestTarget() {
 	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
@@ -184,29 +210,85 @@ function useMedicsIfRelevant() {
 	}
 	
 	// check if Medics is purchased and cooled down
-	if (hasPurchasedAbility(7)) {
-
-		if (isAbilityCoolingDown(7)) {
-			return;
-		}
+	if (hasPurchasedAbility(ABILITIES.MEDIC) && !isAbilityCoolingDown(ABILITIES.MEDIC)) {
 
 		// Medics is purchased, cooled down, and needed. Trigger it.
 		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
-		triggerAbility(7);
+		triggerAbility(ABILITIES.MEDIC);
+	} else if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
+		
+		console.log('We have god mode, cooled down, and needed. Trigger it.');
+		triggerItem(ITEMS.GOD_MODE);
 	}
-}
+};
 
 // Use Good Luck Charm if doable
 function useGoodLuckCharmIfRelevant() {
 	// check if Good Luck Charms is purchased and cooled down
-	if (hasPurchasedAbility(6)) {
-		if (isAbilityCoolingDown(6)) {
+	if (hasPurchasedAbility(ABILITIES.GOOD_LUCK)) {
+		if (isAbilityCoolingDown(ABILITIES.GOOD_LUCK)) {
 			return;
 		}
 
 		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
 		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
-		triggerAbility(6);
+		triggerAbility(ABILITIES.GOOD_LUCK);
+	}
+}
+
+function useClusterBombIfRelevant() {
+	//Check if Cluster Bomb is purchased and cooled down
+	if (hasPurchasedAbility(11)) {
+		if (isAbilityCoolingDown(11)) {
+			return;
+		}
+		
+		//Check lane has monsters to explode
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemyCount = 0;
+		var enemySpawnerExists = false;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type == 0) { 
+					enemySpawnerExists = true;
+				}
+			}
+		}
+		//Bombs away if spawner and 2+ other monsters
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(11);
+		}
+	}
+}
+
+function useNapalmIfRelevant() {
+	//Check if Napalm is purchased and cooled down
+	if (hasPurchasedAbility(12)) {
+		if (isAbilityCoolingDown(12)) {
+			return;
+		}
+		
+		//Check lane has monsters to burn
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemyCount = 0;
+		var enemySpawnerExists = false;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type == 0) { 
+					enemySpawnerExists = true;
+				}
+			}
+		}
+		//Burn them all if spawner and 2+ other monsters
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(12);
+		}
 	}
 }
 
@@ -218,6 +300,20 @@ function attemptRespawn() {
 	}
 }
 
+function isAbilityActive(abilityId) {
+	return g_Minigame.CurrentScene().bIsAbilityActive(abilityId);
+}
+
+function hasItem(itemId) {
+	for ( var i = 0; i < g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items.length; ++i ) {
+		var abilityItem = g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items[i];
+		if (abilityItem.ability == itemId) {
+			return true;
+		}
+	}
+	return false;
+}
+
 function isAbilityCoolingDown(abilityId) {
 	return g_Minigame.CurrentScene().GetCooldownForAbility(abilityId) > 0;
 }
@@ -227,6 +323,13 @@ function hasPurchasedAbility(abilityId) {
 	// the above condition checks if the ability's bit is set or cleared. I.e. it checks if
 	// the player has purchased the specified ability.
 	return (1 << abilityId) & g_Minigame.CurrentScene().m_rgPlayerTechTree.unlocked_abilities_bitfield;
+}
+
+function triggerItem(itemId) {
+	var elem = document.getElementById('abilityitem_' + itemId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		g_Minigame.CurrentScene().TryAbility(document.getElementById('abilityitem_' + itemId).childElements()[0]);
+	}
 }
 
 function triggerAbility(abilityId) {
