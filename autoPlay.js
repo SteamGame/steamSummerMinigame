@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script
 // @namespace https://github.com/wchill/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you. Modified from mouseas's original version to include autoclick.
-// @version 1.02
+// @version 1.3
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
@@ -10,6 +10,7 @@
 
 // IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
 
+var enableAutoClicker = true; // set to false to disable autoclicker
 var clickRate = 20; // change to number of desired clicks per second
 
 var isAlreadyRunning = false;
@@ -249,4 +250,6 @@ function clickTheThing() {
     );
 }
 
-var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
+if(enableAutoClicker) {
+	var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
+}
