@@ -1,11 +1,29 @@
+// ==UserScript== 
+// @name Monster Minigame Auto-script
+// @namespace https://github.com/mouseas/steamSummerMinigame
+// @description A script that runs the Steam Monster Minigame for you.
+// @version 1.0
+// @match http://steamcommunity.com/minigame/towerattack*
+// @updateURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+// @downloadURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+// ==/UserScript==
+
+// IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
+
 var isAlreadyRunning = false;
+
+// disable particle effects - this drastically reduces the game's memory leak
+if (window.g_Minigame !== undefined) {
+	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
+	window.g_Minigame.CurrentScene().SpawnEmitter = function() {};
+}
 
 if (thingTimer !== undefined) {
 	window.clearTimeout(thingTimer);
 }
 
 function doTheThing() {
-	if (isAlreadyRunning || g_Minigame === undefined) {
+	if (isAlreadyRunning || g_Minigame === undefined || !g_Minigame.CurrentScene().m_bRunning || !g_Minigame.CurrentScene().m_rgPlayerTechTree) {
 		return;
 	}
 	isAlreadyRunning = true;
@@ -32,9 +50,9 @@ function doTheThing() {
 }
 
 function goToLaneWithBestTarget() {
-	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 20% hp
+	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
 	var spawnerOKThreshold = 0.4;
-	var creepSnagThreshold = 0.2;
+	var creepSnagThreshold = 0.1;
 	
 	var targetFound = false;
 	var lowHP = 0;
