@@ -19,3 +19,21 @@ powerups for you.
 7. Paste into the javascript input, and hit Enter.
 8. The game should now play itself, you should leave it running in the background. If you're not sure if it
 is auto-playing, try changing lanes. If it jumps back almost immediately, it's working.
+
+To stop the script, type `window.clearTimeout(thingTimer);` into the console and hit Enter.
+
+### TODO ###
+
+- use abilities if available and a suitable target exists:
+	 - Tactical Nuke on a Spawner if below 60% and above 30% of its health
+	 - Cluster Bomb and Napalm if the current lane has a spawner and 2+ creeps
+	 - Good Luck if available
+	 - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
+	 - Morale Booster if available and lane has > 2 live enemies
+	 - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
+	
+- purchase abilities and upgrades intelligently
+
+- check if it's a boss level, handle boss levels appropriately
+
+- prefer lane with a dying creep as long as all living Spawners have >40% health
