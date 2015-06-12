@@ -35,6 +35,8 @@ function doTheThing() {
 	
 	useGoodLuckCharmIfRelevant();
 	useMedicsIfRelevant();
+	useClusterBombIfRelevant();
+	useNapalmIfRelevant();
 	
 	// TODO use abilities if available and a suitable target exists
 	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
@@ -182,6 +184,62 @@ function useGoodLuckCharmIfRelevant() {
 		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
 		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
 		triggerAbility(6);
+	}
+}
+
+function useClusterBombIfRelevant() {
+	//Check if Cluster Bomb is purchased and cooled down
+	if (hasPurchasedAbility(11)) {
+		if (isAbilityCoolingDown(11)) {
+			return;
+		}
+		
+		//Check lane has monsters to explode
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemyCount = 0;
+		var enemySpawnerExists = false;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type == 0) { 
+					enemySpawnerExists = true;
+				}
+			}
+		}
+		//Bombs away if spawner and 2+ other monsters
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(11);
+		}
+	}
+}
+
+function useNapalmIfRelevant() {
+	//Check if Napalm is purchased and cooled down
+	if (hasPurchasedAbility(12)) {
+		if (isAbilityCoolingDown(12)) {
+			return;
+		}
+		
+		//Check lane has monsters to burn
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemyCount = 0;
+		var enemySpawnerExists = false;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type == 0) { 
+					enemySpawnerExists = true;
+				}
+			}
+		}
+		//Burn them all if spawner and 2+ other monsters
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(12);
+		}
 	}
 }
 
