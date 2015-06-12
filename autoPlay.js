@@ -32,13 +32,38 @@ function doTheThing() {
 }
 
 function goToLaneWithBestTarget() {
+	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 20% hp
+	var spawnerOKThreshold = 0.4;
+	var creepSnagThreshold = 0.2;
+	
 	var targetFound = false;
 	var lowHP = 0;
 	var lowLane = 0;
 	var lowTarget = 0;
+	var lowPercentageHP = 0;
+	
+	var ENEMY_TYPE = {
+		"SPAWNER":0,
+		"CREEP":1,
+		"BOSS":2,
+		"MINIBOSS":3,
+		"TREASURE":4
+	}
+	
 	
 	// determine which lane and enemy is the optimal target
-	var enemyTypePriority = [4, 2, 3, 0, 1];
+	var enemyTypePriority = [
+		ENEMY_TYPE.TREASURE, 
+		ENEMY_TYPE.BOSS, 
+		ENEMY_TYPE.MINIBOSS,
+		ENEMY_TYPE.SPAWNER, 
+		ENEMY_TYPE.CREEP
+		];
+		
+	var skippingSpawner = false;
+	var skippedSpawnerLane = 0;
+	var skippedSpawnerTarget = 0;
+	
 	for (var k = 0; !targetFound && k < enemyTypePriority.length; k++) {
 		var enemies = [];
 		
@@ -61,11 +86,32 @@ function goToLaneWithBestTarget() {
 					lowLane = enemies[i].m_nLane;
 					lowTarget = enemies[i].m_nID;
 				}
+				var percentageHP = enemies[i].m_flDisplayedHP / enemies[i].m_data.max_hp;
+				if(lowPercentageHP < 1 || percentageHP < lowPercentageHP) {
+					lowPercentageHP = percentageHP;
+				}
 			}
 		}
+		
+		// If we just finished looking at spawners, 
+		// AND none of them were below our threshold,  
+		// remember them and look for low creeps (so don't quit now)
+		if (enemyTypePriority[k] == ENEMY_TYPE.SPAWNER && lowPercentageHP > spawnerOKThreshold) {
+			skippedSpawnerLane = lowLane;
+			skippedSpawnerTarget = lowTarget;
+			skippingSpawner = true;
+			targetFound = false;
+		}
+		
+		// If we skipped a spawner and just finished looking at creeps,
+		// AND the lowest was above our snag threshold,
+		// just go back to the spawner!
+		if (skippingSpawner && enemyTypePriority[k] == ENEMY_TYPE.CREEP && lowPercentageHP > creepSnagThreshold ) {
+			lowLane = skippedSpawnerLane;
+			lowTarget = skippedSpawnerTarget;
+		}
 	}
-	
-	// TODO maybe: Prefer lane with a dying creep as long as all living spawners have >50% health
+
 	
 	// go to the chosen lane
 	if (targetFound) {
