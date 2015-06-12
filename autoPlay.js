@@ -81,8 +81,16 @@ function goToLaneWithBestTarget() {
 	var skippingSpawner = false;
 	var skippedSpawnerLane = 0;
 	var skippedSpawnerTarget = 0;
+	var targetIsTreasureOrBoss = false;
 	
 	for (var k = 0; !targetFound && k < enemyTypePriority.length; k++) {
+		
+		if (enemyTypePriority[k] == ENEMY_TYPE.TREASURE || enemyTypePriority[k] == ENEMY_TYPE.BOSS){
+			targetIsTreasureOrBoss = true;
+		} else {
+			targetIsTreasureOrBoss = false;
+		}
+		
 		var enemies = [];
 		
 		// gather all the enemies of the specified type.
@@ -143,6 +151,56 @@ function goToLaneWithBestTarget() {
 			//console.log('switching targets');
 			g_Minigame.CurrentScene().TryChangeTarget(lowTarget);
 		}
+		
+		
+		// Prevent boss/treasure instagibbing
+		if (targetIsTreasureOrBoss) {
+			// Morale
+			disableAbility(5);
+			// Luck
+			disableAbility(6);
+			// Nuke
+			disableAbility(10);
+			// Clusterbomb
+			disableAbility(11);
+			// Napalm
+			disableAbility(12);
+			// Crit
+			disableAbilityItem(18);
+			// Cripple Spawner
+			disableAbilityItem(14);
+			// Cripple Monster
+			disableAbilityItem(15);
+			// Max Elemental Damage
+			disableAbilityItem(16);
+			// Crit
+			disableAbilityItem(18);
+			// Reflect Damage
+			disableAbilityItem(24);
+		} else {
+			// Morale
+			enableAbility(5);
+			// Luck
+			enableAbility(6);
+			// Nuke
+			enableAbility(10);
+			// Clusterbomb
+			enableAbility(11);
+			// Napalm
+			enableAbility(12);
+			// Crit
+			enableAbilityItem(18);
+			// Cripple Spawner
+			enableAbilityItem(14);
+			// Cripple Monster
+			enableAbilityItem(15);
+			// Max Elemental Damage
+			enableAbilityItem(16);
+			// Crit
+			enableAbilityItem(18);
+			// Reflect Damage
+			enableAbilityItem(24);
+		}
 	}
 }
 
@@ -173,6 +231,10 @@ function useGoodLuckCharmIfRelevant() {
 	// check if Good Luck Charms is purchased and cooled down
 	if (hasPurchasedAbility(6)) {
 		if (isAbilityCoolingDown(6)) {
+			return;
+		}
+		
+		if (! isAbilityEnabled(6)) {
 			return;
 		}
 
@@ -206,6 +268,50 @@ function triggerAbility(abilityId) {
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
 		g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_' + abilityId).childElements()[0]);
 	}
+}
+
+function disableAbility(abilityId) {
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "hidden";
+	}
+}
+
+function enableAbility(abilityId) {
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "visible";
+	}
+}
+
+function isAbilityEnabled(abilityId) {
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		return  elem.childElements()[0].style.visibility == "visible";
+	}
+	return false;
+}
+
+function disableAbilityItem(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "hidden";
+	}
+}
+
+function enableAbilityItem(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "visible";
+	}
+}
+
+function isAbilityItemEnabled(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		return  elem.childElements()[0].style.visibility == "visible";
+	}
+	return false;
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
