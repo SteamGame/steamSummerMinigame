@@ -1,3 +1,15 @@
+// ==UserScript== 
+// @name Monster Minigame Auto-script
+// @namespace https://github.com/mouseas/steamSummerMinigame
+// @description A script that runs the Steam Monster Minigame for you.
+// @version 1.0
+// @match http://steamcommunity.com/minigame/towerattack*
+// @updateURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+// @downloadURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+// ==/UserScript==
+
+// IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
+
 var isAlreadyRunning = false;
 
 if (thingTimer !== undefined) {
@@ -5,7 +17,7 @@ if (thingTimer !== undefined) {
 }
 
 function doTheThing() {
-	if (isAlreadyRunning || g_Minigame === undefined) {
+	if (isAlreadyRunning || g_Minigame === undefined || !g_Minigame.CurrentScene().m_bRunning || !g_Minigame.CurrentScene().m_rgPlayerTechTree) {
 		return;
 	}
 	isAlreadyRunning = true;
@@ -18,9 +30,9 @@ function doTheThing() {
 	// TODO use abilities if available and a suitable target exists
 	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
 	// - Cluster Bomb and Napalm if the current lane has a spawner and 2+ creeps
-	// - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
+	// - Metal Detector if a boss, miniboss, or spawner death is imminent (predicted in > 2 and < 7 seconds)
 	// - Morale Booster if available and lane has > 2 live enemies
-	// - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
+	// - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago (any ability but Medics or a consumable)
 	
 	// TODO purchase abilities and upgrades intelligently
 	
@@ -32,9 +44,9 @@ function doTheThing() {
 }
 
 function goToLaneWithBestTarget() {
-	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 20% hp
+	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
 	var spawnerOKThreshold = 0.4;
-	var creepSnagThreshold = 0.2;
+	var creepSnagThreshold = 0.1;
 	
 	var targetFound = false;
 	var lowHP = 0;
@@ -87,7 +99,7 @@ function goToLaneWithBestTarget() {
 					lowTarget = enemies[i].m_nID;
 				}
 				var percentageHP = enemies[i].m_flDisplayedHP / enemies[i].m_data.max_hp;
-				if(lowPercentageHP < 1 || percentageHP < lowPercentageHP) {
+				if(lowPercentageHP == 0 || percentageHP < lowPercentageHP) {
 					lowPercentageHP = percentageHP;
 				}
 			}
