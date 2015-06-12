@@ -4,8 +4,8 @@
 // @description A script that runs the Steam Monster Minigame for you.
 // @version 1.0
 // @match http://steamcommunity.com/minigame/towerattack*
-// @updateURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
-// @downloadURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+// @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
+// @downloadURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
 // ==/UserScript==
 
 // IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
