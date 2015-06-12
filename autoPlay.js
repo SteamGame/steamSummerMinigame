@@ -33,48 +33,42 @@ function goToLaneWithLowest() {
 	var lowLane = 0;
 	var lowTarget = 0;
 	
-	// determine if it's a boss level
-	var isBossLevel = g_Minigame.CurrentScene().level != 0 && (1 + g_Minigame.CurrentScene().level) % 10 == 0;
+	// determine which lane the boss is in, if still alive
 	
-	// if it's a boss level, prefer the lane with the boss, then the lane with the miniboss closest to dying.
-	if (isBossLevel) {
-		// determine which lane the boss is in, if still alive
-		
-		// find the boss
+	// find the boss
+	for (var i = 0; i < 3; i++) {
+		for (var j = 0; j < 4; j++) {
+			var boss = g_Minigame.CurrentScene().GetEnemy(i, j);
+			if (boss && boss.m_data.type == 2) {
+				// found the boss monster.
+				targetFound = true;
+				lowHP = boss.m_flDisplayedHP;
+				lowLane = boss.m_nLane;
+				lowTarget = boss.m_nID;
+				break;
+			}
+		}
+	}
+	
+	if (!targetFound) {
+		// if no boss, find the weakest miniboss
+		var minibosses = [];
 		for (var i = 0; i < 3; i++) {
 			for (var j = 0; j < 4; j++) {
-				var boss = g_Minigame.CurrentScene().GetEnemy(i, j);
-				if (boss && boss.m_data.type == 2) {
-					// found the boss monster.
-					targetFound = true;
-					lowHP = boss.m_flDisplayedHP;
-					lowLane = boss.m_nLane;
-					lowTarget = boss.m_nID;
-					break;
+				var miniboss = g_Minigame.CurrentScene().GetEnemy(i, j);
+				if (miniboss && miniboss.m_data.type == 3) {
+					minibosses[minibosses.length] = miniboss;
 				}
 			}
 		}
 		
-		if (!targetFound) {
-			// if no boss, find the weakest miniboss
-			var minibosses = [];
-			for (var i = 0; i < 3; i++) {
-				for (var j = 0; j < 4; j++) {
-					var miniboss = g_Minigame.CurrentScene().GetEnemy(i, j);
-					if (miniboss && miniboss.m_data.type == 3) {
-						minibosses[minibosses.length] = miniboss;
-					}
-				}
-			}
-			
-			for (var i = 0; i < minibosses.length; i++) {
-				if (minibosses[i] && !minibosses[i].m_bIsDestroyed) {
-					if(lowHP < 1 || minibosses[i].m_flDisplayedHP < lowHP) {
-						targetFound = true;
-						lowHP = minibosses[i].m_flDisplayedHP;
-						lowLane = minibosses[i].m_nLane;
-						lowTarget = minibosses[i].m_nID;
-					}
+		for (var i = 0; i < minibosses.length; i++) {
+			if (minibosses[i] && !minibosses[i].m_bIsDestroyed) {
+				if(lowHP < 1 || minibosses[i].m_flDisplayedHP < lowHP) {
+					targetFound = true;
+					lowHP = minibosses[i].m_flDisplayedHP;
+					lowLane = minibosses[i].m_nLane;
+					lowTarget = minibosses[i].m_nID;
 				}
 			}
 		}
