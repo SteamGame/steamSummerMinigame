@@ -43,9 +43,10 @@ function goToLaneWithLowest() {
 		for (var i = 0; i < 3; i++) {
 			for (var j = 0; j < 4; j++) {
 				var boss = g_Minigame.CurrentScene().GetEnemy(i, j);
-				if (boss && boss.m_strSkinName.indexOf('_boss', m_skin.length - 5) > 0) {
+				if (boss && boss.m_data.type == 2) {
 					// found the boss monster.
 					targetFound = true;
+					lowHP = boss.m_flDisplayedHP;
 					lowLane = boss.m_nLane;
 					lowTarget = boss.m_nID;
 					break;
@@ -59,7 +60,7 @@ function goToLaneWithLowest() {
 			for (var i = 0; i < 3; i++) {
 				for (var j = 0; j < 4; j++) {
 					var miniboss = g_Minigame.CurrentScene().GetEnemy(i, j);
-					if (miniboss) {
+					if (miniboss && miniboss.m_data.type == 3) {
 						minibosses[minibosses.length] = miniboss;
 					}
 				}
@@ -68,6 +69,7 @@ function goToLaneWithLowest() {
 			for (var i = 0; i < minibosses.length; i++) {
 				if (minibosses[i] && !minibosses[i].m_bIsDestroyed) {
 					if(lowHP < 1 || minibosses[i].m_flDisplayedHP < lowHP) {
+						targetFound = true;
 						lowHP = minibosses[i].m_flDisplayedHP;
 						lowLane = minibosses[i].m_nLane;
 						lowTarget = minibosses[i].m_nID;
@@ -85,7 +87,7 @@ function goToLaneWithLowest() {
 		for (var i = 0; i < 3; i++) {
 			for (var j = 0; j < 4; j++) {
 				var enemy = g_Minigame.CurrentScene().GetEnemy(i, j);
-				if (enemy && enemy.GetName() == 'Spawner') {
+				if (enemy && enemy.m_data.type == 0) {
 					spawners[spawners.length] = g_Minigame.CurrentScene().GetEnemy(i, j);
 				}
 			}
@@ -118,6 +120,7 @@ function goToLaneWithLowest() {
 		for (var i = 0; i < creeps.length; i++) {
 			if (creeps[i] && !creeps[i].m_bIsDestroyed) {
 				if (lowHP < 1 || creeps[i].m_flDisplayedHP < lowHP) {
+					targetFound = true;
 					lowHP = creeps[i];
 					lowLane = creeps[i].m_nLane;
 					lowTarget = creeps[i].m_nID;
