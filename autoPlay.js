@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script
 // @namespace https://github.com/wchill/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you. Modified from mouseas's original version to include autoclick.
-// @version 1.01
+// @version 1.02
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
@@ -100,9 +100,22 @@ function goToLaneWithBestTarget() {
 		}
 	
 		// target the enemy of the specified type with the lowest hp
+		var mostHPDone = 0;
 		for (var i = 0; i < enemies.length; i++) {
 			if (enemies[i] && !enemies[i].m_bIsDestroyed) {
 				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
+					var element = g_Minigame.CurrentScene().m_rgGameData.lanes[enemies[i].m_nLane].element;
+					
+					var dmg = g_Minigame.CurrentScene().CalculateDamage(
+							g_Minigame.CurrentScene().m_rgPlayerTechTree.dps,
+							element
+						);
+					if(mostHPDone < dmg)
+					{
+						mostHPDone = dmg;
+					}
+					else continue;
+					
 					targetFound = true;
 					lowHP = enemies[i].m_flDisplayedHP;
 					lowLane = enemies[i].m_nLane;
