@@ -36,7 +36,7 @@ function doTheThing() {
 	
 	useGoodLuckCharmIfRelevant();
 	useMedicsIfRelevant();
-	useMoralBoosterIfRelevant()
+	useMoralBoosterIfRelevant();
 	
 	// TODO use abilities if available and a suitable target exists
 	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
@@ -208,20 +208,20 @@ function useGoodLuckCharmIfRelevant() {
 // Use Moral Booster if doable
 function useMoralBoosterIfRelevant() {
 	// check if Good Luck Charms is purchased and cooled down
-	if (hasPurchasedAbility(12)) {
-		if (isAbilityCoolingDown(12)) {
+	if (hasPurchasedAbility(5)) {
+		if (isAbilityCoolingDown(5)) {
 			return;
 		}
-		var numberOfWorthwhileEnimies = 0;
+		var numberOfWorthwhileEnemies = 0;
 		for(i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies.length; i++){
 			//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
 			if(g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies[i].hp > 1000000)
-				numberOfWorthwhileEnimies++;
+				numberOfWorthwhileEnemies++;
 		}
-		if(numberOfWortwhileEnimies == 2){
+		if(numberOfWorthwhileEnemies >= 2){
 			// Moral Booster is purchased, cooled down, and needed. Trigger it.
 			console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
-			triggerAbility(12);
+			triggerAbility(5);
 		}
 	}
 }
