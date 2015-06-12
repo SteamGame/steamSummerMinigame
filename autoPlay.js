@@ -7,10 +7,28 @@ function doTheThing() {
 	
 	goToLaneWithLowest();
 	
+	// TODO check health, use Medics ability if available and health below 50%
+	
+	// TODO use abilities if available and a suitable target exists
+	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
+	// - Cluster Bomb and Napalm if the current lane has a spawner and 2+ creeps
+	// - Good Luck if available
+	// - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
+	// - Morale Booster if available and lane has > 2 live enemies
+	// - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
+	
+	// TODO purchase abilities and upgrades intelligently
+	
+	// TODO click the current target a few times (<= 10/sec, so as not to cheat)
+	
 	isAlreadyRunning = false;
 }
 
 function goToLaneWithLowest() {
+	// TODO check if it's a boss level, handle boss levels differently
+	
+	// TODO prefer lane with a dying creep as long as all living spawners have >50% health
+	
 	// determine which living spawner has lowest hp
 	var spawners = [];
 	for (var i = 0; i < 3; i++) {
@@ -48,6 +66,7 @@ function goToLaneWithLowest() {
 	}
 	
 	// go to the chosen lane.
+	// TODO only try to change if it's not the current lane
 	g_Minigame.CurrentScene().TryChangeLane(lowLane);
 }
 
