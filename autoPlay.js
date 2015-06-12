@@ -36,15 +36,22 @@ function goToLaneWithLowest() {
 	// determine which living spawner has lowest hp
 	var spawners = [];
 	for (var i = 0; i < 3; i++) {
-		spawners[i] = g_Minigame.CurrentScene().GetEnemy(i, 0);
+		for (var j = 0; j < 4; j++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(i, j);
+			if (enemy && enemy.GetName() == 'Spawner') {
+				spawners[spawners.length] = g_Minigame.CurrentScene().GetEnemy(i, j);
+			}
+		}
 	}
 	var lowHP = 0;
 	var lowLane = 0;
+	var lowTarget = 0;
 	for (var i = 0; i < spawners.length; i++) {
 		if(spawners[i] && !spawners[i].m_bIsDestroyed) {
 			if(lowHP < 1 || spawners[i].m_flDisplayedHP < lowHP) {
 				lowHP = spawners[i].m_flDisplayedHP;
 				lowLane = spawners[i].m_nLane;
+				lowTarget = spawners[i].m_nID;
 			}
 		}
 	}
@@ -54,8 +61,11 @@ function goToLaneWithLowest() {
 		// determine which living creep has the lowest hp
 		var creeps = [];
 		for (var i = 0; i < 3; i++) {
-			for (var j = 0; j < 3; j++) {
-				creeps[(3 * i) + j] = g_Minigame.CurrentScene().GetEnemy(i + 1, j);
+			for (var j = 0; j < 4; j++) {
+				var enemy = g_Minigame.CurrentScene().GetEnemy(i, j);
+				if (enemy && enemy.m_data.type == 1) {
+					creeps[creeps.length] = g_Minigame.CurrentScene().GetEnemy(i, j);
+				}
 			}
 		}
 		
@@ -64,15 +74,22 @@ function goToLaneWithLowest() {
 				if (lowHP < 1 || creeps[i].m_flDisplayedHP < lowHP) {
 					lowHP = creeps[i];
 					lowLane = creeps[i].m_nLane;
+					lowTarget = creeps[i].m_nID;
 				}
 			}
 		}
 	}
 	
-	// go to the chosen lane.
-	// TODO only try to change if it's not the current lane
+	// go to the chosen lane
 	if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
+		//console.log('switching langes');
 		g_Minigame.CurrentScene().TryChangeLane(lowLane);
+	}
+	
+	// target the chosen enemy
+	if (g_Minigame.CurrentScene().m_nTarget != lowTarget) {
+		//console.log('switching targets');
+		g_Minigame.CurrentScene().TryChangeTarget(lowTarget);
 	}
 }
 
@@ -94,7 +111,7 @@ function useMedicsIfRelevant() {
 		// the above condition checks if the Medics bit is set or cleared. I.e. it checks if
 		// the player has the Medics ability.
 		
-		var abilitiesInCooldown = g_Minigame.CurrentScene().m_rgPlayerData;
+		var abilitiesInCooldown = g_Minigame.CurrentScene().m_rgPlayerData.active_abilities;
 		for (var i = 1; i < abilitiesInCooldown.length; i++) {
 			if (abilitiesInCooldown[i].ability == 7) {
 				return; // Medics is in cooldown, can't use it.
