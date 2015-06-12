@@ -1,11 +1,11 @@
 // ==UserScript== 
-// @name Monster Minigame Auto-script
-// @namespace https://github.com/mouseas/steamSummerMinigame
+// @name Monster Minigame Auto-script w/ auto-click
+// @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
 // @version 1.0
 // @match http://steamcommunity.com/minigame/towerattack*
-// @updateURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
-// @downloadURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+// @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
+// @downloadURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
 // ==/UserScript==
 
 // IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
