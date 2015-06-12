@@ -1,5 +1,9 @@
 var isAlreadyRunning = false;
 
+if (thingTimer !== undefined) {
+	window.clearTimeout(thingTimer);
+}
+
 function doTheThing() {
 	if (isAlreadyRunning || g_Minigame === undefined) {
 		return;
