@@ -136,7 +136,7 @@ function goToLaneWithBestTarget() {
 		// AND none of them were below our threshold,  
 		// remember them and look for low creeps (so don't quit now)
 		// Don't skip spawner if lane has raining gold
-		if ((enemyTypePriority[k] == ENEMY_TYPE.SPAWNER && lowPercentageHP > spawnerOKThreshold) && preferredLane == 0) {
+		if ((enemyTypePriority[k] == ENEMY_TYPE.SPAWNER && lowPercentageHP > spawnerOKThreshold) && preferredLane == -1) {
 			skippedSpawnerLane = lowLane;
 			skippedSpawnerTarget = lowTarget;
 			skippingSpawner = true;
