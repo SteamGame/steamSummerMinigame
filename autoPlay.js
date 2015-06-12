@@ -52,7 +52,7 @@ function doTheThing() {
 	isAlreadyRunning = false;
 }
 
-var ABILITYS = {
+var ABILITIES = {
 	"GOOD_LUCK": 6,
 	"MEDIC": 7,
 	"METAL_DETECTOR": 8,
@@ -176,11 +176,11 @@ function useMedicsIfRelevant() {
 	}
 	
 	// check if Medics is purchased and cooled down
-	if (hasPurchasedAbility(ABILITYS.MEDIC) && !isAbilityCoolingDown(ABILITYS.MEDIC)) {
+	if (hasPurchasedAbility(ABILITIES.MEDIC) && !isAbilityCoolingDown(ABILITIES.MEDIC)) {
 
 		// Medics is purchased, cooled down, and needed. Trigger it.
 		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
-		triggerAbility(ABILITYS.MEDIC);
+		triggerAbility(ABILITIES.MEDIC);
 	} else if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
 		
 		console.log('We have god mode, cooled down, and needed. Trigger it.');
@@ -191,14 +191,14 @@ function useMedicsIfRelevant() {
 // Use Good Luck Charm if doable
 function useGoodLuckCharmIfRelevant() {
 	// check if Good Luck Charms is purchased and cooled down
-	if (hasPurchasedAbility(ABILITYS.GOOD_LUCK)) {
-		if (isAbilityCoolingDown(ABILITYS.GOOD_LUCK)) {
+	if (hasPurchasedAbility(ABILITIES.GOOD_LUCK)) {
+		if (isAbilityCoolingDown(ABILITIES.GOOD_LUCK)) {
 			return;
 		}
 
 		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
 		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
-		triggerAbility(ABILITYS.GOOD_LUCK);
+		triggerAbility(ABILITIES.GOOD_LUCK);
 	}
 }
 
