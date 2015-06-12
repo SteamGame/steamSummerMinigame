@@ -28,7 +28,7 @@ function doTheThing() {
 
 function goToLaneWithLowest() {
 	// TODO check if it's a boss level, handle boss levels differently
-	var isBossLevel = g_Minigame.m_CurrentScene.level != 0 && (1 + g_Minigame.m_CurrentScene.level) % 10 == 0;
+	var isBossLevel = g_Minigame.m_CurrentScene().level != 0 && (1 + g_Minigame.m_CurrentScene().level) % 10 == 0;
 	// stop jumping lanes on boss levels, since the current version will always jump AWAY from the boss monster.
 	// Note that this is a temporary workaround, not intended as an actual solution to boss levels.
 	if (isBossLevel) { return; }
