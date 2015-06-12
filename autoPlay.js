@@ -236,9 +236,9 @@ function hasPurchasedAbility(abilityId) {
 }
 
 function triggerItem(itemId) {
-	var elem = document.getElementById('abilityitem_' + abilityId);
+	var elem = document.getElementById('abilityitem_' + itemId);
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		g_Minigame.CurrentScene().TryAbility(document.getElementById('abilityitem_' + abilityId).childElements()[0]);
+		g_Minigame.CurrentScene().TryAbility(document.getElementById('abilityitem_' + itemId).childElements()[0]);
 	}
 }
 
