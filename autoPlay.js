@@ -1,5 +1,9 @@
 var isAlreadyRunning = false;
 
+if (thingTimer !== undefined) {
+	window.clearTimeout(thingTimer);
+}
+
 function doTheThing() {
 	if (isAlreadyRunning || g_Minigame === undefined) {
 		return;
@@ -8,19 +12,21 @@ function doTheThing() {
 	
 	goToLaneWithBestTarget();
 	
+	useGoodLuckCharmIfRelevant();
 	useMedicsIfRelevant();
 	
 	// TODO use abilities if available and a suitable target exists
 	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
 	// - Cluster Bomb and Napalm if the current lane has a spawner and 2+ creeps
-	// - Good Luck if available
-	// - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
+	// - Metal Detector if a boss, miniboss, or spawner death is imminent (predicted in > 2 and < 7 seconds)
 	// - Morale Booster if available and lane has > 2 live enemies
-	// - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
+	// - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago (any ability but Medics or a consumable)
 	
 	// TODO purchase abilities and upgrades intelligently
 	
 	attemptRespawn();
+	
+	
 	
 	isAlreadyRunning = false;
 }
@@ -132,20 +138,29 @@ function useMedicsIfRelevant() {
 	}
 	
 	// check if Medics is purchased and cooled down
-	if ((1 << 7) & g_Minigame.CurrentScene().m_rgPlayerTechTree.unlocked_abilities_bitfield) {
-		// each bit in unlocked_abilities_bitfield corresponds to an ability. Medics is ability 7.
-		// the above condition checks if the Medics bit is set or cleared. I.e. it checks if
-		// the player has the Medics ability.
+	if (hasPurchasedAbility(7)) {
 
-		if (hasCooldown(7)) {
+		if (isAbilityCoolingDown(7)) {
 			return;
 		}
 
 		// Medics is purchased, cooled down, and needed. Trigger it.
 		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
-		if (document.getElementById('ability_7')) {
-			g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_7').childElements()[0]);
+		triggerAbility(7);
+	}
+}
+
+// Use Good Luck Charm if doable
+function useGoodLuckCharmIfRelevant() {
+	// check if Good Luck Charms is purchased and cooled down
+	if (hasPurchasedAbility(6)) {
+		if (isAbilityCoolingDown(6)) {
+			return;
 		}
+
+		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
+		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
+		triggerAbility(6);
 	}
 }
 
@@ -157,8 +172,22 @@ function attemptRespawn() {
 	}
 }
 
-function hasCooldown(abilityId) {
+function isAbilityCoolingDown(abilityId) {
 	return g_Minigame.CurrentScene().GetCooldownForAbility(abilityId) > 0;
+}
+
+function hasPurchasedAbility(abilityId) {
+	// each bit in unlocked_abilities_bitfield corresponds to an ability.
+	// the above condition checks if the ability's bit is set or cleared. I.e. it checks if
+	// the player has purchased the specified ability.
+	return (1 << abilityId) & g_Minigame.CurrentScene().m_rgPlayerTechTree.unlocked_abilities_bitfield;
+}
+
+function triggerAbility(abilityId) {
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_' + abilityId).childElements()[0]);
+	}
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
