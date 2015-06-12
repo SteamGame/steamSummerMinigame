@@ -34,6 +34,4 @@ To stop the script, type `window.clearTimeout(thingTimer);` into the console and
 	
 - purchase abilities and upgrades intelligently
 
-- check if it's a boss level, handle boss levels appropriately
-
 - prefer lane with a dying creep as long as all living Spawners have >40% health
