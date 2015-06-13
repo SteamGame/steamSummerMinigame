@@ -18,6 +18,7 @@ var setClickVariable = false; // change to true to improve performance
 
 var disableParticleEffects = true; // Set to false to keep particle effects
 var disableFlinching = false; // Set to true to disable flinching animation for enemies.
+var disableText = false; // Remove all animated text. This includes damage, crits and gold gain.
 
 var alertOnRun = true; // Set to false to disable information alert box
 
@@ -44,7 +45,7 @@ var ITEMS = {
 	"CRIPPLE_MONSTER": 15,
 	"CRIPPLE_SPAWNER": 14,
 	"MAXIMIZE_ELEMENT": 16
-}
+};
 	
 var ENEMY_TYPE = {
 	"SPAWNER":0,
@@ -52,10 +53,36 @@ var ENEMY_TYPE = {
 	"BOSS":2,
 	"MINIBOSS":3,
 	"TREASURE":4
-}
+};
+
 
 // disable particle effects - this drastically reduces the game's memory leak
 if (window.g_Minigame !== undefined && disableParticleEffects) {
+	disableParticles();
+}
+
+if (disableFlinching) {
+	stopFlinching();
+}
+
+// Text toggle.
+trt_textToggle = false;
+if (disableText) {
+	toggleText();
+}
+
+// Remove most effects from the game. Most of these are irreversible.
+// Currently invoked only if specifically called.
+function trt_destroyAllEffects(){
+	stopFlinching();
+	disableParticles();
+	if (!trt_textToggle){
+		toggleText();
+	}
+}
+
+// Callable function to remove particles.
+function disableParticles(){
 	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
 	window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
 	window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
@@ -64,11 +91,31 @@ if (window.g_Minigame !== undefined && disableParticleEffects) {
 	}
 }
 
-if (disableFlinching) {
+// Callable function to stop the flinching animation.
+function stopFlinching(){
 	window.CEnemy.prototype.TakeDamage = function(){};
 	window.CEnemySpawner.prototype.TakeDamage = function(){};
 	window.CEnemyBoss.prototype.TakeDamage = function(){};
+};
+
+// Save old text function.
+var trt_oldPush = window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push;
+
+// Toggles text on and off. We can't explicitly call disable/enable since we need to save the old function.
+function toggleText(){
+	if (!trt_textToggle) {
+	// Replaces the entire text function.
+		window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = function(elem){
+			elem.container.removeChild(elem);
+		};
+		trt_textToggle = true;
+	} else {
+		window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = trt_oldPush;
+		trt_textToggle = false;
+	}
 }
+
+
 
 if (thingTimer !== undefined) {
 	window.clearTimeout(thingTimer);
@@ -233,7 +280,7 @@ function goToLaneWithBestTarget() {
 	// go to the chosen lane
 	if (targetFound) {
 		if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
-			console.log('switching lanes');
+			//console.log('switching lanes');
 			g_Minigame.CurrentScene().TryChangeLane(lowLane);
 		}
 		
