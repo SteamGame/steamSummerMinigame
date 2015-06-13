@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 3.6.2
+// @version 3.6.4
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -160,30 +160,37 @@ function MainLoop() {
 			g_Minigame.m_CurrentScene.m_rgPlayerData.target);
 
 		if (enemy) {
+	        displayText(
+	            enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
+	            enemy.m_Sprite.position.y - 52,
+	            "-" + FormatNumberForDisplay((damagePerClick * clickRate), 5),
+	            "#aaf"
+	        );
+			
+			if( g_Minigame.m_CurrentScene.m_rgStoredCrits.length > 0 )
+			{
+				var rgDamage = g_Minigame.m_CurrentScene.m_rgStoredCrits.splice(0,1);
+			
+				g_Minigame.m_CurrentScene.DoCritEffect( rgDamage[0], enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, 'Crit!' );
+			}
+			
+	        var goldPerClickPercentage = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
+	        if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
+	        {
+	            var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * clickRate;
+	            advLog(
+	                "Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
+	                + "%. Approximately gold per second: " + goldPerSecond,
+	                4
+	            );
 	            displayText(
 	                enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
-	                enemy.m_Sprite.position.y - 52,
-	                "-" + FormatNumberForDisplay((damagePerClick * clickRate), 5),
-	                "#aaf"
+	                enemy.m_Sprite.position.y - 17,
+	                "+" + FormatNumberForDisplay(goldPerSecond, 5),
+	                "#e1b21e"
 	            );
-
-	            var goldPerClickPercentage = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
-	            if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
-	            {
-	                var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * clickRate;
-	                advLog(
-	                    "Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
-	                    + "%. Approximately gold per second: " + goldPerSecond,
-	                    4
-	                );
-	                displayText(
-	                    enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
-	                    enemy.m_Sprite.position.y - 17,
-	                    "+" + FormatNumberForDisplay(goldPerSecond, 5),
-	                    "#e1b21e"
-	                );
-	            }
 	        }
+	    }
 	}
 }
 

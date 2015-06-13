@@ -77,7 +77,7 @@ This fork has:
 4. Press `F12` and navigate to the `Console` tab.
 5. Paste into the javascript input, and hit `Enter`.
 
-To stop the manual script, type `window.clearTimeout(thingTimer);` into the console and hit `Enter`.
+To stop the manual script, type `window.clearTimeout(window.SteamDB_Minigame_Timer);` into the console and hit `Enter`.
 
 The game should now play itself, you should leave it running in the background. If you're not sure if it is auto-playing, try changing lanes. If it jumps back almost immediately, it's working.
 
@@ -90,13 +90,3 @@ This project is open-source on github. There are different ways you can help:
 - Pick an item off the TODO list, below, and implement it. When it's done (and tested and working), create a Pull Request.
 - Got an idea for an improvement that's not already listed? Code it up, test it out, then make a Pull Request when it's ready.
 - Do NOT change the script version in your PR as it could be incremented before your PR is merged.
-
-### TODO ###
-
-- use abilities if available and a suitable target exists:
-	 - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
-	 - Decrease Cooldowns right before using another long-cooldown item. (Decrease Cooldown affects abilities triggered while it is active, not right before it's used)
-	 - Steal Health item if Medics is in cooldown and health is low. This should happen before using God Mode, and God Mode shouldn't be used if Steal Health is active.
-- purchase abilities and upgrades intelligently
-- automatically update the manual script by periodically checking https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js
-- update features section
