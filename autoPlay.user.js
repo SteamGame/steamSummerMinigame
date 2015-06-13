@@ -146,14 +146,14 @@ function MainLoop() {
 	            "-" + FormatNumberForDisplay((damagePerClick * clickRate), 5),
 	            "#aaf"
 	        );
-			
+
 			if( g_Minigame.m_CurrentScene.m_rgStoredCrits.length > 0 )
 			{
 				var rgDamage = g_Minigame.m_CurrentScene.m_rgStoredCrits.splice(0,1);
-			
+
 				g_Minigame.m_CurrentScene.DoCritEffect( rgDamage[0], enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, 'Crit!' );
 			}
-			
+
 	        var goldPerClickPercentage = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
 	        if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
 	        {
@@ -187,13 +187,13 @@ function lockElements() {
 		if (0 === str.length) {
 			return t;
 		}
-		
+
 		for (i=0; i<str.length; i++) {
 			char=str.charCodeAt(i);
 			t=(t<<5)-t+char;
 			t&=t;
 		}
-		
+
 		return t;
   };
 
@@ -320,9 +320,10 @@ function goToLaneWithBestTarget() {
 				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps === 0)
 					continue;
 				var stacks = 0;
-				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined')
+				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined') {
 					stacks = g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17];
 					advLog('stacks: ' + stacks, 3);
+				}
 				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
 					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
 					if (stacks * enemyGold > potential) {
@@ -349,8 +350,9 @@ function goToLaneWithBestTarget() {
 					if(mostHPDone < dmg)
 					{
 						mostHPDone = dmg;
+					} else {
+						 continue;
 					}
-					else continue;
 
 					targetFound = true;
 					lowHP = enemies[i].m_flDisplayedHP;
@@ -584,8 +586,9 @@ function useMoraleBoosterIfRelevant() {
 		var numberOfWorthwhileEnemies = 0;
 		for(var i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies.length; i++){
 			//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
-			if(g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies[i].hp > 1000000)
+			if(g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies[i].hp > 1000000) {
 				numberOfWorthwhileEnemies++;
+			}
 		}
 		if(numberOfWorthwhileEnemies >= 2){
 			// Moral Booster is purchased, cooled down, and needed. Trigger it.
@@ -914,7 +917,7 @@ function enhanceTooltips(){
             default:
                 return trt_oldTooltip(context);
         }
-        
+
         return strOut;
     };
 }
