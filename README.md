@@ -41,12 +41,12 @@ This fork has:
 
 1. Open Tampermonkey's dashboard.
 2. Click on the `Utilites` tab on the right.
-3. Paste `https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.user.js` into the text area, and click `Import`.
+3. Paste `https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js` into the text area, and click `Import`.
 4. When the editor has loaded, click `Install` (*NOT* `Process with Chrome`).
 
 ### Greasemonkey ###
 
-1. Navigate to `https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.user.js`.
+1. Navigate to `https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js`.
 2. Right click on the page, and click `Save Page As`.
 3. While Firefox is still open, open a File Manager of any sort, and navigate to the directory you saved the script.
 4. Drag & drop the script file onto the Firefox window.
@@ -95,5 +95,5 @@ This project is open-source on github. There are different ways you can help:
 	 - Decrease Cooldowns right before using another long-cooldown item. (Decrease Cooldown affects abilities triggered while it is active, not right before it's used)
 	 - Steal Health item if Medics is in cooldown and health is low. This should happen before using God Mode, and God Mode shouldn't be used if Steal Health is active.
 - purchase abilities and upgrades intelligently
-- automatically update the manual script by periodically checking https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.user.js
+- automatically update the manual script by periodically checking https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js
 - update features section
