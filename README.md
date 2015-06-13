@@ -12,7 +12,7 @@ powerups for you.
 ## Features ##
 
 - Moves you to the lane most likely to give you gold, prioritized like so:
-	1. The lane with a Treasure Minion or Boss
+        1. The lane with a Treasure Minion or Boss
 	2. The lane with the Miniboss with the lowest health
 	3. The lane with a Spawner below 40% health
 	4. The lane with a Creep below 10% health
@@ -29,7 +29,7 @@ powerups for you.
 
 ### Tampermonkey ###
 
-1. Open Tapermonkey's dashboard.
+1. Open Tampermonkey's dashboard.
 2. Click on the `Utilites` tab on the right.
 3. Paste `https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js` into the text area, and click `Import`.
 4. When the editor has loaded, press `Install` (*NOT* `Process with Chrome`).
@@ -45,14 +45,29 @@ powerups for you.
 
 ### Manual ###
 
+#####Chrome#####
 1. Open `autoPlay.js` in a text editor.
-2. Select All, Copy
-3. In a browser (Chrome, Firefox, IE), log in to Steam, navigate to the minigame page, and start playing the game.
-4. For your sanity, turn off sound and music.
-5. Hit `F12` to bring up the developer console.
-6. Navigate to the `Console` or `Script` section, where you can enter javascript and see javascript output.
-7. Paste into the javascript input, and hit `Enter`.
-8. (Optional) To stop the script, type `window.clearTimeout(thingTimer);` into the console and hit Enter.
+2. Select All, Copy.
+3. Navigate to http://steamcommunity.com/minigame/ and join or start a game.
+4. press `Cntrl+Shift+j`.
+5. Paste into the javascript input, and hit `Enter`.
+6. (Optional) To stop the script, type `window.clearTimeout(thingTimer);` into the console and hit Enter.
+
+#####FireFox#####
+1. Open `autoPlay.js` in a text editor.
+2. Select All, Copy.
+3. Navigate to http://steamcommunity.com/minigame/ and join or start a game.
+4. press `Cntrl+Shift+k`.
+5. Paste into the javascript input, and hit `Enter`.
+6. (Optional) To stop the script, type `window.clearTimeout(thingTimer);` into the console and hit Enter.
+
+#####Internet Explorer/Microsoft Edge#####
+1. Open `autoPlay.js` in a text editor.
+2. Select All, Copy.
+3. Navigate to http://steamcommunity.com/minigame/ and join or start a game.
+4. press `F12` and navigate to the `console` tab.
+5. Paste into the javascript input, and hit `Enter`.
+6. (Optional) To stop the script, type `window.clearTimeout(thingTimer);` into the console and hit Enter.
 
 The game should now play itself, you should leave it running in the background. If you're not sure if it
 is auto-playing, try changing lanes. If it jumps back almost immediately, it's working.
