@@ -12,6 +12,7 @@
 
 // IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
 
+(function(){
 var isAlreadyRunning = false;
 var clickRate = 20;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
@@ -124,7 +125,7 @@ function doTheThing() {
 
 		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
 		g_msTickRate = 1000;
-		
+
 		var damagePerClick = g_Minigame.m_CurrentScene.CalculateDamage(
             		g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click,
             		g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].element
@@ -145,7 +146,7 @@ function doTheThing() {
 	                "-" + FormatNumberForDisplay((damagePerClick * clickRate), 5),
 	                "#aaf"
 	            );
-	
+
 	            var goldPerClickPercentage = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
 	            if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
 	            {
@@ -443,12 +444,12 @@ function disableCooldownIfRelevant() {
 		disableAbility(ABILITIES.COOLDOWN);
 		return;
 	}
-	
+
 	if(!isAbilityActive(ABILITIES.COOLDOWN))
 	{
 		enableAbility(ABILITIES.COOLDOWN);
 	}
-	
+
 }
 
 function useMedicsIfRelevant() {
@@ -852,3 +853,4 @@ if(breadcrumbs) {
     element.textContent = 'Room ' + g_GameID;
     breadcrumbs.appendChild(element);
 }
+})();
