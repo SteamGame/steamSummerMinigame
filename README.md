@@ -10,7 +10,7 @@ powerups for you.
 ## Features ##
 
 - Moves you to the lane most likely to give you gold, prioritized like so:
-        1. The lane with a Treasure Minion or Boss
+	1. The lane with a Treasure Minion or Boss
 	2. The lane with the Miniboss with the lowest health
 	3. The lane with a Spawner below 40% health
 	4. The lane with a Creep below 10% health
@@ -30,7 +30,7 @@ powerups for you.
 1. Open Tampermonkey's dashboard.
 2. Click on the `Utilites` tab on the right.
 3. Paste `https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js` into the text area, and click `Import`.
-4. When the editor has loaded, press `Install` (*NOT* `Process with Chrome`).
+4. When the editor has loaded, click `Install` (*NOT* `Process with Chrome`).
 
 ### Greasemonkey ###
 
@@ -43,32 +43,30 @@ powerups for you.
 
 ### Manual ###
 
-#####Chrome#####
+##### Chrome #####
 1. Open `autoPlay.js` in a text editor.
 2. Select All, Copy.
-3. Navigate to http://steamcommunity.com/minigame/ and join or start a game.
-4. press `Cntrl+Shift+j`.
+3. Navigate to `http://steamcommunity.com/minigame/` and join or start a game.
+4. Press `Ctrl + Shift + J`.
 5. Paste into the javascript input, and hit `Enter`.
-6. (Optional) To stop the script, type `window.clearTimeout(thingTimer);` into the console and hit Enter.
 
-#####FireFox#####
+##### Firefox #####
 1. Open `autoPlay.js` in a text editor.
 2. Select All, Copy.
-3. Navigate to http://steamcommunity.com/minigame/ and join or start a game.
-4. press `Cntrl+Shift+k`.
+3. Navigate to `http://steamcommunity.com/minigame/` and join or start a game.
+4. Press `Ctrl + Shift + K`.
 5. Paste into the javascript input, and hit `Enter`.
-6. (Optional) To stop the script, type `window.clearTimeout(thingTimer);` into the console and hit Enter.
 
-#####Internet Explorer/Microsoft Edge#####
+##### Internet Explorer / Microsoft Edge #####
 1. Open `autoPlay.js` in a text editor.
 2. Select All, Copy.
-3. Navigate to http://steamcommunity.com/minigame/ and join or start a game.
-4. press `F12` and navigate to the `console` tab.
+3. Navigate to `http://steamcommunity.com/minigame/` and join or start a game.
+4. Press `F12` and navigate to the `Console` tab.
 5. Paste into the javascript input, and hit `Enter`.
-6. (Optional) To stop the script, type `window.clearTimeout(thingTimer);` into the console and hit Enter.
 
-The game should now play itself, you should leave it running in the background. If you're not sure if it
-is auto-playing, try changing lanes. If it jumps back almost immediately, it's working.
+To stop the manual script, type `window.clearTimeout(thingTimer);` into the console and hit `Enter`.
+
+The game should now play itself, you should leave it running in the background. If you're not sure if it is auto-playing, try changing lanes. If it jumps back almost immediately, it's working.
 
 ## TODO ##
 
