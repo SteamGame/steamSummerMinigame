@@ -134,13 +134,30 @@ function doTheThing() {
 			g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane,
 			g_Minigame.m_CurrentScene.m_rgPlayerData.target);
 
-		if(enemy) {
+		if (enemy) {
 	            displayText(
 	                enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
 	                enemy.m_Sprite.position.y - 52,
 	                "-" + FormatNumberForDisplay((damagePerClick * clickRate), 5),
 	                "#aaf"
 	            );
+	
+	            var goldPerClickPercentage = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
+	            if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
+	            {
+	                var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * clickRate;
+	                advLog(
+	                    "Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
+	                    + "%. Approximately gold per second: " + goldPerSecond,
+	                    4
+	                );
+	                displayText(
+	                    enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
+	                    enemy.m_Sprite.position.y - 17,
+	                    "+" + FormatNumberForDisplay(goldPerSecond, 5),
+	                    "#e1b21e"
+	                );
+	            }
 	        }
 	}
 }
