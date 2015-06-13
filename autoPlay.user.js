@@ -16,11 +16,61 @@
 "use strict";
 
 var isAlreadyRunning = false;
-var clickRate = 10;
-var logLevel = 1; // 5 is the most verbose, 0 disables all log
-var removeInterface = false; // get rid of a bunch of pointless DOM
 
-var optimizeGraphics = true; //set this to false if you don't want effects disabled (introduces memory leak.)
+var config = function(name, value)
+{
+	if (typeof value == "undefined")
+		return localStorage.getItem("steamdb-minigame/" + name);
+	else
+		return localStorage.setItem("steamdb-minigame/" + name, value);
+}
+
+var getConfig = function(name, defaultValue)
+{
+	var result = config(name);
+
+	if (result === null &&
+		typeof defaultValue != "undefined")
+		return defaultValue;
+
+	return result;
+}
+
+/**
+ * Local storage is being updated to accept more types in the future, currently browsers store and retrieve items as strings, this function is to fix current and future issues with booleans.
+ *
+ * Ints and floats are fine to use with config because as soon as you use any number operator or action on a string it will automatically convert (example: "2.3" * 1 results in 2.3)
+ */
+var setting = function(name, value)
+{
+	if (typeof value == "undefined")
+	{
+		var result = config(name);
+
+		if (result === null)
+			return null;
+
+		return result == "true"; // Convert back to float
+	}
+	else
+		return config(name, value ? "true" : "false"); // Convert to string
+}
+
+var getSetting = function(name, defaultValue)
+{
+	var result = setting(name);
+
+	if (result === null &&
+		typeof defaultValue != "undefined")
+		return defaultValue;
+
+	return result;
+}
+
+var clickRate = getConfig("config/click-rate", 10);
+var logLevel = getConfig("config/log-level", 1); // 5 is the most verbose, 0 disables all log
+var removeInterface = getSetting("config/remove-interface", false); // get rid of a bunch of pointless DOM
+var optimizeGraphics = getSetting("config/optimize-graphics", true); //set this to false if you don't want effects disabled (introduces memory leak.)
 
 var ABILITIES = {
 	"MORALE_BOOSTER": 5,
@@ -146,14 +196,14 @@ function MainLoop() {
 	            "-" + FormatNumberForDisplay((damagePerClick * clickRate), 5),
 	            "#aaf"
 	        );
-			
+
 			if( g_Minigame.m_CurrentScene.m_rgStoredCrits.length > 0 )
 			{
 				var rgDamage = g_Minigame.m_CurrentScene.m_rgStoredCrits.splice(0,1);
-			
+
 				g_Minigame.m_CurrentScene.DoCritEffect( rgDamage[0], enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, 'Crit!' );
 			}
-			
+
 	        var goldPerClickPercentage = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
 	        if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
 	        {
@@ -187,13 +237,13 @@ function lockElements() {
 		if (0 === str.length) {
 			return t;
 		}
-		
+
 		for (i=0; i<str.length; i++) {
 			char=str.charCodeAt(i);
 			t=(t<<5)-t+char;
 			t&=t;
 		}
-		
+
 		return t;
   };
 
@@ -914,7 +964,7 @@ function enhanceTooltips(){
             default:
                 return trt_oldTooltip(context);
         }
-        
+
         return strOut;
     };
 }
