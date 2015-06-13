@@ -111,7 +111,7 @@ function firstRun() {
 	enhanceTooltips();
 }
 
-function doTheThing() {
+function MainLoop() {
 	if (!isAlreadyRunning) {
 		isAlreadyRunning = true;
 
@@ -842,7 +842,7 @@ var thingTimer = w.setInterval(function(){
 	if (g_Minigame && g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
 		w.clearInterval(thingTimer);
 		firstRun();
-		thingTimer = w.setInterval(doTheThing, 1000);
+		thingTimer = w.setInterval(MainLoop, 1000);
 	}
 }, 1000);
 
