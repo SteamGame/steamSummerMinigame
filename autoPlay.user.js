@@ -15,14 +15,12 @@
 (function(w) {
 "use strict";
 
+var isAlreadyRunning = false;
 var clickRate = 10;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
 var removeInterface = false; // get rid of a bunch of pointless DOM
+
 var optimizeGraphics = true; //set this to false if you don't want effects disabled (introduces memory leak.)
-
-
-var isAlreadyRunning = false;
-var scene = g_Minigame.m_CurrentScene;
 
 var ABILITIES = {
 	"MORALE_BOOSTER": 5,
@@ -125,21 +123,21 @@ function MainLoop() {
 		attemptRespawn();
 		disableCooldownIfRelevant();
 
-		scene.m_nClicks = clickRate;
+		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
 		g_msTickRate = 1000;
 
-		var damagePerClick = scene.CalculateDamage(
-            		scene.m_rgPlayerTechTree.damage_per_click,
-            		scene.m_rgGameData.lanes[scene.m_rgPlayerData.current_lane].element
+		var damagePerClick = g_Minigame.m_CurrentScene.CalculateDamage(
+            		g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click,
+            		g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].element
         	);
 
         	advLog("Ticked. Current clicks per second: " + clickRate + ". Current damage per second: " + (damagePerClick * clickRate), 4);
 
 		isAlreadyRunning = false;
 
-		var enemy = scene.GetEnemy(
-			scene.m_rgPlayerData.current_lane,
-			scene.m_rgPlayerData.target);
+		var enemy = g_Minigame.m_CurrentScene.GetEnemy(
+			g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane,
+			g_Minigame.m_CurrentScene.m_rgPlayerData.target);
 
 		if (enemy) {
 	        displayText(
@@ -149,14 +147,14 @@ function MainLoop() {
 	            "#aaf"
 	        );
 
-			if( scene.m_rgStoredCrits.length > 0 )
+			if( g_Minigame.m_CurrentScene.m_rgStoredCrits.length > 0 )
 			{
-				var rgDamage = scene.m_rgStoredCrits.splice(0,1);
+				var rgDamage = g_Minigame.m_CurrentScene.m_rgStoredCrits.splice(0,1);
 
-				scene.DoCritEffect( rgDamage[0], enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, 'Crit!' );
+				g_Minigame.m_CurrentScene.DoCritEffect( rgDamage[0], enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, 'Crit!' );
 			}
 
-	        var goldPerClickPercentage = scene.m_rgGameData.lanes[scene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
+	        var goldPerClickPercentage = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
 	        if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
 	        {
 	            var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * clickRate;
@@ -311,27 +309,26 @@ function goToLaneWithBestTarget() {
 		}
 
 		//Prefer lane with raining gold, unless current enemy target is a treasure or boss.
-		if (lowTarget != ENEMY_TYPE.TREASURE && lowTarget != ENEMY_TYPE.BOSS ){
+		if(lowTarget != ENEMY_TYPE.TREASURE && lowTarget != ENEMY_TYPE.BOSS ){
 			var potential = 0;
 			// Loop through lanes by elemental preference
 			var sortedLanes = sortLanesByElementals();
-			for (var notI = 0; notI < sortedLanes.length; notI++){
+			for(var notI = 0; notI < sortedLanes.length; notI++){
 				// Maximize compability with upstream
 				i = sortedLanes[notI];
 				// ignore if lane is empty
-				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps === 0) {
+				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps === 0)
 					continue;
-				}
 				var stacks = 0;
-				if (typeof scene.m_rgLaneData[i].abilities[17] != 'undefined') {
-					stacks = scene.m_rgLaneData[i].abilities[17];
+				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined') {
+					stacks = g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17];
 					advLog('stacks: ' + stacks, 3);
 				}
-				for (var m = 0; m < scene.m_rgEnemies.length; m++) {
-					var enemyGold = scene.m_rgEnemies[m].m_data.gold;
+				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
+					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
 					if (stacks * enemyGold > potential) {
 						potential = stacks * enemyGold;
-						preferredTarget = scene.m_rgEnemies[m].m_nID;
+						preferredTarget = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_nID;
 						preferredLane = i;
 					}
 				}
@@ -667,7 +664,7 @@ function useGoldRainIfRelevant() {
 			return;
 		}
 
-		var enemy = scene.GetEnemy(scene.m_rgPlayerData.current_lane, scene.m_rgPlayerData.target);
+		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
 		// check if current target is a boss, otherwise its not worth using the gold rain
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
@@ -688,7 +685,7 @@ function useMetalDetectorIfRelevant() {
 			return;
 		}
 
-		var enemy = scene.GetEnemy(scene.m_rgPlayerData.current_lane, scene.m_rgPlayerData.target);
+		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
 		// check if current target is a boss, otherwise we won't use metal detector
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
@@ -714,10 +711,8 @@ function isAbilityActive(abilityId) {
 }
 
 function hasItem(itemId) {
-	var items = g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items;
-
-	for ( var i = 0; i < items.length; ++i ) {
-		var abilityItem = items[i];
+	for ( var i = 0; i < g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items.length; ++i ) {
+		var abilityItem = g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items[i];
 		if (abilityItem.ability == itemId) {
 			return true;
 		}
@@ -801,7 +796,7 @@ function isAbilityItemEnabled(abilityId) {
 }
 
 function getActiveAbilityNum(ability) {
-    var abilities = scene.m_rgGameData.lanes[scene.m_rgPlayerData.current_lane].active_player_abilities;
+    var abilities = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_abilities;
     var count = 0;
     for(var i = 0; i < abilities.length; i++)
     {
@@ -878,19 +873,19 @@ if(breadcrumbs) {
 
 // Helpers to access player stats.
 function getCritChance(){
-    return scene.m_rgPlayerTechTree.crit_percentage * 100;
+    return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.crit_percentage * 100;
 }
 
 function getCritMultiplier(){
-    return scene.m_rgPlayerTechTree.damage_multiplier_crit;
+    return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_multiplier_crit;
 }
 
 function getDPS(){
-    return scene.m_rgPlayerTechTree.dps;
+    return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.dps;
 }
 
 function getClickDamage(){
-    return scene.m_rgPlayerTechTree.damage_per_click;
+    return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click;
 }
 
 function enhanceTooltips(){
