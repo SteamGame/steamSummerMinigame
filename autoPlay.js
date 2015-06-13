@@ -86,6 +86,7 @@ function doTheThing() {
 		useMoraleBoosterIfRelevant();
 		useClusterBombIfRelevant();
 		useNapalmIfRelevant();
+		useTacticalNukeIfRelevant();
 		attemptRespawn();
 
 		isAlreadyRunning = false;
@@ -376,13 +377,13 @@ function useTacticalNukeIfRelevant() {
 				if (enemy.m_data.type == 0) {
 					enemySpawnerExists = true;
 					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-					console.log(enemySpawnerHealthPercent);
 				}
 			}
 		}
 
 		// If there is a spawner and it's health is between 60% and 30%, nuke it!
 		if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
+			console.log("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.");
 			triggerAbility(ABILITIES.NUKE);
 		}
 	}
