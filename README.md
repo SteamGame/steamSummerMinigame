@@ -7,6 +7,8 @@ This javascript automatically plays the 2015 Steam Summer minigame for you in a 
 It goes beyond the autoclicker scripts already out there. It will keep you in the lane where you'll make the most money, activate abilities as they are available and best apply, and possibly purchase upgrades and
 powerups for you.
 
+**DISCLAIMER:** This autoscript will *NOT* include an auto-clicker. Automatic clicking pushes into the area of cheating, and this script is not designed for cheating. It is designed for automating the process of collecting gold.
+
 ## Installation ##
 
 ### Tampermonkey ###
@@ -43,9 +45,7 @@ is auto-playing, try changing lanes. If it jumps back almost immediately, it's w
 
 - use abilities if available and a suitable target exists:
 	 - Tactical Nuke on a Spawner if below 60% and above 30% of its health
-	 - Cluster Bomb and Napalm if the current lane has a spawner and 2+ creeps
 	 - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
-	 - Morale Booster if available and lane has > 2 live enemies
 	 - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
 	
 - purchase abilities and upgrades intelligently
