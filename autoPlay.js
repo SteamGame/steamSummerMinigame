@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 1.4
+// @version 1.5
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
@@ -97,53 +97,6 @@ function doTheThing() {
 	isAlreadyRunning = false;
 }
 
-function clickTheThing() {
-    g_Minigame.m_CurrentScene.DoClick(
-        {
-            data: {
-                getLocalPosition: function() {
-                    var enemy = g_Minigame.m_CurrentScene.GetEnemy(
-                                      g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane,
-                                      g_Minigame.m_CurrentScene.m_rgPlayerData.target),
-                        laneOffset = enemy.m_nLane * 440;
-
-                    return {
-                        x: enemy.m_Sprite.position.x - laneOffset,
-                        y: enemy.m_Sprite.position.y - 52
-                    }
-                }
-            }
-        }
-    );
-}
-
-if(setClickVariable) {
-	var clickTimer = setInterval( function(){
-		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
-	}, 1000);
-} else {
-	var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
-}
-
-
-
-var ABILITIES = {
-	"GOOD_LUCK": 6,
-	"MEDIC": 7,
-	"METAL_DETECTOR": 8,
-	"COOLDOWN": 9,
-	"NUKE": 10,
-	"CLUSTER_BOMB": 11,
-	"NAPALM": 12
-};
-
-var ITEMS = {
-	"REVIVE": 13,
-	"GOLD_RAIN": 17,
-	"GOD_MODE": 21,
-	"REFLECT_DAMAGE":24
-}
-
 function goToLaneWithBestTarget() {
 	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
 	var spawnerOKThreshold = 0.4;
@@ -154,6 +107,8 @@ function goToLaneWithBestTarget() {
 	var lowLane = 0;
 	var lowTarget = 0;
 	var lowPercentageHP = 0;
+	var preferredLane = -1;
+	var preferredTarget = -1;
 	
 	// determine which lane and enemy is the optimal target
 	var enemyTypePriority = [
@@ -189,10 +144,46 @@ function goToLaneWithBestTarget() {
 			}
 		}
 	
+		//Prefer lane with raining gold, unless current enemy target is a treasure or boss.
+		if(lowTarget != ENEMY_TYPE.TREASURE && lowTarget != ENEMY_TYPE.BOSS ){
+			var potential = 0;
+			for(var i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes.length; i++){
+				// ignore if lane is empty
+				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps == 0)
+					continue;
+				var stacks = 0;
+				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined')
+					stacks = g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17];
+					//console.log('stacks: ' + stacks);
+				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
+					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
+					if (stacks * enemyGold > potential) {
+                				potential = stacks * enemyGold;
+						preferredTarget = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_nID;
+						preferredLane = i;
+        				}
+				}
+			}
+		}
+		
 		// target the enemy of the specified type with the lowest hp
+		var mostHPDone = 0;
 		for (var i = 0; i < enemies.length; i++) {
 			if (enemies[i] && !enemies[i].m_bIsDestroyed) {
-				if (lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
+				// Only select enemy and lane if the preferedLane matches the potential enemy lane
+				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
+					var element = g_Minigame.CurrentScene().m_rgGameData.lanes[enemies[i].m_nLane].element;
+					
+					var dmg = g_Minigame.CurrentScene().CalculateDamage(
+							g_Minigame.CurrentScene().m_rgPlayerTechTree.dps,
+							element
+						);
+					if(mostHPDone < dmg)
+					{
+						mostHPDone = dmg;
+					}
+					else continue;
+
 					targetFound = true;
 					lowHP = enemies[i].m_flDisplayedHP;
 					lowLane = enemies[i].m_nLane;
@@ -205,10 +196,17 @@ function goToLaneWithBestTarget() {
 			}
 		}
 		
+		if(preferredLane != -1 && preferredTarget != -1){
+			lowLane = preferredLane;
+			lowTarget = preferredTarget;
+			console.log('Switching to a lane with best raining gold benefit');
+		}
+		
 		// If we just finished looking at spawners, 
 		// AND none of them were below our threshold,  
 		// remember them and look for low creeps (so don't quit now)
-		if (enemyTypePriority[k] == ENEMY_TYPE.SPAWNER && lowPercentageHP > spawnerOKThreshold) {
+		// Don't skip spawner if lane has raining gold
+		if ((enemyTypePriority[k] == ENEMY_TYPE.SPAWNER && lowPercentageHP > spawnerOKThreshold) && preferredLane == -1) {
 			skippedSpawnerLane = lowLane;
 			skippedSpawnerTarget = lowTarget;
 			skippingSpawner = true;
@@ -310,6 +308,14 @@ function useMedicsIfRelevant() {
 
 // Use Good Luck Charm if doable
 function useGoodLuckCharmIfRelevant() {
+
+	// check if Crits is purchased and cooled down
+	if (hasOneUseAbility(18) && !isAbilityCoolingDown(18)){
+		// Crits is purchased, cooled down, and needed. Trigger it.
+		console.log('Crit chance is always good.');
+		triggerAbility(18);
+    }
+	
 	// check if Good Luck Charms is purchased and cooled down
 	if (hasPurchasedAbility(ABILITIES.GOOD_LUCK)) {
 		if (isAbilityCoolingDown(ABILITIES.GOOD_LUCK)) {
@@ -410,6 +416,27 @@ function useMoraleBoosterIfRelevant() {
 	}
 }
 
+// Use Moral Booster if doable
+function useMoraleBoosterIfRelevant() {
+	// check if Good Luck Charms is purchased and cooled down
+	if (hasPurchasedAbility(5)) {
+		if (isAbilityCoolingDown(5)) {
+			return;
+		}
+		var numberOfWorthwhileEnemies = 0;
+		for(i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies.length; i++){
+			//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
+			if(g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies[i].hp > 1000000)
+				numberOfWorthwhileEnemies++;
+		}
+		if(numberOfWorthwhileEnemies >= 2){
+			// Moral Booster is purchased, cooled down, and needed. Trigger it.
+			console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
+			triggerAbility(5);
+		}
+	}
+}
+
 //If player is dead, call respawn method
 function attemptRespawn() {
 	if ((g_Minigame.CurrentScene().m_bIsDead) && 
@@ -436,6 +463,11 @@ function isAbilityCoolingDown(abilityId) {
 	return g_Minigame.CurrentScene().GetCooldownForAbility(abilityId) > 0;
 }
 
+function hasOneUseAbility(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	return elem != null;
+}
+
 function hasPurchasedAbility(abilityId) {
 	// each bit in unlocked_abilities_bitfield corresponds to an ability.
 	// the above condition checks if the ability's bit is set or cleared. I.e. it checks if
@@ -451,10 +483,7 @@ function triggerItem(itemId) {
 }
 
 function triggerAbility(abilityId) {
-	var elem = document.getElementById('ability_' + abilityId);
-	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_' + abilityId).childElements()[0]);
-	}
+	g_Minigame.CurrentScene().m_rgAbilityQueue.push({'ability': abilityId})
 }
 
 function disableAbility(abilityId) {
@@ -502,3 +531,31 @@ function isAbilityItemEnabled(abilityId) {
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
+function clickTheThing() {
+    g_Minigame.m_CurrentScene.DoClick(
+        {
+            data: {
+                getLocalPosition: function() {
+                    var enemy = g_Minigame.m_CurrentScene.GetEnemy(
+                                      g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane,
+                                      g_Minigame.m_CurrentScene.m_rgPlayerData.target),
+                        laneOffset = enemy.m_nLane * 440;
+
+                    return {
+                        x: enemy.m_Sprite.position.x - laneOffset,
+                        y: enemy.m_Sprite.position.y - 52
+                    }
+                }
+            }
+        }
+    );
+}
+
+if(setClickVariable) {
+	var clickTimer = setInterval( function(){
+		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
+	}, 1000);
+} else {
+	var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
+}
+
