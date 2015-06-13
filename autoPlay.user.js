@@ -14,7 +14,7 @@
 
 var isAlreadyRunning = false;
 var clickRate = 20;
-var logLevel = 1; // 5 is the most spammy, 0 disables all log
+var logLevel = 1; // 5 is the most verbose, 0 disables all log
 var removeInterface = false; // get rid of a bunch of pointless DOM
 
 var optimizeGraphics = true; //set this to false if you don't want effects disabled (introduces memory leak.)
@@ -100,7 +100,7 @@ function firstRun() {
 	if (window.CSceneGame !== undefined) {
 		window.CSceneGame.prototype.DoScreenShake = function() {};
 	}
-    
+
 }
 
 function doTheThing() {
@@ -146,26 +146,63 @@ function doTheThing() {
 }
 
 function lockElements() {
-    String.prototype.hashCode=function(){
-        var t=0;
-        if(0==this.length)
-            return t;
-        for(i=0;i<this.length;i++)
-            char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
-        return t;
-    }
-    var elem = Math.abs(g_steamID.hashCode()%4);
-    var fire = document.querySelector("a.link.element_upgrade_btn[data-type=\"3\"]")
-    var water = document.querySelector("a.link.element_upgrade_btn[data-type=\"4\"]")
-    var earth = document.querySelector("a.link.element_upgrade_btn[data-type=\"6\"]")
-    var air = document.querySelector("a.link.element_upgrade_btn[data-type=\"5\"]")
-    var elems = [fire, water, earth, air];
-    for(i=0; i< elems.length; i++) {
-        if(i == elem) {
-            continue;
-        }
-        elems[i].style.visibility = "hidden";
-    }
+	var elementMultipliers = [
+		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_fire,
+		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_water,
+		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_air,
+		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_earth
+	];
+
+  String.prototype.hashCode=function(){
+      var t=0;
+      if(0==this.length)
+          return t;
+      for(i=0;i<this.length;i++)
+          char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
+      return t;
+  }
+
+  var elem = Math.abs(g_steamID.hashCode()%4);
+
+	// If more than two elements are leveled to 3 or higher, do not enable lock
+	var leveled = 0
+	var lastLeveled = -1
+
+	for (var i=0; i < elementMultipliers.length; i++){
+		advLog("Element " + i + " is at level " + (elementMultipliers[i]-1)/1.5, 3);
+		if ((elementMultipliers[i]-1)/1.5 >= 3) {
+			leveled++;
+			// Only used if there is only one so overwriting it doesn't matter
+			lastLeveled = i;
+		}
+	}
+
+	if (leveled >= 2) {
+		advLog("More than 2 elementals leveled to 3 or above, not locking.", 1);
+		return;
+	} else if (leveled == 1) {
+		advLog("Found existing lock on " + lastLeveled + ", locking to it.", 1);
+		lockToElement(lastLeveled);
+	} else {
+		advLog("Locking to element " + elem + " as chosen by SteamID", 1);
+		lockToElement(elem);
+	}
+}
+
+function lockToElement(element) {
+	var fire = document.querySelector("a.link.element_upgrade_btn[data-type=\"3\"]")
+	var water = document.querySelector("a.link.element_upgrade_btn[data-type=\"4\"]")
+	var air = document.querySelector("a.link.element_upgrade_btn[data-type=\"5\"]")
+	var earth = document.querySelector("a.link.element_upgrade_btn[data-type=\"6\"]")
+
+	var elems = [fire, water, air, earth];
+
+	for (i=0; i < elems.length; i++) {
+		if (i === element) {
+				continue;
+		}
+		elems[i].style.visibility = "hidden";
+	}
 }
 
 function displayText(x, y, strText, color) {
