@@ -12,6 +12,9 @@
 
 // IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
 
+(function(w) {
+"use strict";
+
 var isAlreadyRunning = false;
 var clickRate = 10;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
@@ -97,12 +100,12 @@ function firstRun() {
 	}
 
 	if (thingTimer) {
-		window.clearInterval(thingTimer);
+		w.clearInterval(thingTimer);
 		thingTimer = false;
 	}
 
-	if (window.CSceneGame !== undefined) {
-		window.CSceneGame.prototype.DoScreenShake = function() {};
+	if (w.CSceneGame !== undefined) {
+		w.CSceneGame.prototype.DoScreenShake = function() {};
 	}
 	
 	enhanceTooltips();
@@ -857,11 +860,11 @@ function advLog(msg, lvl) {
 	}
 }
 
-var thingTimer = window.setInterval(function(){
+var thingTimer = w.setInterval(function(){
 	if (g_Minigame && g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
-		window.clearInterval(thingTimer);
+		w.clearInterval(thingTimer);
 		firstRun();
-		thingTimer = window.setInterval(doTheThing, 1000);
+		thingTimer = w.setInterval(doTheThing, 1000);
 	}
 }, 1000);
 
@@ -898,8 +901,8 @@ function getClickDamage(){
 }
 
 function enhanceTooltips(){
-    trt_oldTooltip = window.fnTooltipUpgradeDesc;
-    window.fnTooltipUpgradeDesc = function(context){
+    trt_oldTooltip = w.fnTooltipUpgradeDesc;
+    w.fnTooltipUpgradeDesc = function(context){
         var $context = $J(context);
         var desc = $context.data('desc');
         var strOut = desc;
@@ -930,3 +933,5 @@ function enhanceTooltips(){
         return strOut;
     };
 }
+
+}(window));
