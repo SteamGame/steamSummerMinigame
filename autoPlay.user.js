@@ -3,8 +3,8 @@
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
 // @version 3.6
-// @match http://steamcommunity.com/minigame/towerattack*
-// @match http://steamcommunity.com//minigame/towerattack*
+// @match *://steamcommunity.com/minigame/towerattack*
+// @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
 // @updateURL https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js
 // @downloadURL https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js
