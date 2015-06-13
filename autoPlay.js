@@ -17,6 +17,8 @@ var isAlreadyRunning = false;
 
 var disableParticleEffects = true; // Set to false to keep particle effects
 
+var disableFlinching = true; // Disables the flinching animation for enemies.
+
 // disable particle effects - this drastically reduces the game's memory leak
 if (window.g_Minigame !== undefined && disableParticleEffects) {
 	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
@@ -24,6 +26,12 @@ if (window.g_Minigame !== undefined && disableParticleEffects) {
 		emitter.emit = false;
 		return emitter;
 	}
+}
+
+if (disableFlinching) {
+	window.CEnemy.prototype.TakeDamage = function(){};
+	window.CEnemySpawner.prototype.TakeDamage = function(){};
+	window.CEnemyBoss.prototype.TakeDamage = function(){};
 }
 
 if (thingTimer !== undefined) {
