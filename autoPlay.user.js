@@ -72,7 +72,7 @@ function firstRun() {
 		CEnemyBoss.prototype.TakeDamage = function() {};
 	}
 
-	if ( removeInterface && document.getElementById && document.getElementsByClassName ) {
+	if ( removeInterface ) {
 		var node = document.getElementById("global_header");
 		if (node && node.parentNode) {
 			node.parentNode.removeChild( node );
@@ -85,14 +85,13 @@ function firstRun() {
 		if (node && node.parentNode) {
 			node.parentNode.removeChild( node );
 		}
-		var nodes = document.getElementsByClassName("leave_game_helper");
-		while ( nodes.length > 0 ) {
-			if (nodes[0] && nodes[0].parentNode)
-				nodes[0].parentNode.removeChild(nodes[0]);
+		node = document.querySelector(".leave_game_helper");
+		if (node && node.parentNode) {
+			node.parentNode.removeChild( node );
 		}
-		nodes = document.getElementsByClassName("pagecontent");
-		if (nodes[0]) {
-			nodes[0].style = "padding-bottom: 0";
+		node = document.querySelector(".pagecontent");
+		if (node) {
+			node.style = "padding-bottom: 0";
 		}
 		document.body.style.backgroundPosition = "0 0";
 	}
@@ -240,7 +239,7 @@ function displayText(x, y, strText, color) {
 	e.parent = text;
 	text.m_easeY = e;
 
-	var e = new CEasingSinOut( 2, -2, 1000 );
+	e = new CEasingSinOut( 2, -2, 1000 );
 	e.parent = text;
 	text.m_easeAlpha = e;
 
@@ -751,11 +750,9 @@ function isAbilityEnabled(abilityId) {
 }
 
 function toggleAbilityItemVisibility(abilityId, show) {
-    var vis = show === true ? "visible" : "hidden";
-
     var elem = document.getElementById('abilityitem_' + abilityId);
     if (elem && elem.childElements() && elem.childElements().length >= 1) {
-        elem.childElements()[0].style.visibility = show;
+        elem.childElements()[0].style.visibility = show === true ? "visible" : "hidden";
     }
 }
 
