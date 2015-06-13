@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 3.3
+// @version 3.4
 // @match http://steamcommunity.com/minigame/towerattack*
 // @match http://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -134,6 +134,8 @@ function doTheThing() {
 			displayText(enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, clickRate + " clicks", "#aaf");
 		}
 	}
+}
+
 function lockElements() {
     String.prototype.hashCode=function(){
         var t=0;
@@ -155,7 +157,6 @@ function lockElements() {
         }
         elems[i].style.visibility = "hidden";
     }
-}
 }
 
 function displayText(x, y, strText, color) {
