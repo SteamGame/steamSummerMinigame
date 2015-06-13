@@ -175,18 +175,19 @@ function lockElements() {
 		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_earth
 	];
 
-  var hashCode=function(){
-      var t=0;
-      var char;
-      if (0 === this.length) {
-				return t;
-			}
-
-      for (i=0; i<this.length; i++) {
-        	char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
-			}
-
-      return t;
+  var hashCode=function(str) {
+		var t=0, i, char;
+		if (0 === str.length) {
+			return t;
+		}
+		
+		for (i=0; i<str.length; i++) {
+			char=str.charCodeAt(i);
+			t=(t<<5)-t+char;
+			t&=t;
+		}
+		
+		return t;
   };
 
   var elem = Math.abs(hashCode(g_steamID)%4);
