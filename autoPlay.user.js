@@ -16,6 +16,7 @@
 "use strict";
 
 var isAlreadyRunning = false;
+var clickRate = 10;
 
 var config = function(name, value)
 {
@@ -67,7 +68,6 @@ var getSetting = function(name, defaultValue)
 	return result;
 }
 
-var clickRate = getConfig("config/click-rate", 10);
 var logLevel = getConfig("config/log-level", 1); // 5 is the most verbose, 0 disables all log
 var removeInterface = getSetting("config/remove-interface", false); // get rid of a bunch of pointless DOM
 var optimizeGraphics = getSetting("config/optimize-graphics", true); //set this to false if you don't want effects disabled (introduces memory leak.)
