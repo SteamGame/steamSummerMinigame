@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 3.6.1
+// @version 3.6.2
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -13,7 +13,7 @@
 // IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
 
 var isAlreadyRunning = false;
-var clickRate = 20;
+var clickRate = 10;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
 var removeInterface = false; // get rid of a bunch of pointless DOM
 
