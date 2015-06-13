@@ -230,7 +230,7 @@ function goToLaneWithBestTarget() {
 	// go to the chosen lane
 	if (targetFound) {
 		if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
-			//console.log('switching langes');
+			console.log('switching lanes');
 			g_Minigame.CurrentScene().TryChangeLane(lowLane);
 		}
 		
@@ -314,10 +314,14 @@ function useMedicsIfRelevant() {
 function useGoodLuckCharmIfRelevant() {
 
 	// check if Crits is purchased and cooled down
-	if (hasOneUseAbility(18) && !isAbilityCoolingDown(18)){
+	if (hasItem(ITEMS.CRIT) && !isAbilityCoolingDown(ITEMS.CRIT)){
+		if (! isAbilityItemEnabled(ITEMS.CRIT)) {
+			return;
+		}
 		// Crits is purchased, cooled down, and needed. Trigger it.
 		console.log('Crit chance is always good.');
-		triggerAbility(18);
+		triggerAbility(ITEMS.CRIT);
+		return;
     }
 	
 	// check if Good Luck Charms is purchased and cooled down
@@ -392,51 +396,23 @@ function useNapalmIfRelevant() {
 	}
 }
 
-function useMoraleBoosterIfRelevant() {
-	// Check if Morale Booster is purchased
-	if(hasPurchasedAbility(5)) {
-		if (isAbilityCoolingDown(5)) {
-			return;
-		}
-		
-		//Check lane has monsters so the hype isn't wasted
-		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
-		var enemyCount = 0;
-		var enemySpawnerExists = false;
-		//Count each slot in lane
-		for (var i = 0; i < 4; i++) {
-			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
-			if (enemy) {
-				enemyCount++;
-				if (enemy.m_data.type == 0) { 
-					enemySpawnerExists = true;
-				}
-			}
-		}
-		//Hype everybody up!
-		if (enemySpawnerExists && enemyCount >= 3) {
-			triggerAbility(5);
-		}
-	}
-}
-
-// Use Moral Booster if doable
+// Use Morale Booster if doable
 function useMoraleBoosterIfRelevant() {
 	// check if Good Luck Charms is purchased and cooled down
-	if (hasPurchasedAbility(5)) {
-		if (isAbilityCoolingDown(5)) {
+	if (hasPurchasedAbility(ABILITIES.MORALE_BOOSTER)) {
+		if (isAbilityCoolingDown(ABILITIES.MORALE_BOOSTER)) {
 			return;
 		}
 		var numberOfWorthwhileEnemies = 0;
 		for(i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies.length; i++){
-			//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
+			//Worthwhile enemy is when an enemy has a current hp value of at least 1,000,000
 			if(g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies[i].hp > 1000000)
 				numberOfWorthwhileEnemies++;
 		}
 		if(numberOfWorthwhileEnemies >= 2){
 			// Moral Booster is purchased, cooled down, and needed. Trigger it.
 			console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
-			triggerAbility(5);
+			triggerAbility(ABILITIES.MORALE_BOOSTER);
 		}
 	}
 }
@@ -454,13 +430,7 @@ function isAbilityActive(abilityId) {
 }
 
 function hasItem(itemId) {
-	for ( var i = 0; i < g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items.length; ++i ) {
-		var abilityItem = g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items[i];
-		if (abilityItem.ability == itemId) {
-			return true;
-		}
-	}
-	return false;
+	return $J('#abilityitem_' + itemId).is(':visible');
 }
 
 function isAbilityCoolingDown(abilityId) {
@@ -480,10 +450,7 @@ function hasPurchasedAbility(abilityId) {
 }
 
 function triggerItem(itemId) {
-	var elem = document.getElementById('abilityitem_' + itemId);
-	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		g_Minigame.CurrentScene().TryAbility(document.getElementById('abilityitem_' + itemId).childElements()[0]);
-	}
+	triggerAbility(itemId);
 }
 
 function triggerAbility(abilityId) {
