@@ -99,11 +99,6 @@ function firstRun() {
 		document.body.style.backgroundPosition = "0 0";
 	}
 
-	if (thingTimer) {
-		w.clearInterval(thingTimer);
-		thingTimer = false;
-	}
-
 	if (w.CSceneGame !== undefined) {
 		w.CSceneGame.prototype.DoScreenShake = function() {};
 	}
@@ -838,11 +833,15 @@ function advLog(msg, lvl) {
 	}
 }
 
-var thingTimer = w.setInterval(function(){
+if(w.SteamDB_Minigame_Timer) {
+	w.clearInterval(w.SteamDB_Minigame_Timer);
+}
+
+w.SteamDB_Minigame_Timer = w.setInterval(function(){
 	if (g_Minigame && g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
-		w.clearInterval(thingTimer);
+		w.clearInterval(w.SteamDB_Minigame_Timer);
 		firstRun();
-		thingTimer = w.setInterval(MainLoop, 1000);
+		w.SteamDB_Minigame_Timer = w.setInterval(MainLoop, 1000);
 	}
 }, 1000);
 
