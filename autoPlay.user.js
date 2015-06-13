@@ -1,4 +1,4 @@
-// ==UserScript== 
+// ==UserScript==
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
@@ -38,7 +38,7 @@ var ITEMS = {
 	"CRIPPLE_SPAWNER": 14,
 	"MAXIMIZE_ELEMENT": 16
 };
-	
+
 var ENEMY_TYPE = {
 	"SPAWNER":0,
 	"CREEP":1,
@@ -122,7 +122,7 @@ function goToLaneWithBestTarget() {
 	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
 	var spawnerOKThreshold = 0.4;
 	var creepSnagThreshold = 0.1;
-	
+
 	var targetFound = false;
 	var lowHP = 0;
 	var lowLane = 0;
@@ -130,31 +130,31 @@ function goToLaneWithBestTarget() {
 	var lowPercentageHP = 0;
 	var preferredLane = -1;
 	var preferredTarget = -1;
-	
+
 	// determine which lane and enemy is the optimal target
 	var enemyTypePriority = [
-		ENEMY_TYPE.TREASURE, 
-		ENEMY_TYPE.BOSS, 
+		ENEMY_TYPE.TREASURE,
+		ENEMY_TYPE.BOSS,
 		ENEMY_TYPE.MINIBOSS,
-		ENEMY_TYPE.SPAWNER, 
+		ENEMY_TYPE.SPAWNER,
 		ENEMY_TYPE.CREEP
 	];
-		
+
 	var skippingSpawner = false;
 	var skippedSpawnerLane = 0;
 	var skippedSpawnerTarget = 0;
 	var targetIsTreasureOrBoss = false;
-	
+
 	for (var k = 0; !targetFound && k < enemyTypePriority.length; k++) {
-		
+
 		if (enemyTypePriority[k] == ENEMY_TYPE.TREASURE || enemyTypePriority[k] == ENEMY_TYPE.BOSS){
 			targetIsTreasureOrBoss = true;
 		} else {
 			targetIsTreasureOrBoss = false;
 		}
-		
+
 		var enemies = [];
-		
+
 		// gather all the enemies of the specified type.
 		for (var i = 0; i < 3; i++) {
 			for (var j = 0; j < 4; j++) {
@@ -164,7 +164,7 @@ function goToLaneWithBestTarget() {
 				}
 			}
 		}
-	
+
 		//Prefer lane with raining gold, unless current enemy target is a treasure or boss.
 		if(lowTarget != ENEMY_TYPE.TREASURE && lowTarget != ENEMY_TYPE.BOSS ){
 			var potential = 0;
@@ -183,14 +183,14 @@ function goToLaneWithBestTarget() {
 				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
 					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
 					if (stacks * enemyGold > potential) {
-                				potential = stacks * enemyGold;
+						potential = stacks * enemyGold;
 						preferredTarget = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_nID;
 						preferredLane = i;
-        				}
+					}
 				}
 			}
 		}
-		
+
 		// target the enemy of the specified type with the lowest hp
 		var mostHPDone = 0;
 		for (var i = 0; i < enemies.length; i++) {
@@ -198,7 +198,7 @@ function goToLaneWithBestTarget() {
 				// Only select enemy and lane if the preferedLane matches the potential enemy lane
 				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
 					var element = g_Minigame.CurrentScene().m_rgGameData.lanes[enemies[i].m_nLane].element;
-					
+
 					var dmg = g_Minigame.CurrentScene().CalculateDamage(
 							g_Minigame.CurrentScene().m_rgPlayerTechTree.dps,
 							element
@@ -220,14 +220,14 @@ function goToLaneWithBestTarget() {
 				}
 			}
 		}
-		
+
 		if(preferredLane != -1 && preferredTarget != -1){
 			lowLane = preferredLane;
 			lowTarget = preferredTarget;
 			//console.log('Switching to a lane with best raining gold benefit');
 		}
-		
-		// If we just finished looking at spawners, 
+
+		// If we just finished looking at spawners,
 		// AND none of them were below our threshold,
 		// remember them and look for low creeps (so don't quit now)
 		// Don't skip spawner if lane has raining gold
@@ -237,7 +237,7 @@ function goToLaneWithBestTarget() {
 			skippingSpawner = true;
 			targetFound = false;
 		}
-		
+
 		// If we skipped a spawner and just finished looking at creeps,
 		// AND the lowest was above our snag threshold,
 		// just go back to the spawner!
@@ -247,21 +247,21 @@ function goToLaneWithBestTarget() {
 		}
 	}
 
-	
+
 	// go to the chosen lane
 	if (targetFound) {
 		if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
 			//console.log('switching langes');
 			g_Minigame.CurrentScene().TryChangeLane(lowLane);
 		}
-		
+
 		// target the chosen enemy
 		if (g_Minigame.CurrentScene().m_nTarget != lowTarget) {
 			//console.log('switching targets');
 			g_Minigame.CurrentScene().TryChangeTarget(lowTarget);
 		}
-		
-		
+
+
 		// Prevent attack abilities and items if up against a boss or treasure minion
 		if (targetIsTreasureOrBoss) {
 			// Morale
@@ -311,13 +311,13 @@ function goToLaneWithBestTarget() {
 
 function useMedicsIfRelevant() {
 	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
-	
+
 	// check if health is below 50%
 	var hpPercent = g_Minigame.CurrentScene().m_rgPlayerData.hp / myMaxHealth;
 	if (hpPercent > 0.5 || g_Minigame.CurrentScene().m_rgPlayerData.hp < 1) {
 		return; // no need to heal - HP is above 50% or already dead
 	}
-	
+
 	// check if Medics is purchased and cooled down
 	if (hasPurchasedAbility(ABILITIES.MEDIC) && !isAbilityCoolingDown(ABILITIES.MEDIC)) {
 
@@ -325,7 +325,7 @@ function useMedicsIfRelevant() {
 		//console.log('Medics is purchased, cooled down, and needed. Trigger it.');
 		triggerAbility(ABILITIES.MEDIC);
 	} else if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
-		
+
 		//console.log('We have god mode, cooled down, and needed. Trigger it.');
 		triggerItem(ITEMS.GOD_MODE);
 	}
@@ -340,13 +340,13 @@ function useGoodLuckCharmIfRelevant() {
 		//console.log('Crit chance is always good.');
 		triggerAbility(18);
     }
-	
+
 	// check if Good Luck Charms is purchased and cooled down
 	if (hasPurchasedAbility(ABILITIES.GOOD_LUCK)) {
 		if (isAbilityCoolingDown(ABILITIES.GOOD_LUCK)) {
 			return;
 		}
-		
+
 		if (! isAbilityEnabled(ABILITIES.GOOD_LUCK)) {
 			return;
 		}
@@ -363,7 +363,7 @@ function useClusterBombIfRelevant() {
 		if (isAbilityCoolingDown(ABILITIES.CLUSTER_BOMB)) {
 			return;
 		}
-		
+
 		//Check lane has monsters to explode
 		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
 		var enemyCount = 0;
@@ -373,7 +373,7 @@ function useClusterBombIfRelevant() {
 			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
 			if (enemy) {
 				enemyCount++;
-				if (enemy.m_data.type == 0) { 
+				if (enemy.m_data.type == 0) {
 					enemySpawnerExists = true;
 				}
 			}
@@ -391,7 +391,7 @@ function useNapalmIfRelevant() {
 		if (isAbilityCoolingDown(ABILITIES.NAPALM)) {
 			return;
 		}
-		
+
 		//Check lane has monsters to burn
 		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
 		var enemyCount = 0;
@@ -401,7 +401,7 @@ function useNapalmIfRelevant() {
 			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
 			if (enemy) {
 				enemyCount++;
-				if (enemy.m_data.type == 0) { 
+				if (enemy.m_data.type == 0) {
 					enemySpawnerExists = true;
 				}
 			}
@@ -419,7 +419,7 @@ function useMoraleBoosterIfRelevant() {
 		if (isAbilityCoolingDown(5)) {
 			return;
 		}
-		
+
 		//Check lane has monsters so the hype isn't wasted
 		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
 		var enemyCount = 0;
@@ -429,7 +429,7 @@ function useMoraleBoosterIfRelevant() {
 			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
 			if (enemy) {
 				enemyCount++;
-				if (enemy.m_data.type == 0) { 
+				if (enemy.m_data.type == 0) {
 					enemySpawnerExists = true;
 				}
 			}
@@ -530,10 +530,10 @@ function useGoldRainIfRelevant() {
 
 		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
 		// check if current target is a boss, otherwise its not worth using the gold rain
-		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {	
+		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 
-		  if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
+			if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
 				// Gold Rain is purchased, cooled down, and needed. Trigger it.
 				console.log('Gold rain is purchased and cooled down, Triggering it on boss');
 				triggerItem(ITEMS.GOLD_RAIN);
@@ -544,7 +544,7 @@ function useGoldRainIfRelevant() {
 
 
 function attemptRespawn() {
-	if ((g_Minigame.CurrentScene().m_bIsDead) && 
+	if ((g_Minigame.CurrentScene().m_bIsDead) &&
 			((g_Minigame.CurrentScene().m_rgPlayerData.time_died) + 5) < (g_Minigame.CurrentScene().m_nTime)) {
 		RespawnPlayer();
 	}
@@ -672,7 +672,7 @@ var thingTimer = window.setInterval(function(){
 		firstRun();
 		thingTimer = window.setInterval(doTheThing, 1000);
 	}
-}, 1000); 
+}, 1000);
 
 function clickTheThing() {
     if (g_Minigame &&  g_Minigame.m_CurrentScene && g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
