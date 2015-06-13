@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name Monster Minigame AutoScript
 // @author /u/mouseasw for creating and maintaining the script, /u/WinneonSword for the Greasemonkey support, and every contributor on the GitHub repo for constant enhancements. /u/wchill and contributors on his repo for MSG2015-specific improvements.
-// @version 1.9
+// @version 1.91
 // @namespace https://github.com/wchill/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
 // @match http://steamcommunity.com/minigame/towerattack*
@@ -143,22 +143,33 @@ if (thingTimer !== undefined) {
 }
 
 function doTheThing() {
-	if (!isAlreadyRunning){
-		isAlreadyRunning = true;
-
-		goToLaneWithBestTarget();
-		useGoodLuckCharmIfRelevant();
-		useMedicsIfRelevant();
-		useMoraleBoosterIfRelevant();
-		useClusterBombIfRelevant();
-		useNapalmIfRelevant();
-		useTacticalNukeIfRelevant();
-		useCrippleSpawnerIfRelevant();
-		useGoldRainIfRelevant();
-		attemptRespawn();
-
-		isAlreadyRunning = false;
+	if (isAlreadyRunning || g_Minigame === undefined || !g_Minigame.CurrentScene().m_bRunning || !g_Minigame.CurrentScene().m_rgPlayerTechTree) {
+		return;
 	}
+	isAlreadyRunning = true;
+	
+	goToLaneWithBestTarget();
+	
+	useGoodLuckCharmIfRelevant();
+	useMedicsIfRelevant();
+	useMoraleBoosterIfRelevant();
+	useClusterBombIfRelevant();
+	useNapalmIfRelevant();
+	
+	// TODO use abilities if available and a suitable target exists
+	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
+	// - Metal Detector if a boss, miniboss, or spawner death is imminent (predicted in > 2 and < 7 seconds)
+	// - Morale Booster if available and lane has > 2 live enemies
+	// - Decrease Cooldowns right before using another long-cooldown item.
+	//       (Decrease Cooldown affects abilities triggered while it is active, not night before it's used)
+	
+	// TODO purchase abilities and upgrades intelligently
+	
+	attemptRespawn();
+	
+	
+	
+	isAlreadyRunning = false;
 }
 
 function goToLaneWithBestTarget() {
@@ -267,7 +278,7 @@ function goToLaneWithBestTarget() {
 		}
 		
 		// If we just finished looking at spawners, 
-		// AND none of them were below our threshold,
+		// AND none of them were below our threshold,  
 		// remember them and look for low creeps (so don't quit now)
 		// Don't skip spawner if lane has raining gold
 		if ((enemyTypePriority[k] == ENEMY_TYPE.SPAWNER && lowPercentageHP > spawnerOKThreshold) && preferredLane == -1) {
@@ -494,91 +505,10 @@ function useMoraleBoosterIfRelevant() {
 	}
 }
 
-function useTacticalNukeIfRelevant() {
-	// Check if Tactical Nuke is purchased
-	if(hasPurchasedAbility(ABILITIES.NUKE)) {
-		if (isAbilityCoolingDown(ABILITIES.NUKE)) {
-			return;
-		}
-
-		//Check that the lane has a spawner and record it's health percentage
-		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
-		var enemySpawnerExists = false;
-		var enemySpawnerHealthPercent = 0.0;
-		//Count each slot in lane
-		for (var i = 0; i < 4; i++) {
-			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
-			if (enemy) {
-				if (enemy.m_data.type == 0) {
-					enemySpawnerExists = true;
-					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-				}
-			}
-		}
-
-		// If there is a spawner and it's health is between 60% and 30%, nuke it!
-		if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
-			console.log("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.");
-			triggerAbility(ABILITIES.NUKE);
-		}
-	}
-}
-
-function useCrippleSpawnerIfRelevant() {
-	// Check if Cripple Spawner is available
-	if(hasItem(ITEMS.CRIPPLE_SPAWNER)) {
-		if (isAbilityCoolingDown(ITEMS.CRIPPLE_SPAWNER)) {
-			return;
-		}
-
-		//Check that the lane has a spawner and record it's health percentage
-		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
-		var enemySpawnerExists = false;
-		var enemySpawnerHealthPercent = 0.0;
-		//Count each slot in lane
-		for (var i = 0; i < 4; i++) {
-			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
-			if (enemy) {
-				if (enemy.m_data.type == 0) {
-					enemySpawnerExists = true;
-					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-				}
-			}
-		}
-
-		// If there is a spawner and it's health is above 95%, cripple it!
-		if (enemySpawnerExists && enemySpawnerHealthPercent > 0.95) {
-			console.log("Cripple Spawner available, and needed. Cripple 'em.");
-			triggerItem(ITEMS.CRIPPLE_SPAWNER);
-		}
-	}
-}
-
-function useGoldRainIfRelevant() {
-	// Check if gold rain is purchased
-	if (hasItem(ITEMS.GOLD_RAIN)) {
-		if (isAbilityCoolingDown(ITEMS.GOLD_RAIN)) {
-			return;
-		}
-
-		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
-		// check if current target is a boss, otherwise its not worth using the gold rain
-		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {	
-			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-
-		  if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
-				// Gold Rain is purchased, cooled down, and needed. Trigger it.
-				console.log('Gold rain is purchased and cooled down, Triggering it on boss');
-				triggerItem(ITEMS.GOLD_RAIN);
-			}
-		}
-	}
-}
-
 //If player is dead, call respawn method
 function attemptRespawn() {
 	if ((g_Minigame.CurrentScene().m_bIsDead) && 
-			((g_Minigame.CurrentScene().m_rgPlayerData.time_died) + 5) < (g_Minigame.CurrentScene().m_nTime)) {
+			((g_Minigame.CurrentScene().m_rgPlayerData.time_died * 1000) + 5000) < (new Date().getTime())) {
 		RespawnPlayer();
 	}
 }
@@ -615,63 +545,49 @@ function triggerAbility(abilityId) {
 	g_Minigame.CurrentScene().m_rgAbilityQueue.push({'ability': abilityId})
 }
 
-function toggleAbilityVisibility(abilityId, show) {
-    var vis = show === true ? "visible" : "hidden";
-
-    var elem = document.getElementById('ability_' + abilityId);
-    if (elem && elem.childElements() && elem.childElements().length >= 1) {
-        elem.childElements()[0].style.visibility = vis;
-    }
-}
-
 function disableAbility(abilityId) {
-    toggleAbilityVisibility(abilityId, false);
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "hidden";
+	}
 }
 
 function enableAbility(abilityId) {
-    toggleAbilityVisibility(abilityId, true);
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "visible";
+	}
 }
 
 function isAbilityEnabled(abilityId) {
 	var elem = document.getElementById('ability_' + abilityId);
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		return elem.childElements()[0].style.visibility == "visible";
+		return  elem.childElements()[0].style.visibility == "visible";
 	}
 	return false;
 }
 
-function toggleAbilityItemVisibility(abilityId, show) {
-    var vis = show === true ? "visible" : "hidden";
-
-    var elem = document.getElementById('abilityitem_' + abilityId);
-    if (elem && elem.childElements() && elem.childElements().length >= 1) {
-        elem.childElements()[0].style.visibility = show;
-    }
-}
-
 function disableAbilityItem(abilityId) {
-    toggleAbilityItemVisibility(abilityId, false);
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "hidden";
+	}
 }
 
 function enableAbilityItem(abilityId) {
-    toggleAbilityItemVisibility(abilityId, true);
-}
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "visible"; } }
 
 function isAbilityItemEnabled(abilityId) {
 	var elem = document.getElementById('abilityitem_' + abilityId);
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		return elem.childElements()[0].style.visibility == "visible";
+		return  elem.childElements()[0].style.visibility == "visible";
 	}
 	return false;
 }
 
-var thingTimer = window.setInterval(function(){
-	if (g_Minigame && g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
-		window.clearInterval(thingTimer);
-		firstRun();
-		thingTimer = window.setInterval(doTheThing, 1000);
-	}
-}, 1000);
+var thingTimer = window.setInterval(doTheThing, 1000);
 function clickTheThing() {
     g_Minigame.m_CurrentScene.DoClick(
         {
