@@ -7,8 +7,6 @@ This javascript automatically plays the 2015 Steam Summer minigame for you in a 
 It goes beyond the autoclicker scripts already out there. It will keep you in the lane where you'll make the most money, activate abilities as they are available and best apply, and possibly purchase upgrades and
 powerups for you.
 
-**DISCLAIMER:** This autoscript will *NOT* include an auto-clicker. Automatic clicking pushes into the area of cheating, and this script is not designed for cheating. It is designed for automating the process of collecting gold.
-
 ## Installation ##
 
 ### Tampermonkey ###
