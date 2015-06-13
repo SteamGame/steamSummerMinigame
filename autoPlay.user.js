@@ -15,7 +15,7 @@ var isAlreadyRunning = false;
 var clickRate = 18;
 var setClickVariable = true; // copypasted from a guy's fork, untested
 var spammydebug = false; // set this to true to get spammed by debug messages
-
+var removeInterface = fales; // get rid of a bunch of pointless DOM
 
 var ABILITIES = {
 	"MORALE_BOOSTER": 5,
@@ -80,6 +80,25 @@ function firstRun() {
 		window.CEnemyBoss.prototype.TakeDamage = function(){};
 	}
 
+	if ( removeInterface && document.getElementById && document.getElementsByClassName ) {
+		var node = document.getElementById("global_header");
+		if (node && node.parentNode)
+			node.parentNode.removeChild( node );
+		var node = document.getElementById("footer");
+		if (node && node.parentNode)
+			node.parentNode.removeChild( node );
+		var node = document.getElementById("footer_spacer");
+		if (node && node.parentNode)
+			node.parentNode.removeChild( node );
+		var nodes = document.getElementsByClassName("leave_game_helper");
+		while ( nodes.length > 0 ) {
+			if (nodes[0] && nodes[0].parentNode)
+				nodes[0].parentNode.removeChild(nodes[0]);
+		}
+		var nodes = document.getElementsByClassName("pagecontent");
+		if (nodes[0])
+			nodes[0].style = "padding-bottom: 0";
+	}
 
 	if (thingTimer) {
 		window.clearInterval(thingTimer);
