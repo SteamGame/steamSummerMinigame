@@ -450,7 +450,7 @@ function isAbilityItemEnabled(abilityId) {
 }
 
 var thingTimer = window.setInterval(function(){
-	if (g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
+	if (g_Minigame && g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
 		window.clearInterval(thingTimer);
 		firstRun();
 		thingTimer = window.setInterval(doTheThing, 1000);
