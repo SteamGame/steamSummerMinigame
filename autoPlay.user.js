@@ -63,6 +63,11 @@ if (window.CEnemy !== undefined)
 	window.CEnemyBoss.prototype.TakeDamage = function(){};
 }
 
+if (window.CSceneGame !== undefined)
+{
+	window.CSceneGame.prototype.DoScreenShake = function() {};
+}
+
 if (thingTimer !== undefined) {
 	window.clearTimeout(thingTimer);
 }
