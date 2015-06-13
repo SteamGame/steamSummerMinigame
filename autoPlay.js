@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name Monster Minigame Auto-script
 // @author /u/mouseasw for creating and maintaining the script, /u/WinneonSword for the Greasemonkey support, and every contributor on the GitHub repo for constant enhancements.
-// @version 1.2
+// @version 1.3
 // @namespace https://github.com/mouseas/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
 // @match http://steamcommunity.com/minigame/towerattack*
@@ -43,6 +43,7 @@ function doTheThing() {
 	
 	useGoodLuckCharmIfRelevant();
 	useMedicsIfRelevant();
+	useMoraleBoosterIfRelevant();
 	useClusterBombIfRelevant();
 	useNapalmIfRelevant();
 	
@@ -264,6 +265,34 @@ function useNapalmIfRelevant() {
 		//Burn them all if spawner and 2+ other monsters
 		if (enemySpawnerExists && enemyCount >= 3) {
 			triggerAbility(12);
+		}
+	}
+}
+
+function useMoraleBoosterIfRelevant() {
+	// Check if Morale Booster is purchased
+	if(hasPurchasedAbility(5)) {
+		if (isAbilityCoolingDown(5)) {
+			return;
+		}
+		
+		//Check lane has monsters so the hype isn't wasted
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemyCount = 0;
+		var enemySpawnerExists = false;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type == 0) { 
+					enemySpawnerExists = true;
+				}
+			}
+		}
+		//Hype everybody up!
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(5);
 		}
 	}
 }
