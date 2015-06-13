@@ -121,6 +121,7 @@ function doTheThing() {
 		useTacticalNukeIfRelevant();
 		useCrippleSpawnerIfRelevant();
 		useGoldRainIfRelevant();
+		useMetalDetectorIfRelevant();
 		attemptRespawn();
 		disableCooldownIfRelevant();
 
@@ -690,6 +691,26 @@ function useGoldRainIfRelevant() {
 	}
 }
 
+function useMetalDetectorIfRelevant() {
+	// Check if metal detector is purchased
+	if (hasPurchasedAbility(ABILITIES.METAL_DETECTOR)) {
+		if (isAbilityCoolingDown(ABILITIES.METAL_DETECTOR) || isAbilityActive(ABILITIES.METAL_DETECTOR)) {
+			return;
+		}
+		
+		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
+		// check if current target is a boss, otherwise we won't use metal detector
+		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+
+			if (enemyBossHealthPercent >= 0.9) { // We want sufficient time for the metal detector to be applicable
+				// Metal Detector is purchased, cooled down, and needed. Trigger it.
+				advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
+				triggerAbility(ABILITIES.METAL_DETECTOR);
+			}
+		}
+	}
+}
 
 function attemptRespawn() {
 	if ((g_Minigame.CurrentScene().m_bIsDead) &&
