@@ -86,6 +86,7 @@ function doTheThing() {
 		useMoraleBoosterIfRelevant();
 		useClusterBombIfRelevant();
 		useNapalmIfRelevant();
+		useTacticalNukeIfRelevant();
 		attemptRespawn();
 
 		isAlreadyRunning = false;
@@ -354,6 +355,36 @@ function useMoraleBoosterIfRelevant() {
 		//Hype everybody up!
 		if (enemySpawnerExists && enemyCount >= 3) {
 			triggerAbility(5);
+		}
+	}
+}
+
+function useTacticalNukeIfRelevant() {
+	// Check if Tactical Nuke is purchased
+	if(hasPurchasedAbility(ABILITIES.NUKE)) {
+		if (isAbilityCoolingDown(ABILITIES.NUKE)) {
+			return;
+		}
+
+		//Check that the lane has a spawner and record it's health percentage
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemySpawnerExists = false;
+		var enemySpawnerHealthPercent = 0.0;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				if (enemy.m_data.type == 0) {
+					enemySpawnerExists = true;
+					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+				}
+			}
+		}
+
+		// If there is a spawner and it's health is between 60% and 30%, nuke it!
+		if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
+			console.log("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.");
+			triggerAbility(ABILITIES.NUKE);
 		}
 	}
 }
