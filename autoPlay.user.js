@@ -33,6 +33,7 @@ var ABILITIES = {
 var ITEMS = {
 	"REVIVE": 13,
 	"GOLD_RAIN": 17,
+	"THROW_MONEY": 20,
 	"GOD_MODE": 21,
 	"REFLECT_DAMAGE":24,
 	"CRIT": 18,
@@ -412,6 +413,8 @@ function goToLaneWithBestTarget() {
 			disableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
 			// Reflect Damage
 			disableAbilityItem(ITEMS.REFLECT_DAMAGE);
+			// Throw Money at Screen
+			disableAbilityItem(ITEMS.THROW_MONEY);
 		} else {
 			// Morale
 			enableAbility(ABILITIES.MORALE_BOOSTER);
@@ -433,6 +436,8 @@ function goToLaneWithBestTarget() {
 			enableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
 			// Reflect Damage
 			enableAbilityItem(ITEMS.REFLECT_DAMAGE);
+			// Throw Money at Screen
+			enableAbilityItem(ITEMS.THROW_MONEY);
 		}
 	}
 }
