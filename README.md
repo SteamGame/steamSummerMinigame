@@ -13,12 +13,12 @@ powerups for you.
 
 1. Open Tapermonkey's dashboard.
 2. Click on the `Utilites` tab on the right.
-3. Paste `https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js` into the text area, and click `Import`.
+3. Paste `https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js` into the text area, and click `Import`.
 4. When the editor has loaded, press `Install` (*NOT* `Process with Chrome`).
 
 ### Greasemonkey ###
 
-1. Navigate to `https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js`.
+1. Navigate to `https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js`.
 2. Right click on the page, and click `Save Page As`.
 3. In the name text area at the top, remove the tailing `.js` and add `.user.js` to the end (this may be redundant in the future).
 4. While Firefox is still open, open a File Manager of any sort, and navigate to the directory you saved the script.
@@ -47,4 +47,4 @@ is auto-playing, try changing lanes. If it jumps back almost immediately, it's w
 	 - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
 	
 - purchase abilities and upgrades intelligently
-- automatically update the manual script by periodically checking https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+- automatically update the manual script by periodically checking https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
