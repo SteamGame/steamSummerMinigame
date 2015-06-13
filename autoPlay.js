@@ -10,11 +10,11 @@
 
 // IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
 
-var clickRate = 20; // change to number of desired clicks per second
+var clickRate = 15; // change to number of desired clicks per second
 
 var isAlreadyRunning = false;
 
-var disableParticleEffects = true; // Set to false to keep particle effects
+var disableParticleEffects = false; // Set to false to keep particle effects
 
 // disable particle effects - this drastically reduces the game's memory leak
 if (window.g_Minigame !== undefined && disableParticleEffects) {
@@ -65,6 +65,7 @@ function goToLaneWithBestTarget() {
 	var lowTarget = 0;
 	var lowPercentageHP = 0;
 	var preferredLane = -1;
+	var preferredTarget = -1;
 	
 	var ENEMY_TYPE = {
 		"SPAWNER":0,
@@ -102,16 +103,25 @@ function goToLaneWithBestTarget() {
 		}
 	
 		//Prefer lane with raining gold, unless current enemy target is a treasure or boss.
-		if(lowTarget != ENEMY_TYPE.TREASURE || lowTarget != ENEMY_TYPE.BOSS ){
-			for(i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes.length; i++){
+		if(lowTarget != ENEMY_TYPE.TREASURE && lowTarget != ENEMY_TYPE.BOSS ){
+			var potential = 0;
+			for(var i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes.length; i++){
 				// ignore if lane is empty
 				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps == 0)
 					continue;
-				for(j = 0; j < g_Minigame.CurrentScene().m_rgGameData.lanes[i].active_player_abilities.length; j++){
+				var stacks = 0;
+				for(var j = 0; j < g_Minigame.CurrentScene().m_rgGameData.lanes[i].active_player_abilities.length; j++){
 					if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].active_player_abilities[j].ability == 17){
-						preferredLane = i;
-						console.log('switching to lane with raining gold');
+						stacks++;
 					}
+				}
+				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
+					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
+					if (stacks * enemyGold > potential) {
+                				potential = stacks * enemyGold;
+						preferredTarget = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_nID;
+						preferredLane = i;
+        				}
 				}
 			}
 		}
@@ -120,7 +130,7 @@ function goToLaneWithBestTarget() {
 		for (var i = 0; i < enemies.length; i++) {
 			if (enemies[i] && !enemies[i].m_bIsDestroyed) {
 				// Only select enemy and lane if the preferedLane matches the potential enemy lane
-				if((lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) && ((preferredLane != -1 && preferredLane == enemies[i].m_nLane) || preferredLane == -1)) {
+				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
 					targetFound = true;
 					lowHP = enemies[i].m_flDisplayedHP;
 					lowLane = enemies[i].m_nLane;
@@ -131,6 +141,12 @@ function goToLaneWithBestTarget() {
 					lowPercentageHP = percentageHP;
 				}
 			}
+		}
+		
+		if(preferredLane != -1 && preferredTarget != -1){
+			lowLane = preferredLane;
+			lowTarget = preferredTarget;
+			console.log('Switching to a lane with best raining gold benefit');
 		}
 		
 		// If we just finished looking at spawners, 
