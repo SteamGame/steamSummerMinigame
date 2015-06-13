@@ -2,10 +2,10 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 2.0
+// @version 2.1
 // @match http://steamcommunity.com/minigame/towerattack*
-// @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
-// @downloadURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
+// @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.user.js
+// @downloadURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.user.js
 // ==/UserScript==
 
 // IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
@@ -630,24 +630,27 @@ var thingTimer = window.setInterval(function(){
 		thingTimer = window.setInterval(doTheThing, 1000);
 	}
 }, 1000); 
-function clickTheThing() {
-    g_Minigame.m_CurrentScene.DoClick(
-        {
-            data: {
-                getLocalPosition: function() {
-                    var enemy = g_Minigame.m_CurrentScene.GetEnemy(
-                                      g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane,
-                                      g_Minigame.m_CurrentScene.m_rgPlayerData.target),
-                        laneOffset = enemy.m_nLane * 440;
 
-                    return {
-                        x: enemy.m_Sprite.position.x - laneOffset,
-                        y: enemy.m_Sprite.position.y - 52
-                    }
-                }
-            }
-        }
-    );
+function clickTheThing() {
+    if (g_Minigame &&  g_Minigame.m_CurrentScene && g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
+		g_Minigame.m_CurrentScene.DoClick(
+		{
+			data: {
+				getLocalPosition: function() {
+					var enemy = g_Minigame.m_CurrentScene.GetEnemy(
+									g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane,
+									g_Minigame.m_CurrentScene.m_rgPlayerData.target),
+					laneOffset = enemy.m_nLane * 440;
+
+					return {
+						x: enemy.m_Sprite.position.x - laneOffset,
+						y: enemy.m_Sprite.position.y - 52
+						}
+					}
+				}
+			}
+		);
+    }
 }
 
 if(setClickVariable) {
