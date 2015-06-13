@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name Monster Minigame AutoScript
 // @author /u/mouseasw for creating and maintaining the script, /u/WinneonSword for the Greasemonkey support, and every contributor on the GitHub repo for constant enhancements. /u/wchill and contributors on his repo for MSG2015-specific improvements.
-// @version 1.96
+// @version 2.00
 // @namespace https://github.com/wchill/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
 // @match http://steamcommunity.com/minigame/towerattack*
@@ -25,7 +25,8 @@ var disableCritText = false; // Set to true to disable the crit text.
 var disableText = false; // Remove all animated text. This includes damage, crits and gold gain. 
                          // This OVERRIDES all text related options.
                          
-var lockElements = true; // Disable to allow upgrading all elements
+var lockElements = true; // Set to false to allow upgrading all elements
+var slowStartMode = true; // Set to false to run script from beginning instead of lv11
 
 var isAlreadyRunning = false;
 
@@ -103,14 +104,15 @@ function firstRun() {
 		lockElementToSteamID();
 	}
 
-	if(enableAutoClicker) {
-		if(setClickVariable) {
-			clickTimer = setInterval( function(){
-				g_Minigame.m_CurrentScene.m_nClicks = clickRate;
-			}, 1000);
-		} else {
-			clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
-		}
+	if(slowStartMode && g_Minigame.m_CurrentScene.m_rgGameData.level < 11) {
+		var t = setInterval(function() {
+			if(g_Minigame.m_CurrentScene.m_rgGameData.level >= 11) {
+				clearInterval(t);
+				initAutoClicker();
+			}
+		}, 1000);
+	} else {
+		initAutoClicker();
 	}
 
     var box = document.getElementsByClassName("leave_game_helper")[0];
@@ -120,6 +122,18 @@ function firstRun() {
         "<br>Flinching effect: " + (disableFlinching?"disabled":"enabled") +
         "<br>Crit effect: " + (disableCritText?"disabled":"enabled") +
         "<br>Text: " + (disableText?"disabled":"enabled")
+}
+
+function initAutoClicker() {
+	if(enableAutoClicker) {
+		if(setClickVariable) {
+			clickTimer = setInterval( function(){
+				g_Minigame.m_CurrentScene.m_nClicks = clickRate;
+			}, 1000);
+		} else {
+			clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
+		}
+	}
 }
 
 // Remove most effects from the game. Most of these are irreversible.
