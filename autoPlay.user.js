@@ -104,6 +104,8 @@ function firstRun() {
 		var nodes = document.getElementsByClassName("pagecontent");
 		if (nodes[0])
 			nodes[0].style = "padding-bottom: 0";
+		
+		document.body.style.backgroundPosition = "0 0";
 	}
 
 	if (thingTimer) {
