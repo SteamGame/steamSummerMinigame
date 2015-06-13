@@ -126,7 +126,7 @@ function doTheThing() {
 
 		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
 		g_msTickRate = 1000;
-		
+
 		var damagePerClick = g_Minigame.m_CurrentScene.CalculateDamage(
             		g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click,
             		g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].element
@@ -147,7 +147,7 @@ function doTheThing() {
 	                "-" + FormatNumberForDisplay((damagePerClick * clickRate), 5),
 	                "#aaf"
 	            );
-	
+
 	            var goldPerClickPercentage = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
 	            if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
 	            {
@@ -300,7 +300,7 @@ function goToLaneWithBestTarget() {
 			var potential = 0;
 			// Loop through lanes by elemental preference
 			var sortedLanes = sortLanesByElementals();
-			for(var notI = 0; notI < sortedLanes; notI++){
+			for(var notI = 0; notI < sortedLanes.length; notI++){
 				// Maximize compability with upstream
 				i = sortedLanes[notI];
 				// ignore if lane is empty
