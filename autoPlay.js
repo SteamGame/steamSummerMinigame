@@ -678,6 +678,15 @@ function isAbilityItemEnabled(abilityId) {
 	return false;
 }
 
+function toggleAbilityItemVisibility(abilityId, show) {
+    var vis = show === true ? "visible" : "hidden";
+
+    var elem = document.getElementById('abilityitem_' + abilityId);
+    if (elem && elem.childElements() && elem.childElements().length >= 1) {
+        elem.childElements()[0].style.visibility = show;
+    }
+}
+
 var thingTimer = window.setInterval(doTheThing, 1000);
 function clickTheThing() {
     g_Minigame.m_CurrentScene.DoClick(
