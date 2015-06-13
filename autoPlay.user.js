@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 3.6.1
+// @version 3.6.2
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -34,6 +34,7 @@ var ITEMS = {
 	"REVIVE": 13,
 	"GOLD_RAIN": 17,
 	"GOD_MODE": 21,
+	"STEAL_HEALTH": 23,
 	"REFLECT_DAMAGE":24,
 	"CRIT": 18,
 	"CRIPPLE_MONSTER": 15,
@@ -452,7 +453,12 @@ function useMedicsIfRelevant() {
 		// Medics is purchased, cooled down, and needed. Trigger it.
 		advLog('Medics is purchased, cooled down, and needed. Trigger it.', 2);
 		triggerAbility(ABILITIES.MEDIC);
-	} else if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
+	} else if (hasItem(ITEMS.STEAL_HEALTH) && !isAbilityCoolingDown(ITEMS.STEAL_HEALTH)) {
+		
+		// Use Steal Health ability if Medics are not available, but healing is needed.
+		advLog('We have Steal Health, cooled down, and needed. Trigger it.', 2);
+		triggerItem(ITEMS.STEAL_HEALTH);
+	} else if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE) && !isAbilityActive(ITEMS.STEAL_HEALTH)) {
 
 		advLog('We have god mode, cooled down, and needed. Trigger it.', 2);
 		triggerItem(ITEMS.GOD_MODE);
