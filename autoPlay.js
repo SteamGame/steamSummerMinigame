@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script
 // @namespace https://github.com/wchill/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you. Modified from mouseas's original version to include autoclick.
-// @version 1.41
+// @version 1.42
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
@@ -110,11 +110,9 @@ function goToLaneWithBestTarget() {
 				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps == 0)
 					continue;
 				var stacks = 0;
-				for(var j = 0; j < g_Minigame.CurrentScene().m_rgGameData.lanes[i].active_player_abilities.length; j++){
-					if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].active_player_abilities[j].ability == 17){
-						stacks++;
-					}
-				}
+				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined')
+					stacks = g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17];
+					console.log('stacks: ' + stacks);
 				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
 					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
 					if (stacks * enemyGold > potential) {
