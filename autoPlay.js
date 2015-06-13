@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 1.3
+// @version 1.4
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
@@ -16,9 +16,40 @@ var setClickVariable = false; // copypasted from a guy's fork, untested
 
 
 
+var ABILITIES = {
+	"MORALE_BOOSTER": 5,
+	"GOOD_LUCK": 6,
+	"MEDIC": 7,
+	"METAL_DETECTOR": 8,
+	"COOLDOWN": 9,
+	"NUKE": 10,
+	"CLUSTER_BOMB": 11,
+	"NAPALM": 12
+};
+
+var ITEMS = {
+	"REVIVE": 13,
+	"GOLD_RAIN": 17,
+	"GOD_MODE": 21,
+	"REFLECT_DAMAGE":24,
+	"CRIT": 18,
+	"CRIPPLE_MONSTER": 15,
+	"CRIPPLE_SPAWNER": 14,
+	"MAXIMIZE_ELEMENT": 16
+}
+	
+var ENEMY_TYPE = {
+	"SPAWNER":0,
+	"CREEP":1,
+	"BOSS":2,
+	"MINIBOSS":3,
+	"TREASURE":4
+}
+
 // disable particle effects - this drastically reduces the game's memory leak
 if (window.g_Minigame !== undefined) {
 	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
+	window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
 	window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
 		emitter.emit = false;
 		return emitter;
@@ -46,15 +77,16 @@ function doTheThing() {
 	
 	useGoodLuckCharmIfRelevant();
 	useMedicsIfRelevant();
+	useMoraleBoosterIfRelevant();
 	useClusterBombIfRelevant();
 	useNapalmIfRelevant();
 	
 	// TODO use abilities if available and a suitable target exists
 	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
-	// - Cluster Bomb and Napalm if the current lane has a spawner and 2+ creeps
 	// - Metal Detector if a boss, miniboss, or spawner death is imminent (predicted in > 2 and < 7 seconds)
 	// - Morale Booster if available and lane has > 2 live enemies
-	// - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago (any ability but Medics or a consumable)
+	// - Decrease Cooldowns right before using another long-cooldown item.
+	//       (Decrease Cooldown affects abilities triggered while it is active, not night before it's used)
 	
 	// TODO purchase abilities and upgrades intelligently
 	
@@ -123,15 +155,6 @@ function goToLaneWithBestTarget() {
 	var lowTarget = 0;
 	var lowPercentageHP = 0;
 	
-	var ENEMY_TYPE = {
-		"SPAWNER":0,
-		"CREEP":1,
-		"BOSS":2,
-		"MINIBOSS":3,
-		"TREASURE":4
-	}
-	
-	
 	// determine which lane and enemy is the optimal target
 	var enemyTypePriority = [
 		ENEMY_TYPE.TREASURE, 
@@ -139,13 +162,21 @@ function goToLaneWithBestTarget() {
 		ENEMY_TYPE.MINIBOSS,
 		ENEMY_TYPE.SPAWNER, 
 		ENEMY_TYPE.CREEP
-		];
+	];
 		
 	var skippingSpawner = false;
 	var skippedSpawnerLane = 0;
 	var skippedSpawnerTarget = 0;
+	var targetIsTreasureOrBoss = false;
 	
 	for (var k = 0; !targetFound && k < enemyTypePriority.length; k++) {
+		
+		if (enemyTypePriority[k] == ENEMY_TYPE.TREASURE || enemyTypePriority[k] == ENEMY_TYPE.BOSS){
+			targetIsTreasureOrBoss = true;
+		} else {
+			targetIsTreasureOrBoss = false;
+		}
+		
 		var enemies = [];
 		
 		// gather all the enemies of the specified type.
@@ -161,14 +192,14 @@ function goToLaneWithBestTarget() {
 		// target the enemy of the specified type with the lowest hp
 		for (var i = 0; i < enemies.length; i++) {
 			if (enemies[i] && !enemies[i].m_bIsDestroyed) {
-				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
+				if (lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
 					targetFound = true;
 					lowHP = enemies[i].m_flDisplayedHP;
 					lowLane = enemies[i].m_nLane;
 					lowTarget = enemies[i].m_nID;
 				}
 				var percentageHP = enemies[i].m_flDisplayedHP / enemies[i].m_data.max_hp;
-				if(lowPercentageHP == 0 || percentageHP < lowPercentageHP) {
+				if (lowPercentageHP == 0 || percentageHP < lowPercentageHP) {
 					lowPercentageHP = percentageHP;
 				}
 			}
@@ -206,6 +237,52 @@ function goToLaneWithBestTarget() {
 			//console.log('switching targets');
 			g_Minigame.CurrentScene().TryChangeTarget(lowTarget);
 		}
+		
+		
+		// Prevent attack abilities and items if up against a boss or treasure minion
+		if (targetIsTreasureOrBoss) {
+			// Morale
+			disableAbility(ABILITIES.MORALE_BOOSTER);
+			// Luck
+			disableAbility(ABILITIES.GOOD_LUCK);
+			// Nuke
+			disableAbility(ABILITIES.NUKE);
+			// Clusterbomb
+			disableAbility(ABILITIES.CLUSTER_BOMB);
+			// Napalm
+			disableAbility(ABILITIES.NAPALM);
+			// Crit
+			disableAbilityItem(ITEMS.CRIT);
+			// Cripple Spawner
+			disableAbilityItem(ITEMS.CRIPPLE_SPAWNER);
+			// Cripple Monster
+			disableAbilityItem(ITEMS.CRIPPLE_MONSTER);
+			// Max Elemental Damage
+			disableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
+			// Reflect Damage
+			disableAbilityItem(ITEMS.REFLECT_DAMAGE);
+		} else {
+			// Morale
+			enableAbility(ABILITIES.MORALE_BOOSTER);
+			// Luck
+			enableAbility(ABILITIES.GOOD_LUCK);
+			// Nuke
+			enableAbility(ABILITIES.NUKE);
+			// Clusterbomb
+			enableAbility(ABILITIES.CLUSTER_BOMB);
+			// Napalm
+			enableAbility(ABILITIES.NAPALM);
+			// Crit
+			enableAbilityItem(ITEMS.CRIT);
+			// Cripple Spawner
+			enableAbilityItem(ITEMS.CRIPPLE_SPAWNER);
+			// Cripple Monster
+			enableAbilityItem(ITEMS.CRIPPLE_MONSTER);
+			// Max Elemental Damage
+			enableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
+			// Reflect Damage
+			enableAbilityItem(ITEMS.REFLECT_DAMAGE);
+		}
 	}
 }
 
@@ -238,6 +315,10 @@ function useGoodLuckCharmIfRelevant() {
 		if (isAbilityCoolingDown(ABILITIES.GOOD_LUCK)) {
 			return;
 		}
+		
+		if (! isAbilityEnabled(ABILITIES.GOOD_LUCK)) {
+			return;
+		}
 
 		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
 		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
@@ -247,8 +328,8 @@ function useGoodLuckCharmIfRelevant() {
 
 function useClusterBombIfRelevant() {
 	//Check if Cluster Bomb is purchased and cooled down
-	if (hasPurchasedAbility(11)) {
-		if (isAbilityCoolingDown(11)) {
+	if (hasPurchasedAbility(ABILITIES.CLUSTER_BOMB)) {
+		if (isAbilityCoolingDown(ABILITIES.CLUSTER_BOMB)) {
 			return;
 		}
 		
@@ -268,15 +349,15 @@ function useClusterBombIfRelevant() {
 		}
 		//Bombs away if spawner and 2+ other monsters
 		if (enemySpawnerExists && enemyCount >= 3) {
-			triggerAbility(11);
+			triggerAbility(ABILITIES.CLUSTER_BOMB);
 		}
 	}
 }
 
 function useNapalmIfRelevant() {
 	//Check if Napalm is purchased and cooled down
-	if (hasPurchasedAbility(12)) {
-		if (isAbilityCoolingDown(12)) {
+	if (hasPurchasedAbility(ABILITIES.NAPALM)) {
+		if (isAbilityCoolingDown(ABILITIES.NAPALM)) {
 			return;
 		}
 		
@@ -296,7 +377,35 @@ function useNapalmIfRelevant() {
 		}
 		//Burn them all if spawner and 2+ other monsters
 		if (enemySpawnerExists && enemyCount >= 3) {
-			triggerAbility(12);
+			triggerAbility(ABILITIES.NAPALM);
+		}
+	}
+}
+
+function useMoraleBoosterIfRelevant() {
+	// Check if Morale Booster is purchased
+	if(hasPurchasedAbility(5)) {
+		if (isAbilityCoolingDown(5)) {
+			return;
+		}
+		
+		//Check lane has monsters so the hype isn't wasted
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemyCount = 0;
+		var enemySpawnerExists = false;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type == 0) { 
+					enemySpawnerExists = true;
+				}
+			}
+		}
+		//Hype everybody up!
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(5);
 		}
 	}
 }
@@ -346,6 +455,50 @@ function triggerAbility(abilityId) {
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
 		g_Minigame.CurrentScene().TryAbility(document.getElementById('ability_' + abilityId).childElements()[0]);
 	}
+}
+
+function disableAbility(abilityId) {
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "hidden";
+	}
+}
+
+function enableAbility(abilityId) {
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "visible";
+	}
+}
+
+function isAbilityEnabled(abilityId) {
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		return  elem.childElements()[0].style.visibility == "visible";
+	}
+	return false;
+}
+
+function disableAbilityItem(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "hidden";
+	}
+}
+
+function enableAbilityItem(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "visible";
+	}
+}
+
+function isAbilityItemEnabled(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		return  elem.childElements()[0].style.visibility == "visible";
+	}
+	return false;
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
