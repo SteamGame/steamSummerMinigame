@@ -34,6 +34,7 @@ var ABILITIES = {
 var ITEMS = {
 	"REVIVE": 13,
 	"GOLD_RAIN": 17,
+	"THROW_MONEY": 20,
 	"GOD_MODE": 21,
 	"REFLECT_DAMAGE":24,
 	"CRIT": 18,
@@ -105,6 +106,7 @@ var firstRun = function() {
 		window.CSceneGame.prototype.DoScreenShake = function() {};
 	}
 
+	enhanceTooltips();
 }
 
 var doTheThing = function() {
@@ -413,6 +415,8 @@ var goToLaneWithBestTarget = function() {
 			disableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
 			// Reflect Damage
 			disableAbilityItem(ITEMS.REFLECT_DAMAGE);
+			// Throw Money at Screen
+			disableAbilityItem(ITEMS.THROW_MONEY);
 		} else {
 			// Morale
 			enableAbility(ABILITIES.MORALE_BOOSTER);
@@ -434,6 +438,8 @@ var goToLaneWithBestTarget = function() {
 			enableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
 			// Reflect Damage
 			enableAbilityItem(ITEMS.REFLECT_DAMAGE);
+			// Throw Money at Screen
+			enableAbilityItem(ITEMS.THROW_MONEY);
 		}
 	}
 }
@@ -829,6 +835,57 @@ var advLog = function(msg, lvl) {
 	if (lvl <= logLevel) {
 		console.log(msg);
 	}
+}
+
+// Helpers to access player stats.
+var getCritChance = function(){
+    return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.crit_percentage * 100;
+}
+
+var getCritMultiplier = function(){
+    return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_multiplier_crit;
+}
+
+var getDPS = function(){
+    return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.dps;
+}
+
+var getClickDamage = function(){
+    return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click;
+}
+
+var enhanceTooltips = function(){
+    trt_oldTooltip = window.fnTooltipUpgradeDesc;
+    window.fnTooltipUpgradeDesc = function(context){
+        var $context = $J(context);
+        var desc = $context.data('desc');
+        var strOut = desc;
+        var multiplier = parseFloat( $context.data('multiplier') );
+        switch( $context.data('upgrade_type') )
+        {
+            case 7: // Lucky Shot's type.
+                var currentMultiplier = getCritMultiplier();
+                var newMultiplier = currentMultiplier + multiplier;
+                var dps = getDPS();
+                var clickDamage = getClickDamage();
+
+                strOut += '<br><br>You can have multiple crits in a second. The server combines them into one.';
+
+                strOut += '<br><br>Crit Percentage: ' + getCritChance().toFixed(1) + '%';
+
+                strOut += '<br><br>Current: ' + ( currentMultiplier ) + 'x';
+                strOut += '<br>Next Level: ' + ( newMultiplier ) + 'x';
+
+                strOut += '<br><br>Damage with one crit:';
+                strOut += '<br>DPS: ' + FormatNumberForDisplay( currentMultiplier * dps ) + ' => ' + FormatNumberForDisplay( newMultiplier * dps );
+                strOut += '<br>Click: ' + FormatNumberForDisplay( currentMultiplier * clickDamage ) + ' => ' + FormatNumberForDisplay( newMultiplier * clickDamage );
+                break;
+            default:
+                return trt_oldTooltip(context);
+        }
+        console.log(strOut);
+        return strOut;
+    };
 }
 
 var thingTimer = window.setInterval(function(){
