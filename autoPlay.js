@@ -772,7 +772,7 @@ var thingTimer = window.setInterval(function(){
 	if (g_Minigame && g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
 		window.clearInterval(thingTimer);
 		firstRun();
-		thingTimer = window.setInterval(doTheThing, 1000);
+		thingTimer = window.setInterval(doTheThing, 100);
 	}
 }, 1000);
 function clickTheThing() {
