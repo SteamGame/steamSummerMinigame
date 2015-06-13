@@ -2,8 +2,9 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 2.1
+// @version 2.2
 // @match http://steamcommunity.com/minigame/towerattack*
+// @grant none
 // @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.user.js
 // @downloadURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.user.js
 // ==/UserScript==
