@@ -15,7 +15,7 @@
 // - Tactical Nuke on a Spawner if below 50% and above 25% of its health
 // - Metal Detector if a boss, miniboss, or spawner death is imminent (predicted in > 2 and < 7 seconds)
 // - Decrease Cooldowns right before using another long-cooldown item.
-// - (Decrease Cooldown affects abilities triggered while it is active, not night before it's used)
+// - (Decrease Cooldown affects abilities triggered while it is active, not right before it's used)
 	
 // TODO purchase abilities and upgrades intelligently
 // TODO automatically update the manual script by periodically checking https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js

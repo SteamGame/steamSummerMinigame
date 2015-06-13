@@ -10,7 +10,20 @@ powerups for you.
 **DISCLAIMER:** This autoscript will *NOT* include an auto-clicker. Automatic clicking pushes into the area of cheating, and this script is not designed for cheating. It is designed for automating the process of collecting gold.
 
 ## Features ##
-* See TODO
+
+- Moves you to the lane most likely to give you gold, prioritized like so:
+	1. The lane with a Treasure Minion or Boss
+	2. The lane with the Miniboss with the lowest health
+	3. The lane with a Spawner below 40% health
+	4. The lane with a Creep below 10% health
+	5. The lane with the Spawner with the lowest health
+- Activates most reusable abilities, if they are purchased and cooled down:
+	- Medics if your health is below 50%
+	- Morale Booster, Napalm, and Cluster Bombs if the lane has a Spawner and 2-3 Creeps
+	- Good Luck Charm as soon as possible
+	- Tactical Nuke if the current Spawner is between 60% and 30% health
+- Respawns you after 5 seconds (instead of 1 minute) if you die
+- Disables certain abilities and items if facing a Boss (to try to maximize Raining Gold and Metal Detector benefits)
 
 ## Installation ##
 
@@ -48,7 +61,6 @@ is auto-playing, try changing lanes. If it jumps back almost immediately, it's w
 
 - use abilities if available and a suitable target exists:
 	 - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
-	 - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
+	 - Decrease Cooldowns right before using another long-cooldown item. (Decrease Cooldown affects abilities triggered while it is active, not right before it's used)
 - purchase abilities and upgrades intelligently
 - automatically update the manual script by periodically checking https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
-- update features section
