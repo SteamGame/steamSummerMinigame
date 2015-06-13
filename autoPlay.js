@@ -208,7 +208,7 @@ function doTheThing() {
 		useNapalmIfRelevant();
 		useTacticalNukeIfRelevant();
 		useCrippleSpawnerIfRelevant();
-		if(g_Minigame.m_CurrentScene.m_rgGameData.level < 1000)
+		if(g_Minigame.m_CurrentScene.m_rgGameData.level < 1000 || g_Minigame.m_CurrentScene.m_rgGameData.level % 200 == 0)
 			useGoldRainIfRelevant();
 		attemptRespawn();
 
@@ -588,7 +588,7 @@ function useTacticalNukeIfRelevant() {
 		for (var i = 0; i < 4; i++) {
 			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
 			if (enemy) {
-				if (enemy.m_data.type == 0 || (enemy.m_data.type == ENEMY_TYPE.BOSS && g_Minigame.m_CurrentScene.m_rgGameData.level > 1000)) {
+				if (enemy.m_data.type == 0 || (enemy.m_data.type == ENEMY_TYPE.BOSS && g_Minigame.m_CurrentScene.m_rgGameData.level > 1000 && g_Minigame.m_CurrentScene.m_rgGameData.level % 200 != 0)) {
 					enemySpawnerExists = true;
 					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 				}
