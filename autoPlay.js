@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name Monster Minigame AutoScript
 // @author /u/mouseasw for creating and maintaining the script, /u/WinneonSword for the Greasemonkey support, and every contributor on the GitHub repo for constant enhancements.
-// @version 1.4
+// @version 1.6
 // @namespace https://github.com/mouseas/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
 // @match http://steamcommunity.com/minigame/towerattack*
@@ -10,6 +10,16 @@
 // ==/UserScript==
 
 // IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
+
+// TODO use abilities if available and a suitable target exists
+// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
+// - Metal Detector if a boss, miniboss, or spawner death is imminent (predicted in > 2 and < 7 seconds)
+// - Decrease Cooldowns right before using another long-cooldown item.
+// - (Decrease Cooldown affects abilities triggered while it is active, not night before it's used)
+	
+// TODO purchase abilities and upgrades intelligently
+// TODO automatically update the manual script by periodically checking https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+// TODO update features section in README
 
 var isAlreadyRunning = false;
 
@@ -43,55 +53,43 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 }
 
-// disable particle effects - this drastically reduces the game's memory leak
-if (window.g_Minigame !== undefined) {
-	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
-	window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
-	window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
-		emitter.emit = false;
-		return emitter;
+function firstRun() {
+	// disable particle effects - this drastically reduces the game's memory leak
+	if (window.g_Minigame !== undefined) {
+		window.g_Minigame.CurrentScene().DoClickEffect = function() {};
+		window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+		window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
+			emitter.emit = false;
+			return emitter;
+		}
 	}
-}
 
-// disable enemy flinching animation when they get hit
-if (window.CEnemy !== undefined) {
-	window.CEnemy.prototype.TakeDamage = function() {};
-	window.CEnemySpawner.prototype.TakeDamage = function() {};
-	window.CEnemyBoss.prototype.TakeDamage = function() {};
-}
+	// disable enemy flinching animation when they get hit
+	if (window.CEnemy !== undefined) {
+		window.CEnemy.prototype.TakeDamage = function() {};
+		window.CEnemySpawner.prototype.TakeDamage = function() {};
+		window.CEnemyBoss.prototype.TakeDamage = function() {};
+	}
 
-if (thingTimer !== undefined) {
-	window.clearTimeout(thingTimer);
+	if (thingTimer !== undefined) {
+		window.clearTimeout(thingTimer);
+	}
 }
 
 function doTheThing() {
-	if (isAlreadyRunning || g_Minigame === undefined || !g_Minigame.CurrentScene().m_bRunning || !g_Minigame.CurrentScene().m_rgPlayerTechTree) {
-		return;
+	if (!isAlreadyRunning){
+		isAlreadyRunning = true;
+
+		goToLaneWithBestTarget();
+		useGoodLuckCharmIfRelevant();
+		useMedicsIfRelevant();
+		useMoraleBoosterIfRelevant();
+		useClusterBombIfRelevant();
+		useNapalmIfRelevant();
+		attemptRespawn();
+
+		isAlreadyRunning = false;
 	}
-	isAlreadyRunning = true;
-	
-	goToLaneWithBestTarget();
-	
-	useGoodLuckCharmIfRelevant();
-	useMedicsIfRelevant();
-	useMoraleBoosterIfRelevant();
-	useClusterBombIfRelevant();
-	useNapalmIfRelevant();
-	
-	// TODO use abilities if available and a suitable target exists
-	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
-	// - Metal Detector if a boss, miniboss, or spawner death is imminent (predicted in > 2 and < 7 seconds)
-	// - Morale Booster if available and lane has > 2 live enemies
-	// - Decrease Cooldowns right before using another long-cooldown item.
-	//       (Decrease Cooldown affects abilities triggered while it is active, not night before it's used)
-	
-	// TODO purchase abilities and upgrades intelligently
-	
-	attemptRespawn();
-	
-	
-	
-	isAlreadyRunning = false;
 }
 
 function goToLaneWithBestTarget() {
@@ -156,7 +154,7 @@ function goToLaneWithBestTarget() {
 		}
 		
 		// If we just finished looking at spawners, 
-		// AND none of them were below our threshold,  
+		// AND none of them were below our threshold,
 		// remember them and look for low creeps (so don't quit now)
 		if (enemyTypePriority[k] == ENEMY_TYPE.SPAWNER && lowPercentageHP > spawnerOKThreshold) {
 			skippedSpawnerLane = lowLane;
@@ -454,7 +452,7 @@ function enableAbility(abilityId) {
 function isAbilityEnabled(abilityId) {
 	var elem = document.getElementById('ability_' + abilityId);
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		return  elem.childElements()[0].style.visibility == "visible";
+		return elem.childElements()[0].style.visibility == "visible";
 	}
 	return false;
 }
@@ -476,9 +474,15 @@ function enableAbilityItem(abilityId) {
 function isAbilityItemEnabled(abilityId) {
 	var elem = document.getElementById('abilityitem_' + abilityId);
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		return  elem.childElements()[0].style.visibility == "visible";
+		return elem.childElements()[0].style.visibility == "visible";
 	}
 	return false;
 }
 
-var thingTimer = window.setInterval(doTheThing, 1000);
+var thingTimer = window.setInterval(function(){
+	if (g_Minigame && g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
+		window.clearInterval(thingTimer);
+		firstRun();
+		thingTimer = window.setInterval(doTheThing, 1000);
+	}
+}, 1000);
