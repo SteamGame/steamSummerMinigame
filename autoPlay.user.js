@@ -120,8 +120,13 @@ function doTheThing() {
 
 		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
 		g_msTickRate = 1000;
+		
+		var damagePerClick = g_Minigame.m_CurrentScene.CalculateDamage(
+            		g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click,
+            		g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].element
+        	);
 
-		advLog("Ticked. Current clicks per second " + clickRate, 4);
+        	advLog("Ticked. Current clicks per second: " + clickRate + ". Current damage per second: " + (damagePerClick * clickRate), 4);
 
 		isAlreadyRunning = false;
 
@@ -130,8 +135,13 @@ function doTheThing() {
 			g_Minigame.m_CurrentScene.m_rgPlayerData.target);
 
 		if(enemy) {
-			displayText(enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, clickRate + " clicks", "#aaf");
-		}
+	            displayText(
+	                enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
+	                enemy.m_Sprite.position.y - 52,
+	                "-" + FormatNumberForDisplay((damagePerClick * clickRate), 5),
+	                "#aaf"
+	            );
+	        }
 	}
 }
 
