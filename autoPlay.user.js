@@ -15,7 +15,7 @@
 var isAlreadyRunning = false;
 var clickRate = 20;
 var setClickVariable = true; // copypasted from a guy's fork, untested
-var loglevel = 1; // 5 is the most spammy, 0 disables all log
+var logLevel = 1; // 5 is the most spammy, 0 disables all log
 var removeInterface = false; // get rid of a bunch of pointless DOM
 
 var optimizeGraphics = true; //set this to false if you don't want effects disabled (introduces memory leak.)
