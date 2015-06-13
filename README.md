@@ -1,5 +1,7 @@
 # Steam Summer 2015 Monster Minigame AutoScript #
 
+#Buy at least 1 "Auto-fire Cannon" for lane switching to work.#
+
 ## Purpose ##
 
 it cheats for you.
