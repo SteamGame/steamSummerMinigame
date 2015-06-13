@@ -404,7 +404,7 @@ function useGoldRainIfRelevant() {
 //If player is dead, call respawn method
 function attemptRespawn() {
 	if ((g_Minigame.CurrentScene().m_bIsDead) && 
-			((g_Minigame.CurrentScene().m_rgPlayerData.time_died * 1000) + 5000) < (new Date().getTime())) {
+			((g_Minigame.CurrentScene().m_rgPlayerData.time_died * 1000) + 5000) < (g_Minigame.CurrentScene().m_nTime)) {
 		RespawnPlayer();
 	}
 }
