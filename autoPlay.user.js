@@ -73,28 +73,32 @@ function firstRun() {
 
 	if ( removeInterface && document.getElementById && document.getElementsByClassName ) {
 		var node = document.getElementById("global_header");
-		if (node && node.parentNode)
+		if (node && node.parentNode) {
 			node.parentNode.removeChild( node );
-		var node = document.getElementById("footer");
-		if (node && node.parentNode)
+		}
+		node = document.getElementById("footer");
+		if (node && node.parentNode) {
 			node.parentNode.removeChild( node );
-		var node = document.getElementById("footer_spacer");
-		if (node && node.parentNode)
+		}
+		node = document.getElementById("footer_spacer");
+		if (node && node.parentNode) {
 			node.parentNode.removeChild( node );
+		}
 		var nodes = document.getElementsByClassName("leave_game_helper");
 		while ( nodes.length > 0 ) {
 			if (nodes[0] && nodes[0].parentNode)
 				nodes[0].parentNode.removeChild(nodes[0]);
 		}
-		var nodes = document.getElementsByClassName("pagecontent");
-		if (nodes[0])
+		nodes = document.getElementsByClassName("pagecontent");
+		if (nodes[0]) {
 			nodes[0].style = "padding-bottom: 0";
-
+		}
 		document.body.style.backgroundPosition = "0 0";
 	}
 
 	if (thingTimer) {
 		window.clearInterval(thingTimer);
+		thingTimer = false;
 	}
 
 	if (window.CSceneGame !== undefined) {
