@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 1.2
+// @version 1.3
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
@@ -12,6 +12,8 @@
 
 var isAlreadyRunning = false;
 var clickRate = 25;
+var setClickVariable = false; // copypasted from a guy's fork, untested
+
 
 
 // disable particle effects - this drastically reduces the game's memory leak
@@ -82,7 +84,15 @@ function clickTheThing() {
         }
     );
 }
-var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
+
+if(setClickVariable) {
+	var clickTimer = setInterval( function(){
+		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
+	}, 1000);
+} else {
+	var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
+}
+
 
 
 var ABILITIES = {
@@ -101,7 +111,6 @@ var ITEMS = {
 	"GOD_MODE": 21,
 	"REFLECT_DAMAGE":24
 }
->>>>>>> upstream/master
 
 function goToLaneWithBestTarget() {
 	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
