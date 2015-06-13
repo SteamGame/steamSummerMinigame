@@ -58,8 +58,6 @@ function firstRun() {
 	}
 	
 	if (g_Minigame !== undefined) {
-		g_Minigame.CurrentScene().DoClickEffect = function() {};
-		g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
 		g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
 			emitter.emit = false;
 			return emitter;
