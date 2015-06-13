@@ -49,3 +49,4 @@ is auto-playing, try changing lanes. If it jumps back almost immediately, it's w
 	 - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
 	
 - purchase abilities and upgrades intelligently
+- automatically update the manual script by periodically checking https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
