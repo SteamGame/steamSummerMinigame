@@ -82,13 +82,13 @@ function firstRun() {
 	}
 
 	// Crit toggle.
-	trt_oldCrit = window.g_Minigame.CurrentScene().DoCritEffect;
+	trt_oldCrit = g_Minigame.CurrentScene().DoCritEffect;
 	if (disableCritText) {
 		toggleCritText();
 	}
 
 	// Text toggle.
-	trt_oldPush = window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push
+	trt_oldPush = g_Minigame.m_CurrentScene.m_rgClickNumbers.push
 	if (disableText) {
 		toggleText();
 	}
@@ -124,9 +124,9 @@ function trt_destroyAllEffects() {
 
 // Callable function to remove particles.
 function disableParticles() {
-	if (window.g_Minigame) {
-		window.g_Minigame.CurrentScene().DoClickEffect = function() {};
-		window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
+	if (g_Minigame) {
+		g_Minigame.CurrentScene().DoClickEffect = function() {};
+		g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
 			emitter.emit = false;
 			return emitter;
 		}
@@ -135,24 +135,24 @@ function disableParticles() {
 
 // Callable function to stop the flinching animation.
 function stopFlinching() {
-	if (window.CEnemy) {
-		window.CEnemy.prototype.TakeDamage = function(){};
+	if (CEnemy) {
+		CEnemy.prototype.TakeDamage = function(){};
 	}
-	if (window.CEnemySpawner) {
-		window.CEnemySpawner.prototype.TakeDamage = function(){};
+	if (CEnemySpawner) {
+		CEnemySpawner.prototype.TakeDamage = function(){};
 	}
-	if (window.CEnemyBoss) {
-		window.CEnemyBoss.prototype.TakeDamage = function(){};
+	if (CEnemyBoss) {
+		CEnemyBoss.prototype.TakeDamage = function(){};
 	}
 }
 
 function toggleCritText() {
 	if (!trt_critToggle) {
 		// Replaces the entire crit display function.
-		window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+		g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
 		trt_critToggle = true;
 	} else {
-		window.g_Minigame.CurrentScene().DoCritEffect = trt_oldCrit;
+		g_Minigame.CurrentScene().DoCritEffect = trt_oldCrit;
 		trt_critToggle = false;
 	}
 }
@@ -162,12 +162,12 @@ function toggleCritText() {
 function toggleText() {
 	if (!trt_textToggle) {
 		// Replaces the entire text function.
-		window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = function(elem){
+		g_Minigame.m_CurrentScene.m_rgClickNumbers.push = function(elem){
 			elem.container.removeChild(elem);
 		};
 		trt_textToggle = true;
 	} else {
-		window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = trt_oldPush;
+		g_Minigame.m_CurrentScene.m_rgClickNumbers.push = trt_oldPush;
 		trt_textToggle = false;
 	}
 }
