@@ -18,6 +18,8 @@ var setClickVariable = true; // copypasted from a guy's fork, untested
 var spammydebug = false; // set this to true to get spammed by debug messages
 var removeInterface = false; // get rid of a bunch of pointless DOM
 
+var optimizeGraphics = true; //set this to false if you don't want effects disabled (introduces memory leak.)
+
 var ABILITIES = {
 	"MORALE_BOOSTER": 5,
 	"GOOD_LUCK": 6,
@@ -51,6 +53,9 @@ var ENEMY_TYPE = {
 
 function firstRun() {
 	// disable particle effects - this drastically reduces the game's memory leak
+	if(!optimizeGraphics) {
+		return;
+	}
 	if (g_Minigame !== undefined) {
 		g_Minigame.CurrentScene().DoClickEffect = function() {};
 		g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
