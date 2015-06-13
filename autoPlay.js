@@ -1,8 +1,9 @@
 // ==UserScript== 
-// @name Monster Minigame Auto-script
+// @name Monster Minigame AutoScript
+// @author /u/mouseasw for creating and maintaining the script, /u/WinneonSword for the Greasemonkey support, and every contributor on the GitHub repo for constant enhancements.
+// @version 1.4
 // @namespace https://github.com/mouseas/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 1.3
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
