@@ -56,6 +56,7 @@ function firstRun() {
 	if(!optimizeGraphics) {
 		return;
 	}
+	
 	if (g_Minigame !== undefined) {
 		g_Minigame.CurrentScene().DoClickEffect = function() {};
 		g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
@@ -64,28 +65,14 @@ function firstRun() {
 			return emitter;
 		}
 	}
-
+	
 	// disable enemy flinching animation when they get hit
 	if (CEnemy !== undefined) {
 		CEnemy.prototype.TakeDamage = function() {};
 		CEnemySpawner.prototype.TakeDamage = function() {};
 		CEnemyBoss.prototype.TakeDamage = function() {};
 	}
-	if (window.g_Minigame !== undefined) {
-		window.g_Minigame.CurrentScene().DoClickEffect = function() {};
-		window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
-		window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
-			emitter.emit = false;
-			return emitter;
-		};
-	}
-
-	if (window.CEnemy !== undefined) {
-		window.CEnemy.prototype.TakeDamage = function(){};
-		window.CEnemySpawner.prototype.TakeDamage = function(){};
-		window.CEnemyBoss.prototype.TakeDamage = function(){};
-	}
-
+	
 	if ( removeInterface && document.getElementById && document.getElementsByClassName ) {
 		var node = document.getElementById("global_header");
 		if (node && node.parentNode)
@@ -107,17 +94,14 @@ function firstRun() {
 		
 		document.body.style.backgroundPosition = "0 0";
 	}
-
+	
 	if (thingTimer) {
 		window.clearInterval(thingTimer);
 	}
-
+	
 	if (window.CSceneGame !== undefined) {
 		window.CSceneGame.prototype.DoScreenShake = function() {};
 	}
-
-
-
 }
 
 function doTheThing() {
