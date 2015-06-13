@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 3.6.3
+// @version 3.6.2
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -195,19 +195,18 @@ function lockElements() {
 		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_earth
 	];
 
-  var hashCode=function(str) {
-		var t=0, i, char;
-		if (0 === str.length) {
-			return t;
-		}
-		
-		for (i=0; i<str.length; i++) {
-			char=str.charCodeAt(i);
-			t=(t<<5)-t+char;
-			t&=t;
-		}
-		
-		return t;
+  var hashCode=function(){
+      var t=0;
+      var char;
+      if (0 === this.length) {
+				return t;
+			}
+
+      for (i=0; i<this.length; i++) {
+        	char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
+			}
+
+      return t;
   };
 
   var elem = Math.abs(hashCode(g_steamID)%4);
@@ -668,51 +667,50 @@ function useCrippleSpawnerIfRelevant() {
 }
 
 function useGoldRainIfRelevant() {
-	// Check if gold rain is purchased
-	if (hasItem(ITEMS.GOLD_RAIN)) {
-		if (isAbilityCoolingDown(ITEMS.GOLD_RAIN)) {
-			return;
-		}
-
-		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
-		// check if current target is a boss, otherwise its not worth using the gold rain
-		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-
-			if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
-				// Gold Rain is purchased, cooled down, and needed. Trigger it.
-				advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
-				triggerItem(ITEMS.GOLD_RAIN);
-			}
-		}
-	}
-}
-
-function useMetalDetectorIfRelevant() {
-  // Check if metal detector is purchased
-  if (hasPurchasedAbility(ABILITIES.METAL_DETECTOR)) {
-    if (isAbilityCoolingDown(ABILITIES.METAL_DETECTOR) || isAbilityActive(ABILITIES.METAL_DETECTOR)) {
+  // Check if gold rain is purchased
+  if (hasItem(ITEMS.GOLD_RAIN)) {
+    if (isAbilityCoolingDown(ITEMS.GOLD_RAIN)) {
       return;
     }
 
-    if (shouldUseItemOnCurrentEnemy(ENEMY_TYPE.BOSS, 0.9)) { // We want sufficient time for the metal detector to be applicable
-      advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
-      triggerAbility(ABILITIES.METAL_DETECTOR);
+    if (shouldUseItemOnCurrentEnemy(ENEMY_TYPE.BOSS, 0.6)) { // check if current target is a boss, otherwise its not worth using the gold rain
+      advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
+      triggerItem(ITEMS.GOLD_RAIN);
     }
   }
+}
+
+function useMetalDetectorIfRelevant() {
+	// Check if metal detector is purchased
+	if (hasPurchasedAbility(ABILITIES.METAL_DETECTOR)) {
+		if (isAbilityCoolingDown(ABILITIES.METAL_DETECTOR) || isAbilityActive(ABILITIES.METAL_DETECTOR)) {
+			return;
+		}
+
+		if (shouldUseItemOnCurrentEnemy(ENEMY_TYPE.BOSS, 0.9)) { // We want sufficient time for the metal detector to be applicable
+			advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
+			triggerAbility(ABILITIES.METAL_DETECTOR);
+		}
+	}
 }
 
 function useTreasureIfRelevant() {
   // Check if treasure is purchased
   if (hasItem(ITEMS.TREASURE)) {
-    if (isAbilityCoolingDown(ITEMS.TREASURE) || isAbilityActive(ABILITIES.METAL_DETECTOR)) {
+    if (isItemCoolingDown(ITEMS.TREASURE) || isAbilityActive(ABILITIES.METAL_DETECTOR)) {
       return;
     }
     if (g_Minigame.m_CurrentScene.m_rgPlayerData.gold < 100000 || shouldUseItemOnCurrentEnemy(ENEMY_TYPE.BOSS, 0.9)) { // If the player doesnt have much gold, or conditions for metal detector since it's applied in addition
-      advLog('Treasure is acquired and cooled down, Triggering it on boss', 2);
-      triggerItem(ITEMS.TREASURE);
-    }
+    	advLog('Treasure is acquired and cooled down, Triggering it on boss', 2);
+    	triggerItem(ITEMS.TREASURE);
+  	}
   }
+}
+
+function shouldUseItemOnCurrentEnemy(enemyType, minHP) {
+	// Checks enemy type and verifies that the enemy has sufficient HP
+	var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
+	return (enemy && enemy.m_data.type == enemyType && (enemy.m_flDisplayedHP / enemy.m_data.max_hp) >= minHP);
 }
 
 function attemptRespawn() {
@@ -720,12 +718,6 @@ function attemptRespawn() {
 			((g_Minigame.CurrentScene().m_rgPlayerData.time_died) + 5) < (g_Minigame.CurrentScene().m_nTime)) {
 		RespawnPlayer();
 	}
-}
-
-function shouldUseItemOnCurrentEnemy(enemyType, minHP) {
-  // Checks enemy type and verifies that the enemy has sufficient HP
-  var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
-  return (enemy && enemy.m_data.type == enemyType && (enemy.m_flDisplayedHP / enemy.m_data.max_hp) >= minHP);
 }
 
 function isAbilityActive(abilityId) {
@@ -740,6 +732,10 @@ function hasItem(itemId) {
 		}
 	}
 	return false;
+}
+
+function isItemCoolingDown(itemId) {
+	return isAbilityCoolingDown(itemId);
 }
 
 function isAbilityCoolingDown(abilityId) {
