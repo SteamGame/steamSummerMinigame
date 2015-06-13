@@ -37,7 +37,7 @@ var ITEMS = {
 	"CRIPPLE_MONSTER": 15,
 	"CRIPPLE_SPAWNER": 14,
 	"MAXIMIZE_ELEMENT": 16
-}
+};
 	
 var ENEMY_TYPE = {
 	"SPAWNER":0,
@@ -45,7 +45,7 @@ var ENEMY_TYPE = {
 	"BOSS":2,
 	"MINIBOSS":3,
 	"TREASURE":4
-}
+};
 
 
 function firstRun() {
@@ -71,7 +71,7 @@ function firstRun() {
 		window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
 			emitter.emit = false;
 			return emitter;
-		}
+		};
 	}
 
 	if (window.CEnemy !== undefined) {
@@ -168,7 +168,11 @@ function goToLaneWithBestTarget() {
 		//Prefer lane with raining gold, unless current enemy target is a treasure or boss.
 		if(lowTarget != ENEMY_TYPE.TREASURE && lowTarget != ENEMY_TYPE.BOSS ){
 			var potential = 0;
-			for(var i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes.length; i++){
+			// Loop through lanes by elemental preference
+			var sortedLanes = sortLanesByElementals();
+			for(var notI = 0; notI < sortedLanes; notI++){
+				// Maximize compability with upstream
+				i = sortedLanes[notI];
 				// ignore if lane is empty
 				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps == 0)
 					continue;
@@ -635,6 +639,31 @@ function isAbilityItemEnabled(abilityId) {
 		return elem.childElements()[0].style.visibility == "visible";
 	}
 	return false;
+}
+
+function sortLanesByElementals() {
+	var elementPriorities = [
+		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_fire,
+		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_water,
+		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_air,
+		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_earth
+	];
+
+	var lanes = g_Minigame.CurrentScene().m_rgGameData.lanes;
+	var lanePointers = [];
+
+	for (var i = 0; i < lanes.length; i++) {
+		lanePointers[i] = i;
+	}
+
+	lanePointers.sort(function(a, b) {
+    return elementPriorities[lanes[b].element - 1] - elementPriorities[lanes[a].element - 1];
+	});
+
+	// console.log("Lane IDs  : " + lanePointers[0] + " " + lanePointers[1] + " " + lanePointers[2]);
+	// console.log("Elements  : " + lanes[lanePointers[0]].element + " " + lanes[lanePointers[1]].element + " " + lanes[lanePointers[2]].element);
+
+	return lanePointers;
 }
 
 var thingTimer = window.setInterval(function(){
