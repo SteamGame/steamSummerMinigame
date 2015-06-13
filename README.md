@@ -89,3 +89,11 @@ This project is open-source on github. There are different ways you can help:
 	 - Steal Health item if Medics is in cooldown and health is low. This should happen before using God Mode, and God Mode shouldn't be used if Steal Health is active.
 - purchase abilities and upgrades intelligently
 - automatically update the manual script by periodically checking https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
+
+## Experimental ##
+
+These functions work as intended, but do not have a UI option to do the toggling.
+
+- toggleText() to hide/show all text. Overrides all text options.
+- toggleCritText() to hide/show crit text.
+- stopFlinching() will stop flinching animations. These are not saved and will not be restored.
