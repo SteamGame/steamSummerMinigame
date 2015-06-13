@@ -107,7 +107,7 @@ function firstRun() {
 	if (w.CSceneGame !== undefined) {
 		w.CSceneGame.prototype.DoScreenShake = function() {};
 	}
-	
+
 	enhanceTooltips();
 }
 
@@ -182,18 +182,22 @@ function lockElements() {
 
   String.prototype.hashCode=function(){
       var t=0;
-      if(0==this.length)
-          return t;
-      for(i=0;i<this.length;i++)
-          char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
+      if (0 === this.length) {
+				return t;
+			}
+
+      for (i=0; i<this.length; i++) {
+        char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
+			}
+
       return t;
-  }
+  };
 
   var elem = Math.abs(g_steamID.hashCode()%4);
 
 	// If more than two elements are leveled to 3 or higher, do not enable lock
-	var leveled = 0
-	var lastLeveled = -1
+	var leveled = 0;
+	var lastLeveled = -1;
 
 	for (var i=0; i < elementMultipliers.length; i++){
 		advLog("Element " + i + " is at level " + (elementMultipliers[i]-1)/1.5, 3);
@@ -217,10 +221,10 @@ function lockElements() {
 }
 
 function lockToElement(element) {
-	var fire = document.querySelector("a.link.element_upgrade_btn[data-type=\"3\"]")
-	var water = document.querySelector("a.link.element_upgrade_btn[data-type=\"4\"]")
-	var air = document.querySelector("a.link.element_upgrade_btn[data-type=\"5\"]")
-	var earth = document.querySelector("a.link.element_upgrade_btn[data-type=\"6\"]")
+	var fire = document.querySelector("a.link.element_upgrade_btn[data-type=\"3\"]");
+	var water = document.querySelector("a.link.element_upgrade_btn[data-type=\"4\"]");
+	var air = document.querySelector("a.link.element_upgrade_btn[data-type=\"5\"]");
+	var earth = document.querySelector("a.link.element_upgrade_btn[data-type=\"6\"]");
 
 	var elems = [fire, water, air, earth];
 
@@ -308,7 +312,7 @@ function goToLaneWithBestTarget() {
 				// Maximize compability with upstream
 				i = sortedLanes[notI];
 				// ignore if lane is empty
-				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps == 0)
+				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps === 0)
 					continue;
 				var stacks = 0;
 				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined')
@@ -349,7 +353,7 @@ function goToLaneWithBestTarget() {
 					lowTarget = enemies[i].m_nID;
 				}
 				var percentageHP = enemies[i].m_flDisplayedHP / enemies[i].m_data.max_hp;
-				if (lowPercentageHP == 0 || percentageHP < lowPercentageHP) {
+				if (lowPercentageHP === 0 || percentageHP < lowPercentageHP) {
 					lowPercentageHP = percentageHP;
 				}
 			}
@@ -453,12 +457,12 @@ function disableCooldownIfRelevant() {
 		disableAbility(ABILITIES.COOLDOWN);
 		return;
 	}
-	
+
 	if(!isAbilityActive(ABILITIES.COOLDOWN))
 	{
 		enableAbility(ABILITIES.COOLDOWN);
 	}
-	
+
 }
 
 function useMedicsIfRelevant() {
@@ -481,7 +485,7 @@ function useMedicsIfRelevant() {
 		advLog('We have god mode, cooled down, and needed. Trigger it.', 2);
 		triggerItem(ITEMS.GOD_MODE);
 	}
-};
+}
 
 // Use Good Luck Charm if doable
 function useGoodLuckCharmIfRelevant() {
@@ -525,7 +529,7 @@ function useClusterBombIfRelevant() {
 			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
 			if (enemy) {
 				enemyCount++;
-				if (enemy.m_data.type == 0) {
+				if (enemy.m_data.type === 0) {
 					enemySpawnerExists = true;
 				}
 			}
@@ -553,7 +557,7 @@ function useNapalmIfRelevant() {
 			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
 			if (enemy) {
 				enemyCount++;
-				if (enemy.m_data.type == 0) {
+				if (enemy.m_data.type === 0) {
 					enemySpawnerExists = true;
 				}
 			}
@@ -581,7 +585,7 @@ function useMoraleBoosterIfRelevant() {
 			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
 			if (enemy) {
 				enemyCount++;
-				if (enemy.m_data.type == 0) {
+				if (enemy.m_data.type === 0) {
 					enemySpawnerExists = true;
 				}
 			}
@@ -628,7 +632,7 @@ function useTacticalNukeIfRelevant() {
 		for (var i = 0; i < 4; i++) {
 			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
 			if (enemy) {
-				if (enemy.m_data.type == 0) {
+				if (enemy.m_data.type === 0) {
 					enemySpawnerExists = true;
 					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 				}
@@ -658,7 +662,7 @@ function useCrippleSpawnerIfRelevant() {
 		for (var i = 0; i < 4; i++) {
 			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
 			if (enemy) {
-				if (enemy.m_data.type == 0) {
+				if (enemy.m_data.type === 0) {
 					enemySpawnerExists = true;
 					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 				}
@@ -700,7 +704,7 @@ function useMetalDetectorIfRelevant() {
 		if (isAbilityCoolingDown(ABILITIES.METAL_DETECTOR) || isAbilityActive(ABILITIES.METAL_DETECTOR)) {
 			return;
 		}
-		
+
 		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
 		// check if current target is a boss, otherwise we won't use metal detector
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
@@ -742,7 +746,7 @@ function isAbilityCoolingDown(abilityId) {
 
 function hasOneUseAbility(abilityId) {
 	var elem = document.getElementById('abilityitem_' + abilityId);
-	return elem != null;
+	return elem !== null;
 }
 
 function hasPurchasedAbility(abilityId) {
@@ -760,7 +764,7 @@ function triggerItem(itemId) {
 }
 
 function triggerAbility(abilityId) {
-	g_Minigame.CurrentScene().m_rgAbilityQueue.push({'ability': abilityId})
+	g_Minigame.CurrentScene().m_rgAbilityQueue.push({'ability': abilityId});
 }
 
 function toggleAbilityVisibility(abilityId, show) {
@@ -816,11 +820,11 @@ function getActiveAbilityNum(ability) {
     var count = 0;
     for(var i = 0; i < abilities.length; i++)
     {
-        if(abilities[i]['ability'] != ability)
+        if(abilities[i].ability != ability)
         {
             continue;
         }
-        if(abilities[i]['timestamp_done'] < Date.now())
+        if(abilities[i].timestamp_done < Date.now())
         {
             continue;
         }
@@ -914,11 +918,11 @@ function enhanceTooltips(){
                 var newMultiplier = currentMultiplier + multiplier;
                 var dps = getDPS();
                 var clickDamage = getClickDamage();
-                
+
                 strOut += '<br><br>You can have multiple crits in a second. The server combines them into one.';
-                
+
                 strOut += '<br><br>Crit Percentage: ' + getCritChance().toFixed(1) + '%';
-                
+
                 strOut += '<br><br>Current: ' + ( currentMultiplier ) + 'x';
                 strOut += '<br>Next Level: ' + ( newMultiplier ) + 'x';
 
