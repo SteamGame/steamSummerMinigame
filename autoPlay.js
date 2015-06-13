@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name Monster Minigame AutoScript
 // @author /u/mouseasw for creating and maintaining the script, /u/WinneonSword for the Greasemonkey support, and every contributor on the GitHub repo for constant enhancements. /u/wchill and contributors on his repo for MSG2015-specific improvements.
-// @version 1.6
+// @version 1.7
 // @namespace https://github.com/wchill/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
 // @match http://steamcommunity.com/minigame/towerattack*
@@ -18,6 +18,8 @@ var setClickVariable = false; // change to true to improve performance
 
 var disableParticleEffects = true; // Set to false to keep particle effects
 var disableFlinching = false; // Set to true to disable flinching animation for enemies.
+
+var alertOnRun = true; // Set to false to disable information alert box
 
 var isAlreadyRunning = false;
 
@@ -542,3 +544,8 @@ if(enableAutoClicker) {
 		var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
 	}
 }
+
+alert("Autoscript now enabled - your game ID is " + g_GameID +
+	"\nAutoclicker: " + (enableAutoClicker?"enabled - "+clickRate+"cps, "+(setClickVariable?"variable":"clicks"):"disabled") +
+	"\nParticle effects: " + (disableParticleEffects?"disabled":"enabled") +
+	"\nFlinching effect: " + (disableFlinching?"disabled":"enabled"));
