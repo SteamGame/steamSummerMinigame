@@ -173,6 +173,15 @@ function MainLoop() {
 	if (!isAlreadyRunning) {
 		isAlreadyRunning = true;
 
+		for (var i = 0; i < 20; i++) {
+			g_Minigame.m_CurrentScene.m_rgAbilityQueue.push(
+				{
+					'ability': 1,
+					'num_clicks': 20
+				}
+			);
+		}
+
 		goToLaneWithBestTarget();
 		useGoodLuckCharmIfRelevant();
 		useMedicsIfRelevant();
