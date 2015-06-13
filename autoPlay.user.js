@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 2.2
+// @version 2.3
 // @match http://steamcommunity.com/minigame/towerattack*
 // @grant none
 // @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.user.js
@@ -74,27 +74,29 @@ function firstRun() {
 		}
 	}
 
-	if (window.CEnemy !== undefined)
-	{
+	if (window.CEnemy !== undefined) {
 		window.CEnemy.prototype.TakeDamage = function(){};
 		window.CEnemySpawner.prototype.TakeDamage = function(){};
 		window.CEnemyBoss.prototype.TakeDamage = function(){};
 	}
 
 
-	if (thingTimer){
+	if (thingTimer) {
 		window.clearInterval(thingTimer);
 	}
+	if(resetTickTimer) {
+		window.clearInterval(resetTickTimer);
+	}
+	if(clickTimer) {
+		window.clearInterval(clickTimer);
+	}
 
-	if (window.CSceneGame !== undefined)
-	{
+	if (window.CSceneGame !== undefined) {
 		window.CSceneGame.prototype.DoScreenShake = function() {};
 	}
 
-	if (thingTimer !== undefined) {
-		window.clearTimeout(thingTimer);
 
-	}
+
 }
 
 function doTheThing() {
@@ -672,3 +674,4 @@ if(setClickVariable) {
 } else {
 	var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
 }
+var resetTickTimer = setInterval(function(){g_msTickRate = 1000},1000);
