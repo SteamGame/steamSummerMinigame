@@ -59,7 +59,7 @@ if (thingTimer){
 
 function firstRun() {
 	// disable particle effects - this drastically reduces the game's memory leak
-	if (g_Minigame !== undefined) {
+	if (disableParticleEffects && g_Minigame !== undefined) {
 		g_Minigame.CurrentScene().DoClickEffect = function() {};
 		g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
 		g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
@@ -69,7 +69,7 @@ function firstRun() {
 	}
 
 	// disable enemy flinching animation when they get hit
-	if (CEnemy !== undefined) {
+	if (disableFlinching && CEnemy !== undefined) {
 		CEnemy.prototype.TakeDamage = function() {};
 		CEnemySpawner.prototype.TakeDamage = function() {};
 		CEnemyBoss.prototype.TakeDamage = function() {};
