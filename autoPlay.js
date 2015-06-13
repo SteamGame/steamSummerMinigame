@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name Monster Minigame AutoScript
 // @author /u/mouseasw for creating and maintaining the script, /u/WinneonSword for the Greasemonkey support, and every contributor on the GitHub repo for constant enhancements. /u/wchill and contributors on his repo for MSG2015-specific improvements.
-// @version 1.6
+// @version 1.61
 // @namespace https://github.com/wchill/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
 // @match http://steamcommunity.com/minigame/towerattack*
@@ -415,27 +415,6 @@ function useMoraleBoosterIfRelevant() {
 		}
 		//Hype everybody up!
 		if (enemySpawnerExists && enemyCount >= 3) {
-			triggerAbility(5);
-		}
-	}
-}
-
-// Use Moral Booster if doable
-function useMoraleBoosterIfRelevant() {
-	// check if Good Luck Charms is purchased and cooled down
-	if (hasPurchasedAbility(5)) {
-		if (isAbilityCoolingDown(5)) {
-			return;
-		}
-		var numberOfWorthwhileEnemies = 0;
-		for(i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies.length; i++){
-			//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
-			if(g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies[i].hp > 1000000)
-				numberOfWorthwhileEnemies++;
-		}
-		if(numberOfWorthwhileEnemies >= 2){
-			// Moral Booster is purchased, cooled down, and needed. Trigger it.
-			console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
 			triggerAbility(5);
 		}
 	}
