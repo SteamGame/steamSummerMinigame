@@ -13,7 +13,6 @@
 
 var isAlreadyRunning = false;
 var clickRate = 18;
-var setClickVariable = true; // copypasted from a guy's fork, untested
 var spammydebug = false; // set this to true to get spammed by debug messages
 
 
@@ -659,23 +658,3 @@ var thingTimer = window.setInterval(function(){
 		thingTimer = window.setInterval(doTheThing, 1000);
 	}
 }, 1000);
-
-function clickTheThing() {
-		g_Minigame.m_CurrentScene.DoClick(
-		{
-			data: {
-				getLocalPosition: function() {
-					var enemy = g_Minigame.m_CurrentScene.GetEnemy(
-									g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane,
-									g_Minigame.m_CurrentScene.m_rgPlayerData.target),
-					laneOffset = enemy.m_nLane * 440;
-
-					return {
-						x: enemy.m_Sprite.position.x - laneOffset,
-						y: enemy.m_Sprite.position.y - 52
-						}
-					}
-				}
-			}
-		);
-}
