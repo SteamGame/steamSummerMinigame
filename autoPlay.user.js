@@ -15,7 +15,7 @@
 (function(w) {
 "use strict";
 
-var clickRate = 10;
+const CLICK_RATE = 10;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
 var removeInterface = false; // get rid of a bunch of pointless DOM
 var optimizeGraphics = true; //set this to false if you don't want effects disabled (introduces memory leak.)
@@ -125,7 +125,7 @@ function MainLoop() {
 		attemptRespawn();
 		disableCooldownIfRelevant();
 
-		scene.m_nClicks = clickRate;
+		scene.m_nClicks = CLICK_RATE;
 		g_msTickRate = 1000;
 
 		var damagePerClick = scene.CalculateDamage(
@@ -133,7 +133,7 @@ function MainLoop() {
             		scene.m_rgGameData.lanes[scene.m_rgPlayerData.current_lane].element
         	);
 
-        	advLog("Ticked. Current clicks per second: " + clickRate + ". Current damage per second: " + (damagePerClick * clickRate), 4);
+        	advLog("Ticked. Current clicks per second: " + CLICK_RATE + ". Current damage per second: " + (damagePerClick * CLICK_RATE), 4);
 
 		isAlreadyRunning = false;
 
@@ -145,7 +145,7 @@ function MainLoop() {
 	        displayText(
 	            enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
 	            enemy.m_Sprite.position.y - 52,
-	            "-" + FormatNumberForDisplay((damagePerClick * clickRate), 5),
+	            "-" + FormatNumberForDisplay((damagePerClick * CLICK_RATE), 5),
 	            "#aaf"
 	        );
 
@@ -159,7 +159,7 @@ function MainLoop() {
 	        var goldPerClickPercentage = scene.m_rgGameData.lanes[scene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
 	        if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
 	        {
-	            var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * clickRate;
+	            var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * CLICK_RATE;
 	            advLog(
 	                "Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
 	                + "%. Approximately gold per second: " + goldPerSecond,
