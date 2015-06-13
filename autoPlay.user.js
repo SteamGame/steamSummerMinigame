@@ -587,7 +587,7 @@ function useMoraleBoosterIfRelevant() {
 		if(numberOfWorthwhileEnemies >= 2){
 			// Moral Booster is purchased, cooled down, and needed. Trigger it.
 			advLog('Moral Booster is purchased, cooled down, and needed. Trigger it.', 2);
-			triggerAbility(5);
+			triggerAbility(ABILITIES.MORALE_BOOSTER);
 			}
 	}
 }
