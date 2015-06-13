@@ -436,18 +436,21 @@ function triggerAbility(abilityId) {
 	}
 }
 
+function toggleAbilityVisibility(abilityId, show) {
+    var vis = show === true ? "visible" : "hidden";
+
+    var elem = document.getElementById('ability_' + abilityId);
+    if (elem && elem.childElements() && elem.childElements().length >= 1) {
+        elem.childElements()[0].style.visibility = vis;
+    }
+}
+
 function disableAbility(abilityId) {
-	var elem = document.getElementById('ability_' + abilityId);
-	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		elem.childElements()[0].style.visibility = "hidden";
-	}
+    toggleAbilityVisibility(abilityId, false);
 }
 
 function enableAbility(abilityId) {
-	var elem = document.getElementById('ability_' + abilityId);
-	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		elem.childElements()[0].style.visibility = "visible";
-	}
+    toggleAbilityVisibility(abilityId, true);
 }
 
 function isAbilityEnabled(abilityId) {
@@ -458,18 +461,21 @@ function isAbilityEnabled(abilityId) {
 	return false;
 }
 
+function toggleAbilityItemVisibility(abilityId, show) {
+    var vis = show === true ? "visible" : "hidden";
+
+    var elem = document.getElementById('abilityitem_' + abilityId);
+    if (elem && elem.childElements() && elem.childElements().length >= 1) {
+        elem.childElements()[0].style.visibility = show;
+    }
+}
+
 function disableAbilityItem(abilityId) {
-	var elem = document.getElementById('abilityitem_' + abilityId);
-	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		elem.childElements()[0].style.visibility = "hidden";
-	}
+    toggleAbilityItemVisibility(abilityId, false);
 }
 
 function enableAbilityItem(abilityId) {
-	var elem = document.getElementById('abilityitem_' + abilityId);
-	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		elem.childElements()[0].style.visibility = "visible";
-	}
+    toggleAbilityItemVisibility(abilityId, true);
 }
 
 function isAbilityItemEnabled(abilityId) {
