@@ -574,8 +574,8 @@ function useNapalmIfRelevant() {
 // Use Moral Booster if doable
 function useMoraleBoosterIfRelevant() {
 	// check if Good Luck Charms is purchased and cooled down
-	if (hasPurchasedAbility(5)) {
-		if (isAbilityCoolingDown(5)) {
+	if (hasPurchasedAbility(ABILITIES.MORALE_BOOSTER)) {
+		if (isAbilityCoolingDown(ABILITIES.MORALE_BOOSTER)) {
 			return;
 		}
 		var numberOfWorthwhileEnemies = 0;
