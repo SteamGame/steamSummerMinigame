@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 2.5
+// @version 2.6
 // @match http://steamcommunity.com/minigame/towerattack*
 // @grant none
 // @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.user.js
@@ -14,7 +14,7 @@
 var isAlreadyRunning = false;
 var clickRate = 18;
 var setClickVariable = true; // copypasted from a guy's fork, untested
-
+var spammydebug = false; // set this to true to get spammed by debug messages
 
 
 var ABILITIES = {
@@ -84,12 +84,6 @@ function firstRun() {
 	if (thingTimer) {
 		window.clearInterval(thingTimer);
 	}
-	if(resetTickTimer) {
-		window.clearInterval(resetTickTimer);
-	}
-	if(clickTimer) {
-		window.clearInterval(clickTimer);
-	}
 
 	if (window.CSceneGame !== undefined) {
 		window.CSceneGame.prototype.DoScreenShake = function() {};
@@ -100,7 +94,7 @@ function firstRun() {
 }
 
 function doTheThing() {
-	if (!isAlreadyRunning){
+	if (!isAlreadyRunning) {
 		isAlreadyRunning = true;
 
 		goToLaneWithBestTarget();
@@ -114,6 +108,13 @@ function doTheThing() {
 		useGoldRainIfRelevant();
 		attemptRespawn();
 
+		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
+		g_msTickRate = 1000;
+
+		if(spammydebug) {
+			console.log("Ticked. Current clicks per second " + clickRate)
+		}
+		
 		isAlreadyRunning = false;
 	}
 }
@@ -179,7 +180,7 @@ function goToLaneWithBestTarget() {
 				var stacks = 0;
 				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined')
 					stacks = g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17];
-					//console.log('stacks: ' + stacks);
+					console.log('stacks: ' + stacks);
 				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
 					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
 					if (stacks * enemyGold > potential) {
@@ -224,7 +225,7 @@ function goToLaneWithBestTarget() {
 		if(preferredLane != -1 && preferredTarget != -1){
 			lowLane = preferredLane;
 			lowTarget = preferredTarget;
-			//console.log('Switching to a lane with best raining gold benefit');
+			console.log('Switching to a lane with best raining gold benefit');
 		}
 
 		// If we just finished looking at spawners,
@@ -251,13 +252,13 @@ function goToLaneWithBestTarget() {
 	// go to the chosen lane
 	if (targetFound) {
 		if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
-			//console.log('switching langes');
+			console.log('switching langes');
 			g_Minigame.CurrentScene().TryChangeLane(lowLane);
 		}
 
 		// target the chosen enemy
 		if (g_Minigame.CurrentScene().m_nTarget != lowTarget) {
-			//console.log('switching targets');
+			console.log('switching targets');
 			g_Minigame.CurrentScene().TryChangeTarget(lowTarget);
 		}
 
@@ -322,11 +323,11 @@ function useMedicsIfRelevant() {
 	if (hasPurchasedAbility(ABILITIES.MEDIC) && !isAbilityCoolingDown(ABILITIES.MEDIC)) {
 
 		// Medics is purchased, cooled down, and needed. Trigger it.
-		//console.log('Medics is purchased, cooled down, and needed. Trigger it.');
+		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
 		triggerAbility(ABILITIES.MEDIC);
 	} else if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
 
-		//console.log('We have god mode, cooled down, and needed. Trigger it.');
+		console.log('We have god mode, cooled down, and needed. Trigger it.');
 		triggerItem(ITEMS.GOD_MODE);
 	}
 };
@@ -337,7 +338,7 @@ function useGoodLuckCharmIfRelevant() {
 	// check if Crits is purchased and cooled down
 	if (hasOneUseAbility(18) && !isAbilityCoolingDown(18)){
 		// Crits is purchased, cooled down, and needed. Trigger it.
-		//console.log('Crit chance is always good.');
+		console.log('Crit chance is always good.');
 		triggerAbility(18);
     }
 
@@ -352,7 +353,7 @@ function useGoodLuckCharmIfRelevant() {
 		}
 
 		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
-		//console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
+		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
 		triggerAbility(ABILITIES.GOOD_LUCK);
 	}
 }
@@ -456,7 +457,7 @@ function useMoraleBoosterIfRelevant() {
 		}
 		if(numberOfWorthwhileEnemies >= 2){
 			// Moral Booster is purchased, cooled down, and needed. Trigger it.
-			//console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
+			console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
 			triggerAbility(5);
 			}
 	}
@@ -675,7 +676,6 @@ var thingTimer = window.setInterval(function(){
 }, 1000);
 
 function clickTheThing() {
-    if (g_Minigame &&  g_Minigame.m_CurrentScene && g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
 		g_Minigame.m_CurrentScene.DoClick(
 		{
 			data: {
@@ -693,14 +693,4 @@ function clickTheThing() {
 				}
 			}
 		);
-    }
 }
-
-if(setClickVariable) {
-	var clickTimer = setInterval( function(){
-		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
-	}, 1000);
-} else {
-	var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
-}
-var resetTickTimer = setInterval(function(){g_msTickRate = 1000},1000);
