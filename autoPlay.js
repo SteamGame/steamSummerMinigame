@@ -112,7 +112,7 @@ function goToLaneWithBestTarget() {
 				var stacks = 0;
 				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined')
 					stacks = g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17];
-					console.log('stacks: ' + stacks);
+					//console.log('stacks: ' + stacks);
 				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
 					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
 					if (stacks * enemyGold > potential) {
