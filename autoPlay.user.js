@@ -181,14 +181,13 @@ function lockElements() {
 	];
 
   String.prototype.hashCode=function(){
-      var t=0;
-      var char;
+      var t=0, char=0;
       if (0 === this.length) {
 				return t;
 			}
 
-      for (i=0; i<this.length; i++) {
-        	char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
+      for (var i=0; i<this.length; i++) {
+        char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
 			}
 
       return t;
@@ -311,7 +310,7 @@ function goToLaneWithBestTarget() {
 			var sortedLanes = sortLanesByElementals();
 			for(var notI = 0; notI < sortedLanes.length; notI++){
 				// Maximize compability with upstream
-				i = sortedLanes[notI];
+				var i = sortedLanes[notI];
 				// ignore if lane is empty
 				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps === 0)
 					continue;
