@@ -26,7 +26,7 @@ var disableText = false; // Remove all animated text. This includes damage, crit
                          // This OVERRIDES all text related options.
                          
 var lockElements = true; // Set to false to allow upgrading all elements
-var slowStartMode = true; // Set to false to run script from beginning instead of lv11
+var slowStartMode = false; // Set to false to run script from beginning instead of lv11
 
 var isAlreadyRunning = false;
 
