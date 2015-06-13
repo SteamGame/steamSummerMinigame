@@ -1,5 +1,5 @@
 // ==UserScript== 
-// @name Monster Minigame Auto-script
+// @name Monster Minigame AutoScript
 // @author /u/mouseasw for creating and maintaining the script, /u/WinneonSword for the Greasemonkey support, and every contributor on the GitHub repo for constant enhancements.
 // @version 1.3
 // @namespace https://github.com/mouseas/steamSummerMinigame

@@ -1,4 +1,4 @@
-# Steam Summer Monster Minigame Auto-script
+# Steam Summer 2015 Monster Minigame AutoScript #
 
 ## Purpose ##
 
