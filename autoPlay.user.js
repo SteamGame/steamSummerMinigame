@@ -128,10 +128,11 @@ function doTheThing() {
 		
 		var enemy = g_Minigame.m_CurrentScene.GetEnemy(
 			g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane,
-			g_Minigame.m_CurrentScene.m_rgPlayerData.target),
-		laneOffset = enemy.m_nLane * 440;
+			g_Minigame.m_CurrentScene.m_rgPlayerData.target);
 		
-		displayText(enemy.m_Sprite.position.x - laneOffset, enemy.m_Sprite.position.y - 52, clickRate + " clicks", "#aaf");
+		if(enemy) {
+			displayText(enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, clickRate + " clicks", "#aaf");
+		}
 	}
 }
 
