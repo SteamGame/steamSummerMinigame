@@ -56,6 +56,8 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 };
 
+var rainingGold = false; // Leave on false. Allows for abilities to be temporarily disabled while Raining Gold is active, to maximise Raining Gold's benefit.
+
 // Save old functions for toggles.
 var trt_oldCrit;
 var trt_oldPush;
@@ -244,6 +246,7 @@ function goToLaneWithBestTarget() {
 		//Prefer lane with raining gold, unless current enemy target is a treasure or boss.
 		if(lowTarget != ENEMY_TYPE.TREASURE && lowTarget != ENEMY_TYPE.BOSS ){
 			var potential = 0;
+			rainingGold = false;
 			for(var i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes.length; i++){
 				// ignore if lane is empty
 				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps == 0)
@@ -251,6 +254,7 @@ function goToLaneWithBestTarget() {
 				var stacks = 0;
 				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined')
 					stacks = g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17];
+					rainingGold = true; 
 					//console.log('stacks: ' + stacks);
 				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
 					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
@@ -333,8 +337,8 @@ function goToLaneWithBestTarget() {
 		}
 		
 		
-		// Prevent attack abilities and items if up against a boss or treasure minion
-		if (targetIsTreasureOrBoss) {
+		// Prevent attack abilities and items if up against a boss or treasure minion, or Raining Gold is active.
+		if ((targetIsTreasureOrBoss) || (rainingGold == true)) {
 			// Morale
 			disableAbility(ABILITIES.MORALE_BOOSTER);
 			// Luck
