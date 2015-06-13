@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 1.6
+// @version 1.7
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
@@ -46,31 +46,25 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 }
 
-function firstRun(){
-	// disable particle effects - this drastically reduces the game's memory leak
-	if (window.g_Minigame !== undefined) {
-		window.g_Minigame.CurrentScene().DoClickEffect = function() {};
-		window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
-		window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
-			emitter.emit = false;
-			return emitter;
-		}
+// disable particle effects - this drastically reduces the game's memory leak
+if (window.g_Minigame !== undefined) {
+	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
+	window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+	window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
+		emitter.emit = false;
+		return emitter;
 	}
+}
 
-	// disable enemy flinching animation when they get hit
-	if (window.CEnemy !== undefined) {
-		window.CEnemy.prototype.TakeDamage = function() {};
-		window.CEnemySpawner.prototype.TakeDamage = function() {};
-		window.CEnemyBoss.prototype.TakeDamage = function() {};
-	}
+if (window.CEnemy !== undefined)
+{
+	window.CEnemy.prototype.TakeDamage = function(){};
+	window.CEnemySpawner.prototype.TakeDamage = function(){};
+	window.CEnemyBoss.prototype.TakeDamage = function(){};
+}
 
-	if (thingTimer !== undefined) {
-		window.clearTimeout(thingTimer);
-	}
-	if(clickTimer !== undefined)
-	{
-		window.clearTimeout(clickTimer);
-	}
+if (thingTimer !== undefined) {
+	window.clearTimeout(thingTimer);
 }
 
 function doTheThing() {
@@ -318,7 +312,7 @@ function useGoodLuckCharmIfRelevant() {
 	// check if Crits is purchased and cooled down
 	if (hasOneUseAbility(18) && !isAbilityCoolingDown(18)){
 		// Crits is purchased, cooled down, and needed. Trigger it.
-		c//onsole.log('Crit chance is always good.');
+		//console.log('Crit chance is always good.');
 		triggerAbility(18);
     }
 	
@@ -537,7 +531,6 @@ function isAbilityItemEnabled(abilityId) {
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
-firstRun();
 function clickTheThing() {
     g_Minigame.m_CurrentScene.DoClick(
         {
