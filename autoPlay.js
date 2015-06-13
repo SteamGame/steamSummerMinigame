@@ -1,8 +1,9 @@
 // ==UserScript== 
-// @name Monster Minigame Auto-script
+// @name Monster Minigame AutoScript
+// @author /u/mouseasw for creating and maintaining the script, /u/WinneonSword for the Greasemonkey support, and every contributor on the GitHub repo for constant enhancements. /u/wchill and contributors on his repo for MSG2015-specific improvements.
+// @version 1.6
 // @namespace https://github.com/wchill/steamSummerMinigame
-// @description A script that runs the Steam Monster Minigame for you. Modified from mouseas's original version to include autoclick.
-// @version 1.3
+// @description A script that runs the Steam Monster Minigame for you.
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
@@ -10,18 +11,50 @@
 
 // IMPORTANT: Update the @version property above to a higher number such as 1.1 and 1.2 when you update the script! Otherwise, Tamper / Greasemonkey users will not update automatically.
 
+// OPTIONS
 var enableAutoClicker = true; // set to false to disable autoclicker
 var clickRate = 20; // change to number of desired clicks per second
+var setClickVariable = false; // change to true to improve performance
+
+var disableParticleEffects = true; // Set to false to keep particle effects
+var disableFlinching = false; // Set to true to disable flinching animation for enemies.
 
 var isAlreadyRunning = false;
 
-var disableParticleEffects = true; // Set to false to keep particle effects
+var ABILITIES = {
+	"MORALE_BOOSTER": 5,
+	"GOOD_LUCK": 6,
+	"MEDIC": 7,
+	"METAL_DETECTOR": 8,
+	"COOLDOWN": 9,
+	"NUKE": 10,
+	"CLUSTER_BOMB": 11,
+	"NAPALM": 12
+};
 
-var disableFlinching = true; // Disables the flinching animation for enemies.
+var ITEMS = {
+	"REVIVE": 13,
+	"GOLD_RAIN": 17,
+	"GOD_MODE": 21,
+	"REFLECT_DAMAGE":24,
+	"CRIT": 18,
+	"CRIPPLE_MONSTER": 15,
+	"CRIPPLE_SPAWNER": 14,
+	"MAXIMIZE_ELEMENT": 16
+}
+	
+var ENEMY_TYPE = {
+	"SPAWNER":0,
+	"CREEP":1,
+	"BOSS":2,
+	"MINIBOSS":3,
+	"TREASURE":4
+}
 
 // disable particle effects - this drastically reduces the game's memory leak
 if (window.g_Minigame !== undefined && disableParticleEffects) {
 	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
+	window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
 	window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
 		emitter.emit = false;
 		return emitter;
@@ -48,13 +81,16 @@ function doTheThing() {
 	
 	useGoodLuckCharmIfRelevant();
 	useMedicsIfRelevant();
+	useMoraleBoosterIfRelevant();
+	useClusterBombIfRelevant();
+	useNapalmIfRelevant();
 	
 	// TODO use abilities if available and a suitable target exists
 	// - Tactical Nuke on a Spawner if below 50% and above 25% of its health
-	// - Cluster Bomb and Napalm if the current lane has a spawner and 2+ creeps
 	// - Metal Detector if a boss, miniboss, or spawner death is imminent (predicted in > 2 and < 7 seconds)
 	// - Morale Booster if available and lane has > 2 live enemies
-	// - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago (any ability but Medics or a consumable)
+	// - Decrease Cooldowns right before using another long-cooldown item.
+	//       (Decrease Cooldown affects abilities triggered while it is active, not night before it's used)
 	
 	// TODO purchase abilities and upgrades intelligently
 	
@@ -75,15 +111,8 @@ function goToLaneWithBestTarget() {
 	var lowLane = 0;
 	var lowTarget = 0;
 	var lowPercentageHP = 0;
-	
-	var ENEMY_TYPE = {
-		"SPAWNER":0,
-		"CREEP":1,
-		"BOSS":2,
-		"MINIBOSS":3,
-		"TREASURE":4
-	}
-	
+	var preferredLane = -1;
+	var preferredTarget = -1;
 	
 	// determine which lane and enemy is the optimal target
 	var enemyTypePriority = [
@@ -92,13 +121,21 @@ function goToLaneWithBestTarget() {
 		ENEMY_TYPE.MINIBOSS,
 		ENEMY_TYPE.SPAWNER, 
 		ENEMY_TYPE.CREEP
-		];
+	];
 		
 	var skippingSpawner = false;
 	var skippedSpawnerLane = 0;
 	var skippedSpawnerTarget = 0;
+	var targetIsTreasureOrBoss = false;
 	
 	for (var k = 0; !targetFound && k < enemyTypePriority.length; k++) {
+		
+		if (enemyTypePriority[k] == ENEMY_TYPE.TREASURE || enemyTypePriority[k] == ENEMY_TYPE.BOSS){
+			targetIsTreasureOrBoss = true;
+		} else {
+			targetIsTreasureOrBoss = false;
+		}
+		
 		var enemies = [];
 		
 		// gather all the enemies of the specified type.
@@ -111,10 +148,33 @@ function goToLaneWithBestTarget() {
 			}
 		}
 	
+		//Prefer lane with raining gold, unless current enemy target is a treasure or boss.
+		if(lowTarget != ENEMY_TYPE.TREASURE && lowTarget != ENEMY_TYPE.BOSS ){
+			var potential = 0;
+			for(var i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes.length; i++){
+				// ignore if lane is empty
+				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps == 0)
+					continue;
+				var stacks = 0;
+				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined')
+					stacks = g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17];
+					//console.log('stacks: ' + stacks);
+				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
+					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
+					if (stacks * enemyGold > potential) {
+                				potential = stacks * enemyGold;
+						preferredTarget = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_nID;
+						preferredLane = i;
+        				}
+				}
+			}
+		}
+		
 		// target the enemy of the specified type with the lowest hp
 		var mostHPDone = 0;
 		for (var i = 0; i < enemies.length; i++) {
 			if (enemies[i] && !enemies[i].m_bIsDestroyed) {
+				// Only select enemy and lane if the preferedLane matches the potential enemy lane
 				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
 					var element = g_Minigame.CurrentScene().m_rgGameData.lanes[enemies[i].m_nLane].element;
 					
@@ -127,23 +187,30 @@ function goToLaneWithBestTarget() {
 						mostHPDone = dmg;
 					}
 					else continue;
-					
+
 					targetFound = true;
 					lowHP = enemies[i].m_flDisplayedHP;
 					lowLane = enemies[i].m_nLane;
 					lowTarget = enemies[i].m_nID;
 				}
 				var percentageHP = enemies[i].m_flDisplayedHP / enemies[i].m_data.max_hp;
-				if(lowPercentageHP == 0 || percentageHP < lowPercentageHP) {
+				if (lowPercentageHP == 0 || percentageHP < lowPercentageHP) {
 					lowPercentageHP = percentageHP;
 				}
 			}
 		}
 		
+		if(preferredLane != -1 && preferredTarget != -1){
+			lowLane = preferredLane;
+			lowTarget = preferredTarget;
+			console.log('Switching to a lane with best raining gold benefit');
+		}
+		
 		// If we just finished looking at spawners, 
 		// AND none of them were below our threshold,  
 		// remember them and look for low creeps (so don't quit now)
-		if (enemyTypePriority[k] == ENEMY_TYPE.SPAWNER && lowPercentageHP > spawnerOKThreshold) {
+		// Don't skip spawner if lane has raining gold
+		if ((enemyTypePriority[k] == ENEMY_TYPE.SPAWNER && lowPercentageHP > spawnerOKThreshold) && preferredLane == -1) {
 			skippedSpawnerLane = lowLane;
 			skippedSpawnerTarget = lowTarget;
 			skippingSpawner = true;
@@ -172,6 +239,52 @@ function goToLaneWithBestTarget() {
 			//console.log('switching targets');
 			g_Minigame.CurrentScene().TryChangeTarget(lowTarget);
 		}
+		
+		
+		// Prevent attack abilities and items if up against a boss or treasure minion
+		if (targetIsTreasureOrBoss) {
+			// Morale
+			disableAbility(ABILITIES.MORALE_BOOSTER);
+			// Luck
+			disableAbility(ABILITIES.GOOD_LUCK);
+			// Nuke
+			disableAbility(ABILITIES.NUKE);
+			// Clusterbomb
+			disableAbility(ABILITIES.CLUSTER_BOMB);
+			// Napalm
+			disableAbility(ABILITIES.NAPALM);
+			// Crit
+			disableAbilityItem(ITEMS.CRIT);
+			// Cripple Spawner
+			disableAbilityItem(ITEMS.CRIPPLE_SPAWNER);
+			// Cripple Monster
+			disableAbilityItem(ITEMS.CRIPPLE_MONSTER);
+			// Max Elemental Damage
+			disableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
+			// Reflect Damage
+			disableAbilityItem(ITEMS.REFLECT_DAMAGE);
+		} else {
+			// Morale
+			enableAbility(ABILITIES.MORALE_BOOSTER);
+			// Luck
+			enableAbility(ABILITIES.GOOD_LUCK);
+			// Nuke
+			enableAbility(ABILITIES.NUKE);
+			// Clusterbomb
+			enableAbility(ABILITIES.CLUSTER_BOMB);
+			// Napalm
+			enableAbility(ABILITIES.NAPALM);
+			// Crit
+			enableAbilityItem(ITEMS.CRIT);
+			// Cripple Spawner
+			enableAbilityItem(ITEMS.CRIPPLE_SPAWNER);
+			// Cripple Monster
+			enableAbilityItem(ITEMS.CRIPPLE_MONSTER);
+			// Max Elemental Damage
+			enableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
+			// Reflect Damage
+			enableAbilityItem(ITEMS.REFLECT_DAMAGE);
+		}
 	}
 }
 
@@ -185,17 +298,17 @@ function useMedicsIfRelevant() {
 	}
 	
 	// check if Medics is purchased and cooled down
-	if (hasPurchasedAbility(7)) {
-
-		if (isAbilityCoolingDown(7)) {
-			return;
-		}
+	if (hasPurchasedAbility(ABILITIES.MEDIC) && !isAbilityCoolingDown(ABILITIES.MEDIC)) {
 
 		// Medics is purchased, cooled down, and needed. Trigger it.
 		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
-		triggerAbility(7);
+		triggerAbility(ABILITIES.MEDIC);
+	} else if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
+		
+		console.log('We have god mode, cooled down, and needed. Trigger it.');
+		triggerItem(ITEMS.GOD_MODE);
 	}
-}
+};
 
 // Use Good Luck Charm if doable
 function useGoodLuckCharmIfRelevant() {
@@ -205,16 +318,126 @@ function useGoodLuckCharmIfRelevant() {
 		// Crits is purchased, cooled down, and needed. Trigger it.
 		console.log('Crit chance is always good.');
 		triggerAbility(18);
+    }
 	
 	// check if Good Luck Charms is purchased and cooled down
-	} else if (hasPurchasedAbility(6)) {
-		if (isAbilityCoolingDown(6)) {
+	if (hasPurchasedAbility(ABILITIES.GOOD_LUCK)) {
+		if (isAbilityCoolingDown(ABILITIES.GOOD_LUCK)) {
+			return;
+		}
+		
+		if (! isAbilityEnabled(ABILITIES.GOOD_LUCK)) {
 			return;
 		}
 
 		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
 		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
-		triggerAbility(6);
+		triggerAbility(ABILITIES.GOOD_LUCK);
+	}
+}
+
+function useClusterBombIfRelevant() {
+	//Check if Cluster Bomb is purchased and cooled down
+	if (hasPurchasedAbility(ABILITIES.CLUSTER_BOMB)) {
+		if (isAbilityCoolingDown(ABILITIES.CLUSTER_BOMB)) {
+			return;
+		}
+		
+		//Check lane has monsters to explode
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemyCount = 0;
+		var enemySpawnerExists = false;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type == 0) { 
+					enemySpawnerExists = true;
+				}
+			}
+		}
+		//Bombs away if spawner and 2+ other monsters
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(ABILITIES.CLUSTER_BOMB);
+		}
+	}
+}
+
+function useNapalmIfRelevant() {
+	//Check if Napalm is purchased and cooled down
+	if (hasPurchasedAbility(ABILITIES.NAPALM)) {
+		if (isAbilityCoolingDown(ABILITIES.NAPALM)) {
+			return;
+		}
+		
+		//Check lane has monsters to burn
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemyCount = 0;
+		var enemySpawnerExists = false;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type == 0) { 
+					enemySpawnerExists = true;
+				}
+			}
+		}
+		//Burn them all if spawner and 2+ other monsters
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(ABILITIES.NAPALM);
+		}
+	}
+}
+
+function useMoraleBoosterIfRelevant() {
+	// Check if Morale Booster is purchased
+	if(hasPurchasedAbility(5)) {
+		if (isAbilityCoolingDown(5)) {
+			return;
+		}
+		
+		//Check lane has monsters so the hype isn't wasted
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemyCount = 0;
+		var enemySpawnerExists = false;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type == 0) { 
+					enemySpawnerExists = true;
+				}
+			}
+		}
+		//Hype everybody up!
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(5);
+		}
+	}
+}
+
+// Use Moral Booster if doable
+function useMoraleBoosterIfRelevant() {
+	// check if Good Luck Charms is purchased and cooled down
+	if (hasPurchasedAbility(5)) {
+		if (isAbilityCoolingDown(5)) {
+			return;
+		}
+		var numberOfWorthwhileEnemies = 0;
+		for(i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies.length; i++){
+			//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
+			if(g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies[i].hp > 1000000)
+				numberOfWorthwhileEnemies++;
+		}
+		if(numberOfWorthwhileEnemies >= 2){
+			// Moral Booster is purchased, cooled down, and needed. Trigger it.
+			console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
+			triggerAbility(5);
+		}
 	}
 }
 
@@ -224,6 +447,20 @@ function attemptRespawn() {
 			((g_Minigame.CurrentScene().m_rgPlayerData.time_died * 1000) + 5000) < (new Date().getTime())) {
 		RespawnPlayer();
 	}
+}
+
+function isAbilityActive(abilityId) {
+	return g_Minigame.CurrentScene().bIsAbilityActive(abilityId);
+}
+
+function hasItem(itemId) {
+	for ( var i = 0; i < g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items.length; ++i ) {
+		var abilityItem = g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items[i];
+		if (abilityItem.ability == itemId) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function isAbilityCoolingDown(abilityId) {
@@ -242,8 +479,59 @@ function hasPurchasedAbility(abilityId) {
 	return (1 << abilityId) & g_Minigame.CurrentScene().m_rgPlayerTechTree.unlocked_abilities_bitfield;
 }
 
+function triggerItem(itemId) {
+	var elem = document.getElementById('abilityitem_' + itemId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		g_Minigame.CurrentScene().TryAbility(document.getElementById('abilityitem_' + itemId).childElements()[0]);
+	}
+}
+
 function triggerAbility(abilityId) {
 	g_Minigame.CurrentScene().m_rgAbilityQueue.push({'ability': abilityId})
+}
+
+function disableAbility(abilityId) {
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "hidden";
+	}
+}
+
+function enableAbility(abilityId) {
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "visible";
+	}
+}
+
+function isAbilityEnabled(abilityId) {
+	var elem = document.getElementById('ability_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		return  elem.childElements()[0].style.visibility == "visible";
+	}
+	return false;
+}
+
+function disableAbilityItem(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "hidden";
+	}
+}
+
+function enableAbilityItem(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "visible";
+	}
+}
+
+function isAbilityItemEnabled(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		return  elem.childElements()[0].style.visibility == "visible";
+	}
+	return false;
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
@@ -268,5 +556,11 @@ function clickTheThing() {
 }
 
 if(enableAutoClicker) {
-	var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
+	if(setClickVariable) {
+		var clickTimer = setInterval( function(){
+			g_Minigame.m_CurrentScene.m_nClicks = clickRate;
+		}, 1000);
+	} else {
+		var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
+	}
 }
