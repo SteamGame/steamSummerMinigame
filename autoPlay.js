@@ -87,6 +87,7 @@ function doTheThing() {
 		useClusterBombIfRelevant();
 		useNapalmIfRelevant();
 		useTacticalNukeIfRelevant();
+		useGoldRainIfRelevant();
 		attemptRespawn();
 
 		isAlreadyRunning = false;
@@ -459,6 +460,27 @@ function useTacticalNukeIfRelevant() {
 		if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
 			console.log("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.");
 			triggerAbility(ABILITIES.NUKE);
+		}
+	}
+}
+
+function useGoldRainIfRelevant() {
+	// Check if gold rain is purchased
+	if (hasItem(ITEMS.GOLD_RAIN)) {
+		if (isAbilityCoolingDown(ITEMS.GOLD_RAIN)) {
+			return;
+		}
+
+		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
+		// check if current target is a boss, otherwise its not worth using the gold rain
+		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {	
+			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+
+		  if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
+				// Gold Rain is purchased, cooled down, and needed. Trigger it.
+				console.log('Gold rain is purchased and cooled down, Triggering it on boss');
+				triggerItem(ITEMS.GOLD_RAIN);
+			}
 		}
 	}
 }
