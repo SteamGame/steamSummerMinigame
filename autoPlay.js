@@ -558,6 +558,7 @@ function clickTheThing() {
 }
 
 if(enableAutoClicker) {
+	var resetTickTimer = setInterval(function(){g_msTickRate = 1000},1000); //Force update to be sent every 1000ms
 	if(setClickVariable) {
 		var clickTimer = setInterval( function(){
 			g_Minigame.m_CurrentScene.m_nClicks = clickRate;
