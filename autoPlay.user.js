@@ -120,6 +120,7 @@ function doTheThing() {
 		useCrippleSpawnerIfRelevant();
 		useGoldRainIfRelevant();
 		attemptRespawn();
+		disableCooldownIfRelevant();
 
 		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
 		g_msTickRate = 1000;
@@ -434,6 +435,20 @@ function goToLaneWithBestTarget() {
 			enableAbilityItem(ITEMS.REFLECT_DAMAGE);
 		}
 	}
+}
+
+function disableCooldownIfRelevant() {
+	if(getActiveAbilityNum(ABILITIES.COOLDOWN) > 0)
+	{
+		disableAbility(ABILITIES.COOLDOWN);
+		return;
+	}
+	
+	if(!isAbilityActive(ABILITIES.COOLDOWN))
+	{
+		enableAbility(ABILITIES.COOLDOWN);
+	}
+	
 }
 
 function useMedicsIfRelevant() {
@@ -764,6 +779,24 @@ function isAbilityItemEnabled(abilityId) {
 		return elem.childElements()[0].style.visibility == "visible";
 	}
 	return false;
+}
+
+function getActiveAbilityNum(ability) {
+    var abilities = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_abilities;
+    var count = 0;
+    for(var i = 0; i < abilities.length; i++)
+    {
+        if(abilities[i]['ability'] != ability)
+        {
+            continue;
+        }
+        if(abilities[i]['timestamp_done'] < Date.now())
+        {
+            continue;
+        }
+        count++;
+    }
+    return count;
 }
 
 function sortLanesByElementals() {
