@@ -51,7 +51,7 @@ var ENEMY_TYPE = {
 };
 
 
-function firstRun() {
+var firstRun = function() {
     lockElements();
 	// disable particle effects - this drastically reduces the game's memory leak
 	if(!optimizeGraphics) {
@@ -107,7 +107,7 @@ function firstRun() {
 
 }
 
-function doTheThing() {
+var doTheThing = function() {
 	if (!isAlreadyRunning) {
 		isAlreadyRunning = true;
 
@@ -167,7 +167,7 @@ function doTheThing() {
 	}
 }
 
-function lockElements() {
+var lockElements = function() {
 	var elementMultipliers = [
 		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_fire,
 		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_water,
@@ -211,7 +211,7 @@ function lockElements() {
 	}
 }
 
-function lockToElement(element) {
+var lockToElement = function(element) {
 	var fire = document.querySelector("a.link.element_upgrade_btn[data-type=\"3\"]")
 	var water = document.querySelector("a.link.element_upgrade_btn[data-type=\"4\"]")
 	var air = document.querySelector("a.link.element_upgrade_btn[data-type=\"5\"]")
@@ -227,7 +227,7 @@ function lockToElement(element) {
 	}
 }
 
-function displayText(x, y, strText, color) {
+var displayText = function(x, y, strText, color) {
 	var text = new PIXI.Text(strText, {font: "35px 'Press Start 2P'", fill: color, stroke: '#000', strokeThickness: 2 });
 
 	text.x = x;
@@ -247,7 +247,7 @@ function displayText(x, y, strText, color) {
 	g_Minigame.CurrentScene().m_rgClickNumbers.push(text);
 }
 
-function goToLaneWithBestTarget() {
+var goToLaneWithBestTarget = function() {
 	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
 	var spawnerOKThreshold = 0.4;
 	var creepSnagThreshold = 0.1;
@@ -438,7 +438,7 @@ function goToLaneWithBestTarget() {
 	}
 }
 
-function disableCooldownIfRelevant() {
+var disableCooldownIfRelevant = function() {
 	if(getActiveAbilityNum(ABILITIES.COOLDOWN) > 0)
 	{
 		disableAbility(ABILITIES.COOLDOWN);
@@ -452,7 +452,7 @@ function disableCooldownIfRelevant() {
 
 }
 
-function useMedicsIfRelevant() {
+var useMedicsIfRelevant = function() {
 	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
 
 	// check if health is below 50%
@@ -475,7 +475,7 @@ function useMedicsIfRelevant() {
 };
 
 // Use Good Luck Charm if doable
-function useGoodLuckCharmIfRelevant() {
+var useGoodLuckCharmIfRelevant = function() {
 
 	// check if Crits is purchased and cooled down
 	if (hasOneUseAbility(18) && !isAbilityCoolingDown(18)){
@@ -500,7 +500,7 @@ function useGoodLuckCharmIfRelevant() {
 	}
 }
 
-function useClusterBombIfRelevant() {
+var useClusterBombIfRelevant = function() {
 	//Check if Cluster Bomb is purchased and cooled down
 	if (hasPurchasedAbility(ABILITIES.CLUSTER_BOMB)) {
 		if (isAbilityCoolingDown(ABILITIES.CLUSTER_BOMB)) {
@@ -528,7 +528,7 @@ function useClusterBombIfRelevant() {
 	}
 }
 
-function useNapalmIfRelevant() {
+var useNapalmIfRelevant = function() {
 	//Check if Napalm is purchased and cooled down
 	if (hasPurchasedAbility(ABILITIES.NAPALM)) {
 		if (isAbilityCoolingDown(ABILITIES.NAPALM)) {
@@ -556,7 +556,7 @@ function useNapalmIfRelevant() {
 	}
 }
 
-function useMoraleBoosterIfRelevant() {
+var useMoraleBoosterIfRelevant = function() {
 	// Check if Morale Booster is purchased
 	if(hasPurchasedAbility(5)) {
 		if (isAbilityCoolingDown(5)) {
@@ -585,7 +585,7 @@ function useMoraleBoosterIfRelevant() {
 }
 
 // Use Moral Booster if doable
-function useMoraleBoosterIfRelevant() {
+var useMoraleBoosterIfRelevant = function() {
 	// check if Good Luck Charms is purchased and cooled down
 	if (hasPurchasedAbility(5)) {
 		if (isAbilityCoolingDown(5)) {
@@ -604,7 +604,7 @@ function useMoraleBoosterIfRelevant() {
 			}
 	}
 }
-function useTacticalNukeIfRelevant() {
+var useTacticalNukeIfRelevant = function() {
 	// Check if Tactical Nuke is purchased
 	if(hasPurchasedAbility(ABILITIES.NUKE)) {
 		if (isAbilityCoolingDown(ABILITIES.NUKE)) {
@@ -634,7 +634,7 @@ function useTacticalNukeIfRelevant() {
 	}
 }
 
-function useCrippleSpawnerIfRelevant() {
+var useCrippleSpawnerIfRelevant = function() {
 	// Check if Cripple Spawner is available
 	if(hasItem(ITEMS.CRIPPLE_SPAWNER)) {
 		if (isAbilityCoolingDown(ITEMS.CRIPPLE_SPAWNER)) {
@@ -664,7 +664,7 @@ function useCrippleSpawnerIfRelevant() {
 	}
 }
 
-function useGoldRainIfRelevant() {
+var useGoldRainIfRelevant = function() {
 	// Check if gold rain is purchased
 	if (hasItem(ITEMS.GOLD_RAIN)) {
 		if (isAbilityCoolingDown(ITEMS.GOLD_RAIN)) {
@@ -686,18 +686,18 @@ function useGoldRainIfRelevant() {
 }
 
 
-function attemptRespawn() {
+var attemptRespawn = function() {
 	if ((g_Minigame.CurrentScene().m_bIsDead) &&
 			((g_Minigame.CurrentScene().m_rgPlayerData.time_died) + 5) < (g_Minigame.CurrentScene().m_nTime)) {
 		RespawnPlayer();
 	}
 }
 
-function isAbilityActive(abilityId) {
+var isAbilityActive = function(abilityId) {
 	return g_Minigame.CurrentScene().bIsAbilityActive(abilityId);
 }
 
-function hasItem(itemId) {
+var hasItem = function(itemId) {
 	for ( var i = 0; i < g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items.length; ++i ) {
 		var abilityItem = g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items[i];
 		if (abilityItem.ability == itemId) {
@@ -707,34 +707,34 @@ function hasItem(itemId) {
 	return false;
 }
 
-function isAbilityCoolingDown(abilityId) {
+var isAbilityCoolingDown = function(abilityId) {
 	return g_Minigame.CurrentScene().GetCooldownForAbility(abilityId) > 0;
 }
 
-function hasOneUseAbility(abilityId) {
+var hasOneUseAbility = function(abilityId) {
 	var elem = document.getElementById('abilityitem_' + abilityId);
 	return elem != null;
 }
 
-function hasPurchasedAbility(abilityId) {
+var hasPurchasedAbility = function(abilityId) {
 	// each bit in unlocked_abilities_bitfield corresponds to an ability.
 	// the above condition checks if the ability's bit is set or cleared. I.e. it checks if
 	// the player has purchased the specified ability.
 	return (1 << abilityId) & g_Minigame.CurrentScene().m_rgPlayerTechTree.unlocked_abilities_bitfield;
 }
 
-function triggerItem(itemId) {
+var triggerItem = function(itemId) {
 	var elem = document.getElementById('abilityitem_' + itemId);
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
 		g_Minigame.CurrentScene().TryAbility(document.getElementById('abilityitem_' + itemId).childElements()[0]);
 	}
 }
 
-function triggerAbility(abilityId) {
+var triggerAbility = function(abilityId) {
 	g_Minigame.CurrentScene().m_rgAbilityQueue.push({'ability': abilityId})
 }
 
-function toggleAbilityVisibility(abilityId, show) {
+var toggleAbilityVisibility = function(abilityId, show) {
     var vis = show === true ? "visible" : "hidden";
 
     var elem = document.getElementById('ability_' + abilityId);
@@ -743,15 +743,15 @@ function toggleAbilityVisibility(abilityId, show) {
     }
 }
 
-function disableAbility(abilityId) {
+var disableAbility = function(abilityId) {
     toggleAbilityVisibility(abilityId, false);
 }
 
-function enableAbility(abilityId) {
+var enableAbility = function(abilityId) {
     toggleAbilityVisibility(abilityId, true);
 }
 
-function isAbilityEnabled(abilityId) {
+var isAbilityEnabled = function(abilityId) {
 	var elem = document.getElementById('ability_' + abilityId);
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
 		return elem.childElements()[0].style.visibility == "visible";
@@ -759,22 +759,22 @@ function isAbilityEnabled(abilityId) {
 	return false;
 }
 
-function toggleAbilityItemVisibility(abilityId, show) {
+var toggleAbilityItemVisibility = function(abilityId, show) {
     var elem = document.getElementById('abilityitem_' + abilityId);
     if (elem && elem.childElements() && elem.childElements().length >= 1) {
         elem.childElements()[0].style.visibility = show === true ? "visible" : "hidden";
     }
 }
 
-function disableAbilityItem(abilityId) {
+var disableAbilityItem = function(abilityId) {
     toggleAbilityItemVisibility(abilityId, false);
 }
 
-function enableAbilityItem(abilityId) {
+var enableAbilityItem = function(abilityId) {
     toggleAbilityItemVisibility(abilityId, true);
 }
 
-function isAbilityItemEnabled(abilityId) {
+var isAbilityItemEnabled = function(abilityId) {
 	var elem = document.getElementById('abilityitem_' + abilityId);
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
 		return elem.childElements()[0].style.visibility == "visible";
@@ -782,7 +782,7 @@ function isAbilityItemEnabled(abilityId) {
 	return false;
 }
 
-function getActiveAbilityNum(ability) {
+var getActiveAbilityNum = function(ability) {
     var abilities = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_abilities;
     var count = 0;
     for(var i = 0; i < abilities.length; i++)
@@ -800,7 +800,7 @@ function getActiveAbilityNum(ability) {
     return count;
 }
 
-function sortLanesByElementals() {
+var sortLanesByElementals = function() {
 	var elementPriorities = [
 		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_fire,
 		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_water,
@@ -825,7 +825,7 @@ function sortLanesByElementals() {
 	return lanePointers;
 }
 
-function advLog(msg, lvl) {
+var advLog = function(msg, lvl) {
 	if (lvl <= logLevel) {
 		console.log(msg);
 	}
