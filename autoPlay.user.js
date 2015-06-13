@@ -52,6 +52,7 @@ var ENEMY_TYPE = {
 
 
 function firstRun() {
+    lockElements();
 	// disable particle effects - this drastically reduces the game's memory leak
 	if(!optimizeGraphics) {
 		return;
@@ -100,6 +101,7 @@ function firstRun() {
 	if (window.CSceneGame !== undefined) {
 		window.CSceneGame.prototype.DoScreenShake = function() {};
 	}
+    
 }
 
 function doTheThing() {
@@ -132,6 +134,28 @@ function doTheThing() {
 			displayText(enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, clickRate + " clicks", "#aaf");
 		}
 	}
+function lockElements() {
+    String.prototype.hashCode=function(){
+        var t=0;
+        if(0==this.length)
+            return t;
+        for(i=0;i<this.length;i++)
+            char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
+        return t;
+    }
+    var elem = Math.abs(g_steamID.hashCode()%4);
+    var fire = document.querySelector("a.link.element_upgrade_btn[data-type=\"3\"]")
+    var water = document.querySelector("a.link.element_upgrade_btn[data-type=\"4\"]")
+    var earth = document.querySelector("a.link.element_upgrade_btn[data-type=\"6\"]")
+    var air = document.querySelector("a.link.element_upgrade_btn[data-type=\"5\"]")
+    var elems = [fire, water, earth, air];
+    for(i=0; i< elems.length; i++) {
+        if(i == elem) {
+            continue;
+        }
+        elems[i].style.visibility = "hidden";
+    }
+}
 }
 
 function displayText(x, y, strText, color) {
