@@ -131,8 +131,28 @@ function doTheThing() {
 			g_Minigame.m_CurrentScene.m_rgPlayerData.target),
 		laneOffset = enemy.m_nLane * 440;
 		
-		g_Minigame.CurrentScene().DoCritEffect(0, enemy.m_Sprite.position.x - laneOffset, enemy.m_Sprite.position.y - 52, clickRate + " clicks");
+		displayText(enemy.m_Sprite.position.x - laneOffset, enemy.m_Sprite.position.y - 52, clickRate + " clicks", "#aaf");
 	}
+}
+
+function displayText(x, y, strText, color) {
+	var text = new PIXI.Text(strText, {font: "35px 'Press Start 2P'", fill: color, stroke: '#000', strokeThickness: 2 });
+
+	text.x = x;
+	text.y = y;
+
+	g_Minigame.CurrentScene().m_containerUI.addChild( text );
+	text.container = g_Minigame.CurrentScene().m_containerUI;
+
+	var e = new CEasingSinOut( text.y, -200, 1000 );
+	e.parent = text;
+	text.m_easeY = e;
+
+	var e = new CEasingSinOut( 2, -2, 1000 );
+	e.parent = text;
+	text.m_easeAlpha = e;
+	
+	g_Minigame.CurrentScene().m_rgClickNumbers.push(text);
 }
 
 function goToLaneWithBestTarget() {
