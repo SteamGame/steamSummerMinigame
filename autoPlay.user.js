@@ -104,6 +104,9 @@ function firstRun() {
 	}
 
 	enhanceTooltips();
+	
+	box.innerHTML = "Autoscript now enabled - your game ID is " + g_GameID +
+        "<br>Click rate: " + clickRate
 }
 
 function MainLoop() {
