@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/chauffer/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 1.5
+// @version 1.6
 // @match http://steamcommunity.com/minigame/towerattack*
 // @updateURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
 // @downloadURL https://raw.githubusercontent.com/chauffer/steamSummerMinigame/master/autoPlay.js
@@ -46,25 +46,31 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 }
 
-// disable particle effects - this drastically reduces the game's memory leak
-if (window.g_Minigame !== undefined) {
-	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
-	window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
-	window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
-		emitter.emit = false;
-		return emitter;
+function firstRun(){
+	// disable particle effects - this drastically reduces the game's memory leak
+	if (window.g_Minigame !== undefined) {
+		window.g_Minigame.CurrentScene().DoClickEffect = function() {};
+		window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+		window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
+			emitter.emit = false;
+			return emitter;
+		}
 	}
-}
 
-// disable enemy flinching animation when they get hit
-if (window.CEnemy !== undefined) {
-	window.CEnemy.prototype.TakeDamage = function() {};
-	window.CEnemySpawner.prototype.TakeDamage = function() {};
-	window.CEnemyBoss.prototype.TakeDamage = function() {};
-}
+	// disable enemy flinching animation when they get hit
+	if (window.CEnemy !== undefined) {
+		window.CEnemy.prototype.TakeDamage = function() {};
+		window.CEnemySpawner.prototype.TakeDamage = function() {};
+		window.CEnemyBoss.prototype.TakeDamage = function() {};
+	}
 
-if (thingTimer !== undefined) {
-	window.clearTimeout(thingTimer);
+	if (thingTimer !== undefined) {
+		window.clearTimeout(thingTimer);
+	}
+	if(clickTimer !== undefined)
+	{
+		window.clearTimeout(clickTimer);
+	}
 }
 
 function doTheThing() {
@@ -531,6 +537,7 @@ function isAbilityItemEnabled(abilityId) {
 }
 
 var thingTimer = window.setInterval(doTheThing, 1000);
+firstRun();
 function clickTheThing() {
     g_Minigame.m_CurrentScene.DoClick(
         {
@@ -558,4 +565,3 @@ if(setClickVariable) {
 } else {
 	var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
 }
-
