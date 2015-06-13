@@ -796,7 +796,8 @@ if(breadcrumbs) {
     breadcrumbs.appendChild(element);
 
     element = document.createElement('span');
-    element.style.color = '#ebebeb';
+    element.style.color = '#D4E157';
+    element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
     element.textContent = 'Room ' + g_GameID;
     breadcrumbs.appendChild(element);
 }
