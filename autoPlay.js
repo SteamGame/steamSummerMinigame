@@ -17,8 +17,11 @@ var clickRate = 20; // change to number of desired clicks per second
 var setClickVariable = false; // change to true to improve performance
 
 var disableParticleEffects = true; // Set to false to keep particle effects
+
 var disableFlinching = false; // Set to true to disable flinching animation for enemies.
-var disableText = false; // Remove all animated text. This includes damage, crits and gold gain.
+var disableCritText = false; // Set to true to disable the crit text.
+var disableText = false; // Remove all animated text. This includes damage, crits and gold gain. 
+                         // This OVERRIDES all text related options.
 
 var alertOnRun = true; // Set to false to disable information alert box
 
@@ -55,6 +58,9 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 };
 
+// Save old functions for toggles.
+var trt_oldCrit = window.g_Minigame.CurrentScene().DoCritEffect;
+var trt_oldPush = window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push;
 
 // disable particle effects - this drastically reduces the game's memory leak
 if (window.g_Minigame !== undefined && disableParticleEffects) {
@@ -63,6 +69,12 @@ if (window.g_Minigame !== undefined && disableParticleEffects) {
 
 if (disableFlinching) {
 	stopFlinching();
+}
+
+// Crit toggle.
+trt_critToggle = false;
+if (disableCritText) {
+	toggleCritText();
 }
 
 // Text toggle.
@@ -84,7 +96,6 @@ function trt_destroyAllEffects(){
 // Callable function to remove particles.
 function disableParticles(){
 	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
-	window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
 	window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
 		emitter.emit = false;
 		return emitter;
@@ -98,8 +109,18 @@ function stopFlinching(){
 	window.CEnemyBoss.prototype.TakeDamage = function(){};
 };
 
-// Save old text function.
-var trt_oldPush = window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push;
+function toggleCritText(){
+	if (!trt_critToggle) {
+		// Replaces the entire crit display function.
+		window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+		trt_critToggle = true;
+	} else {
+		window.g_Minigame.CurrentScene().DoCritEffect = trt_oldCrit;
+		trt_critToggle = false;
+	}
+	window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+}
+
 
 // Toggles text on and off. We can't explicitly call disable/enable since we need to save the old function.
 function toggleText(){
@@ -595,4 +616,7 @@ if(enableAutoClicker) {
 alert("Autoscript now enabled - your game ID is " + g_GameID +
 	"\nAutoclicker: " + (enableAutoClicker?"enabled - "+clickRate+"cps, "+(setClickVariable?"variable":"clicks"):"disabled") +
 	"\nParticle effects: " + (disableParticleEffects?"disabled":"enabled") +
-	"\nFlinching effect: " + (disableFlinching?"disabled":"enabled"));
+	"\nFlinching effect: " + (disableFlinching?"disabled":"enabled") +
+	"\nCrit effect: " + (disableCritText?"disabled":"enabled") +
+	"\nText: " + (disableText?"disabled":"enabled")
+	);
