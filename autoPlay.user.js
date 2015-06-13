@@ -719,3 +719,8 @@ function clickTheThing() {
 			}
 		);
 }
+
+// Append gameid to breadcrumbs
+var element = document.createElement('span');
+element.textContent = ' > Room ' + g_GameID;
+document.querySelector('.breadcrumbs').appendChild(element);
