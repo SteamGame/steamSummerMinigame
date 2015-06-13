@@ -328,31 +328,28 @@ function goToLaneWithBestTarget() {
 		// target the enemy of the specified type with the lowest hp
 		var mostHPDone = 0;
 		for (var i = 0; i < enemies.length; i++) {
-			if (enemies[i] && !enemies[i].m_bIsDestroyed) {
-				// Only select enemy and lane if the preferedLane matches the potential enemy lane
-				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
-					var element = g_Minigame.CurrentScene().m_rgGameData.lanes[enemies[i].m_nLane].element;
-
-					var dmg = g_Minigame.CurrentScene().CalculateDamage(
-							g_Minigame.CurrentScene().m_rgPlayerTechTree.dps,
-							element
-						);
-					if(mostHPDone < dmg)
-					{
-						mostHPDone = dmg;
-					}
-					else continue;
-
-					targetFound = true;
-					lowHP = enemies[i].m_flDisplayedHP;
-					lowLane = enemies[i].m_nLane;
-					lowTarget = enemies[i].m_nID;
-				}
-				var percentageHP = enemies[i].m_flDisplayedHP / enemies[i].m_data.max_hp;
-				if (lowPercentageHP == 0 || percentageHP < lowPercentageHP) {
-					lowPercentageHP = percentageHP;
-				}
-			}
+		    if (enemies[i] && !enemies[i].m_bIsDestroyed) {
+		        // Only select enemy and lane if the preferedLane matches the potential enemy lane
+		        if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
+		            var element = g_Minigame.CurrentScene().m_rgGameData.lanes[enemies[i].m_nLane].element;
+		            var dmg = g_Minigame.CurrentScene().CalculateDamage(
+		                g_Minigame.CurrentScene().m_rgPlayerTechTree.dps,
+		                element
+		            );
+		            if (mostHPDone > dmg) {
+		                continue;
+		            }
+		            mostHPDone = dmg;
+		            targetFound = true;
+		            lowHP = enemies[i].m_flDisplayedHP;
+		            lowLane = enemies[i].m_nLane;
+		            lowTarget = enemies[i].m_nID;
+		        }
+		        var percentageHP = enemies[i].m_flDisplayedHP / enemies[i].m_data.max_hp;
+		        if (lowPercentageHP == 0 || percentageHP < lowPercentageHP) {
+		            lowPercentageHP = percentageHP;
+		        }
+		    }
 		}
 
 		if(preferredLane != -1 && preferredTarget != -1){
