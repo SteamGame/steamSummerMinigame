@@ -12,6 +12,7 @@
 
 var enableAutoClicker = true; // set to false to disable autoclicker
 var clickRate = 20; // change to number of desired clicks per second
+var setClickVariable = false; // change to true to improve performance
 
 var isAlreadyRunning = false;
 
@@ -251,5 +252,11 @@ function clickTheThing() {
 }
 
 if(enableAutoClicker) {
-	var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
+	if(setClickVariable) {
+		var clickTimer = setInterval( function(){
+			g_Minigame.m_CurrentScene.m_nClicks = clickRate;
+		}, 1000);
+	} else {
+		var clickTimer = window.setInterval(clickTheThing, 1000/clickRate);
+	}
 }
