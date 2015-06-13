@@ -106,7 +106,8 @@ function firstRun() {
 	enhanceTooltips();
 	
 	var box = document.getElementsByClassName("leave_game_helper")[0];
-	box.innerHTML = "Autoscript now enabled - your game ID is " + g_GameID +
+	box.innerHTML = "Autoscript is enabled. +
+		"<br>Game ID: " + g_GameID +
         "<br>Click rate: " + clickRate
 }
 
