@@ -34,15 +34,18 @@ var ABILITIES = {
 };
 
 var ITEMS = {
-	"REVIVE": 13,
-	"GOLD_RAIN": 17,
-	"THROW_MONEY": 20,
-	"GOD_MODE": 21,
-	"REFLECT_DAMAGE":24,
-	"CRIT": 18,
-	"CRIPPLE_MONSTER": 15,
-	"CRIPPLE_SPAWNER": 14,
-	"MAXIMIZE_ELEMENT": 16
+  "REVIVE": 13,
+  "CRIPPLE_SPAWNER": 14,
+  "CRIPPLE_MONSTER": 15,
+  "MAXIMIZE_ELEMENT": 16,
+  "GOLD_RAIN": 17,
+  "CRIT": 18,
+  "PUMPED_UP": 19,
+  "THROW_MONEY": 20,
+  "GOD_MODE": 21,
+  "TREASURE": 22,
+  "STEAL_HEALTH": 23,
+  "REFLECT_DAMAGE": 24
 };
 
 var ENEMY_TYPE = {
@@ -53,6 +56,22 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 };
 
+var UPGRADEABLES = {
+  "ARMOR": [ 0, 8, 20 ],
+  "AUTO_FIRE": [ 1, 9, 21 ],
+  "DAMAGE": [ 2, 10, 22 ],
+  "ELEMENTAL": [ 3, 4, 6, 5 ],
+  "LUCKY_SHOT": 7,
+  "MEDICS": 11,
+  "MORALE_BOOSTER": 12,
+  "GOOD_LUCK": 13,
+  "METAL_DETECTOR": 14,
+  "COOLDOWN": 15,
+  "NUKE": 16,
+  "CLUSTER_BOMB": 17,
+  "NAPALM": 18,
+  "BOSS_LOOT": 19
+};
 
 function firstRun() {
     lockElements();
@@ -120,6 +139,7 @@ function MainLoop() {
 		useCrippleSpawnerIfRelevant();
 		useGoldRainIfRelevant();
 		useMetalDetectorIfRelevant();
+    useTreasureIfRelevant();
 		attemptRespawn();
 		disableCooldownIfRelevant();
 
@@ -669,24 +689,30 @@ function useGoldRainIfRelevant() {
 }
 
 function useMetalDetectorIfRelevant() {
-	// Check if metal detector is purchased
-	if (hasPurchasedAbility(ABILITIES.METAL_DETECTOR)) {
-		if (isAbilityCoolingDown(ABILITIES.METAL_DETECTOR) || isAbilityActive(ABILITIES.METAL_DETECTOR)) {
-			return;
-		}
+  // Check if metal detector is purchased
+  if (hasPurchasedAbility(ABILITIES.METAL_DETECTOR)) {
+    if (isAbilityCoolingDown(ABILITIES.METAL_DETECTOR) || isAbilityActive(ABILITIES.METAL_DETECTOR)) {
+      return;
+    }
 
-		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
-		// check if current target is a boss, otherwise we won't use metal detector
-		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+    if (shouldUseItemOnCurrentEnemy(ENEMY_TYPE.BOSS, 0.9)) { // We want sufficient time for the metal detector to be applicable
+      advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
+      triggerAbility(ABILITIES.METAL_DETECTOR);
+    }
+  }
+}
 
-			if (enemyBossHealthPercent >= 0.9) { // We want sufficient time for the metal detector to be applicable
-				// Metal Detector is purchased, cooled down, and needed. Trigger it.
-				advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
-				triggerAbility(ABILITIES.METAL_DETECTOR);
-			}
-		}
-	}
+function useTreasureIfRelevant() {
+  // Check if treasure is purchased
+  if (hasItem(ITEMS.TREASURE)) {
+    if (isAbilityCoolingDown(ITEMS.TREASURE) || isAbilityActive(ABILITIES.METAL_DETECTOR)) {
+      return;
+    }
+    if (g_Minigame.m_CurrentScene.m_rgPlayerData.gold < 100000 || shouldUseItemOnCurrentEnemy(ENEMY_TYPE.BOSS, 0.9)) { // If the player doesnt have much gold, or conditions for metal detector since it's applied in addition
+      advLog('Treasure is acquired and cooled down, Triggering it on boss', 2);
+      triggerItem(ITEMS.TREASURE);
+    }
+  }
 }
 
 function attemptRespawn() {
@@ -694,6 +720,12 @@ function attemptRespawn() {
 			((g_Minigame.CurrentScene().m_rgPlayerData.time_died) + 5) < (g_Minigame.CurrentScene().m_nTime)) {
 		RespawnPlayer();
 	}
+}
+
+function shouldUseItemOnCurrentEnemy(enemyType, minHP) {
+  // Checks enemy type and verifies that the enemy has sufficient HP
+  var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
+  return (enemy && enemy.m_data.type == enemyType && (enemy.m_flDisplayedHP / enemy.m_data.max_hp) >= minHP);
 }
 
 function isAbilityActive(abilityId) {
