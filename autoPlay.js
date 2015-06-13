@@ -13,8 +13,6 @@
 
 var isAlreadyRunning = false;
 
-var clicksPerSecond = 500;
-
 var ABILITIES = {
 	"MORALE_BOOSTER": 5,
 	"GOOD_LUCK": 6,
@@ -82,19 +80,10 @@ function doTheThing() {
 		useGoldRainIfRelevant();
 		attemptRespawn();
 
-		autoClick();
-
 		isAlreadyRunning = false;
 	}
 }
 
-function autoClick() {
-	var autoClickerVariance = Math.floor(clicksPerSecond / 10);
-  
-  var randomVariance = Math.floor(Math.random() * autoClickerVariance * 2) - (autoClickerVariance);
-  var clicks = clicksPerSecond + randomVariance;
-  g_Minigame.m_CurrentScene.m_nClicks = clicks;
-}
 function goToLaneWithBestTarget() {
 	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
 	var spawnerOKThreshold = 0.4;
