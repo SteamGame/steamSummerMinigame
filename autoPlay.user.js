@@ -182,12 +182,13 @@ function lockElements() {
 
   String.prototype.hashCode=function(){
       var t=0;
+      var char;
       if (0 === this.length) {
 				return t;
 			}
 
       for (i=0; i<this.length; i++) {
-        	var char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
+        	char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
 			}
 
       return t;
