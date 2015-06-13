@@ -466,23 +466,30 @@ function useNapalmIfRelevant() {
 	}
 }
 
-// Use Morale Booster if doable
 function useMoraleBoosterIfRelevant() {
-	// check if Good Luck Charms is purchased and cooled down
-	if (hasPurchasedAbility(ABILITIES.MORALE_BOOSTER)) {
-		if (isAbilityCoolingDown(ABILITIES.MORALE_BOOSTER)) {
+	// Check if Morale Booster is purchased
+	if(hasPurchasedAbility(5)) {
+		if (isAbilityCoolingDown(5)) {
 			return;
 		}
-		var numberOfWorthwhileEnemies = 0;
-		for(i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies.length; i++){
-			//Worthwhile enemy is when an enemy has a current hp value of at least 1,000,000
-			if(g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies[i].hp > 1000000)
-				numberOfWorthwhileEnemies++;
+		
+		//Check lane has monsters so the hype isn't wasted
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemyCount = 0;
+		var enemySpawnerExists = false;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type == 0) { 
+					enemySpawnerExists = true;
+				}
+			}
 		}
-		if(numberOfWorthwhileEnemies >= 2){
-			// Moral Booster is purchased, cooled down, and needed. Trigger it.
-			console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
-			triggerAbility(ABILITIES.MORALE_BOOSTER);
+		//Hype everybody up!
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(5);
 		}
 	}
 }
