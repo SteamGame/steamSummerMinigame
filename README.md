@@ -70,7 +70,16 @@ To stop the manual script, type `window.clearTimeout(thingTimer);` into the cons
 
 The game should now play itself, you should leave it running in the background. If you're not sure if it is auto-playing, try changing lanes. If it jumps back almost immediately, it's working.
 
-## TODO ##
+## I want to contribute! ##
+
+This project is open-source on github. There are different ways you can help:
+
+- Find a Pull Request that's marked `needs testing`. Run that version of the script for a while and watch the console for errors. If there's no errors, pay attention to what the changes are doing gameplay-wise, and make sure it's doing what it's supposed to do.
+- Find an Issue that's marked `help wanted`. Make the changes needed by that issue, and create a Pull Request with your enhancement or bugfix.
+- Pick an item off the TODO list, below, and implement it. When it's done (and tested and working), create a Pull Request.
+- Got an idea for an improvement that's not already listed? Code it up, test it out, then make a Pull Request when it's ready.
+
+### TODO ###
 
 - use abilities if available and a suitable target exists:
 	 - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
