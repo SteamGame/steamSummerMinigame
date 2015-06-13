@@ -87,6 +87,7 @@ function doTheThing() {
 		useClusterBombIfRelevant();
 		useNapalmIfRelevant();
 		useTacticalNukeIfRelevant();
+		useCrippleSpawnerIfRelevant();
 		useGoldRainIfRelevant();
 		attemptRespawn();
 
@@ -464,6 +465,36 @@ function useTacticalNukeIfRelevant() {
 	}
 }
 
+function useCrippleSpawnerIfRelevant() {
+	// Check if Cripple Spawner is available
+	if(hasItem(ITEMS.CRIPPLE_SPAWNER)) {
+		if (isAbilityCoolingDown(ITEMS.CRIPPLE_SPAWNER)) {
+			return;
+		}
+
+		//Check that the lane has a spawner and record it's health percentage
+		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var enemySpawnerExists = false;
+		var enemySpawnerHealthPercent = 0.0;
+		//Count each slot in lane
+		for (var i = 0; i < 4; i++) {
+			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			if (enemy) {
+				if (enemy.m_data.type == 0) {
+					enemySpawnerExists = true;
+					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+				}
+			}
+		}
+
+		// If there is a spawner and it's health is above 95%, cripple it!
+		if (enemySpawnerExists && enemySpawnerHealthPercent > 0.95) {
+			console.log("Cripple Spawner available, and needed. Cripple 'em.");
+			triggerItem(ITEMS.CRIPPLE_SPAWNER);
+		}
+	}
+}
+
 function useGoldRainIfRelevant() {
 	// Check if gold rain is purchased
 	if (hasItem(ITEMS.GOLD_RAIN)) {
@@ -488,7 +519,7 @@ function useGoldRainIfRelevant() {
 //If player is dead, call respawn method
 function attemptRespawn() {
 	if ((g_Minigame.CurrentScene().m_bIsDead) && 
-			((g_Minigame.CurrentScene().m_rgPlayerData.time_died * 1000) + 5000) < (g_Minigame.CurrentScene().m_nTime)) {
+			((g_Minigame.CurrentScene().m_rgPlayerData.time_died) + 5) < (g_Minigame.CurrentScene().m_nTime)) {
 		RespawnPlayer();
 	}
 }
