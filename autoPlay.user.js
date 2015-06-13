@@ -751,6 +751,15 @@ var thingTimer = window.setInterval(function(){
 }, 1000);
 
 // Append gameid to breadcrumbs
-var element = document.createElement('span');
-element.textContent = ' > Room ' + g_GameID;
-document.querySelector('.breadcrumbs').appendChild(element);
+var breadcrumbs = document.querySelector('.breadcrumbs');
+
+if(breadcrumbs) {
+    var element = document.createElement('span');
+    element.textContent = ' > ';
+    breadcrumbs.appendChild(element);
+
+    element = document.createElement('span');
+    element.style.color = '#ebebeb';
+    element.textContent = 'Room ' + g_GameID;
+    breadcrumbs.appendChild(element);
+}
