@@ -568,7 +568,9 @@ if(enableAutoClicker) {
 	}
 }
 
-alert("Autoscript now enabled - your game ID is " + g_GameID +
-	"\nAutoclicker: " + (enableAutoClicker?"enabled - "+clickRate+"cps, "+(setClickVariable?"variable":"clicks"):"disabled") +
-	"\nParticle effects: " + (disableParticleEffects?"disabled":"enabled") +
-	"\nFlinching effect: " + (disableFlinching?"disabled":"enabled"));
+if(alertOnRun) {
+	alert("Autoscript now enabled - your game ID is " + g_GameID +
+		"\nAutoclicker: " + (enableAutoClicker?"enabled - "+clickRate+"cps, "+(setClickVariable?"variable":"clicks"):"disabled") +
+		"\nParticle effects: " + (disableParticleEffects?"disabled":"enabled") +
+		"\nFlinching effect: " + (disableFlinching?"disabled":"enabled"));
+}
