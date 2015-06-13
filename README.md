@@ -9,6 +9,9 @@ powerups for you.
 
 **DISCLAIMER:** This autoscript will *NOT* include an auto-clicker. Automatic clicking pushes into the area of cheating, and this script is not designed for cheating. It is designed for automating the process of collecting gold.
 
+## Features ##
+* See TODO
+
 ## Installation ##
 
 ### Tampermonkey ###
@@ -50,3 +53,4 @@ is auto-playing, try changing lanes. If it jumps back almost immediately, it's w
 	
 - purchase abilities and upgrades intelligently
 - automatically update the manual script by periodically checking https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js
+- update features section
