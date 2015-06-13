@@ -2,10 +2,16 @@
 
 ## Purpose ##
 
-This javascript automatically plays the 2015 Steam Summer minigame for you in a semi-optimal way.
+it cheats for you.
 
-It goes beyond the autoclicker scripts already out there. It will keep you in the lane where you'll make the most money, activate abilities as they are available and best apply, and possibly purchase upgrades and
-powerups for you.
+This fork has:
+	1. Elemental damage prioritizing, gold prioritizing
+	2. Auto clicking (change `clickRate` in console)
+	3. Tickrate set to 1000ms every second
+	4. Disable most particles
+	5. Auto use abilities
+	6. idk
+
 
 **DISCLAIMER:** This autoscript *will* include an auto-clicker. Automatic clicking pushes into the area of cheating, and this script is designed for cheating and automating the process of collecting gold.
 
