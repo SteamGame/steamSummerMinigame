@@ -48,3 +48,11 @@ is auto-playing, try changing lanes. If it jumps back almost immediately, it's w
 	
 - purchase abilities and upgrades intelligently
 - automatically update the manual script by periodically checking https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
+
+## Experimental ##
+
+These functions work as intended, but do not have a UI option to do the toggling.
+
+- toggleText() to hide/show all text. Overrides all text options.
+- toggleCritText() to hide/show crit text.
+- stopFlinching() will stop flinching animations. These are not saved and will not be restored.

@@ -17,7 +17,11 @@ var clickRate = 20; // change to number of desired clicks per second
 var setClickVariable = false; // change to true to improve performance
 
 var disableParticleEffects = true; // Set to false to keep particle effects
+
 var disableFlinching = false; // Set to true to disable flinching animation for enemies.
+var disableCritText = false; // Set to true to disable the crit text.
+var disableText = false; // Remove all animated text. This includes damage, crits and gold gain. 
+                         // This OVERRIDES all text related options.
 
 var alertOnRun = true; // Set to false to disable information alert box
 
@@ -40,10 +44,11 @@ var ITEMS = {
 	"GOD_MODE": 21,
 	"REFLECT_DAMAGE":24,
 	"CRIT": 18,
+	"PUMPED_UP": 19,
 	"CRIPPLE_MONSTER": 15,
 	"CRIPPLE_SPAWNER": 14,
 	"MAXIMIZE_ELEMENT": 16
-}
+};
 	
 var ENEMY_TYPE = {
 	"SPAWNER":0,
@@ -51,23 +56,87 @@ var ENEMY_TYPE = {
 	"BOSS":2,
 	"MINIBOSS":3,
 	"TREASURE":4
-}
+};
+
+// Save old functions for toggles.
+var trt_oldCrit = window.g_Minigame.CurrentScene().DoCritEffect;
+var trt_oldPush = window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push;
 
 // disable particle effects - this drastically reduces the game's memory leak
 if (window.g_Minigame !== undefined && disableParticleEffects) {
+	disableParticles();
+}
+
+if (disableFlinching) {
+	stopFlinching();
+}
+
+// Crit toggle.
+trt_critToggle = false;
+if (disableCritText) {
+	toggleCritText();
+}
+
+// Text toggle.
+trt_textToggle = false;
+if (disableText) {
+	toggleText();
+}
+
+// Remove most effects from the game. Most of these are irreversible.
+// Currently invoked only if specifically called.
+function trt_destroyAllEffects(){
+	stopFlinching();
+	disableParticles();
+	if (!trt_textToggle){
+		toggleText();
+	}
+}
+
+// Callable function to remove particles.
+function disableParticles(){
 	window.g_Minigame.CurrentScene().DoClickEffect = function() {};
-	window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
 	window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
 		emitter.emit = false;
 		return emitter;
 	}
 }
 
-if (disableFlinching) {
+// Callable function to stop the flinching animation.
+function stopFlinching(){
 	window.CEnemy.prototype.TakeDamage = function(){};
 	window.CEnemySpawner.prototype.TakeDamage = function(){};
 	window.CEnemyBoss.prototype.TakeDamage = function(){};
+};
+
+function toggleCritText(){
+	if (!trt_critToggle) {
+		// Replaces the entire crit display function.
+		window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+		trt_critToggle = true;
+	} else {
+		window.g_Minigame.CurrentScene().DoCritEffect = trt_oldCrit;
+		trt_critToggle = false;
+	}
+	window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
 }
+
+
+// Toggles text on and off. We can't explicitly call disable/enable since we need to save the old function.
+function toggleText(){
+	if (!trt_textToggle) {
+	// Replaces the entire text function.
+		window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = function(elem){
+			elem.container.removeChild(elem);
+		};
+		trt_textToggle = true;
+	} else {
+		window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = trt_oldPush;
+		trt_textToggle = false;
+	}
+}
+
+
 
 if (thingTimer !== undefined) {
 	window.clearTimeout(thingTimer);
@@ -232,7 +301,7 @@ function goToLaneWithBestTarget() {
 	// go to the chosen lane
 	if (targetFound) {
 		if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
-			//console.log('switching langes');
+			//console.log('switching lanes');
 			g_Minigame.CurrentScene().TryChangeLane(lowLane);
 		}
 		
@@ -290,7 +359,17 @@ function goToLaneWithBestTarget() {
 	}
 }
 
+function usePumpedUp(){
+	if (hasItem(ITEMS.PUMPED_UP) && !isAbilityCoolingDown(ITEMS.PUMPED_UP)){
+		// Crits is purchased, cooled down, and needed. Trigger it.
+		console.log('Pumped up is always good.');
+		triggerAbility(ITEMS.PUMPED_UP);
+		return;
+    }
+};
+
 function useMedicsIfRelevant() {
+	usePumpedUp();
 	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
 	
 	// check if health is below 50%
@@ -316,10 +395,14 @@ function useMedicsIfRelevant() {
 function useGoodLuckCharmIfRelevant() {
 
 	// check if Crits is purchased and cooled down
-	if (hasOneUseAbility(18) && !isAbilityCoolingDown(18)){
+	if (hasItem(ITEMS.CRIT) && !isAbilityCoolingDown(ITEMS.CRIT)){
+		if (! isAbilityItemEnabled(ITEMS.CRIT)) {
+			return;
+		}
 		// Crits is purchased, cooled down, and needed. Trigger it.
 		console.log('Crit chance is always good.');
-		triggerAbility(18);
+		triggerAbility(ITEMS.CRIT);
+		return;
     }
 	
 	// check if Good Luck Charms is purchased and cooled down
@@ -394,51 +477,23 @@ function useNapalmIfRelevant() {
 	}
 }
 
-function useMoraleBoosterIfRelevant() {
-	// Check if Morale Booster is purchased
-	if(hasPurchasedAbility(5)) {
-		if (isAbilityCoolingDown(5)) {
-			return;
-		}
-		
-		//Check lane has monsters so the hype isn't wasted
-		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
-		var enemyCount = 0;
-		var enemySpawnerExists = false;
-		//Count each slot in lane
-		for (var i = 0; i < 4; i++) {
-			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
-			if (enemy) {
-				enemyCount++;
-				if (enemy.m_data.type == 0) { 
-					enemySpawnerExists = true;
-				}
-			}
-		}
-		//Hype everybody up!
-		if (enemySpawnerExists && enemyCount >= 3) {
-			triggerAbility(5);
-		}
-	}
-}
-
-// Use Moral Booster if doable
+// Use Morale Booster if doable
 function useMoraleBoosterIfRelevant() {
 	// check if Good Luck Charms is purchased and cooled down
-	if (hasPurchasedAbility(5)) {
-		if (isAbilityCoolingDown(5)) {
+	if (hasPurchasedAbility(ABILITIES.MORALE_BOOSTER)) {
+		if (isAbilityCoolingDown(ABILITIES.MORALE_BOOSTER)) {
 			return;
 		}
 		var numberOfWorthwhileEnemies = 0;
 		for(i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies.length; i++){
-			//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
+			//Worthwhile enemy is when an enemy has a current hp value of at least 1,000,000
 			if(g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies[i].hp > 1000000)
 				numberOfWorthwhileEnemies++;
 		}
 		if(numberOfWorthwhileEnemies >= 2){
 			// Moral Booster is purchased, cooled down, and needed. Trigger it.
 			console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
-			triggerAbility(5);
+			triggerAbility(ABILITIES.MORALE_BOOSTER);
 		}
 	}
 }
@@ -456,13 +511,7 @@ function isAbilityActive(abilityId) {
 }
 
 function hasItem(itemId) {
-	for ( var i = 0; i < g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items.length; ++i ) {
-		var abilityItem = g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items[i];
-		if (abilityItem.ability == itemId) {
-			return true;
-		}
-	}
-	return false;
+	return $J('#abilityitem_' + itemId).is(':visible');
 }
 
 function isAbilityCoolingDown(abilityId) {
@@ -482,10 +531,7 @@ function hasPurchasedAbility(abilityId) {
 }
 
 function triggerItem(itemId) {
-	var elem = document.getElementById('abilityitem_' + itemId);
-	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		g_Minigame.CurrentScene().TryAbility(document.getElementById('abilityitem_' + itemId).childElements()[0]);
-	}
+	triggerAbility(itemId);
 }
 
 function triggerAbility(abilityId) {
@@ -568,9 +614,10 @@ if(enableAutoClicker) {
 	}
 }
 
-if(alertOnRun) {
-	alert("Autoscript now enabled - your game ID is " + g_GameID +
-		"\nAutoclicker: " + (enableAutoClicker?"enabled - "+clickRate+"cps, "+(setClickVariable?"variable":"clicks"):"disabled") +
-		"\nParticle effects: " + (disableParticleEffects?"disabled":"enabled") +
-		"\nFlinching effect: " + (disableFlinching?"disabled":"enabled"));
-}
+alert("Autoscript now enabled - your game ID is " + g_GameID +
+	"\nAutoclicker: " + (enableAutoClicker?"enabled - "+clickRate+"cps, "+(setClickVariable?"variable":"clicks"):"disabled") +
+	"\nParticle effects: " + (disableParticleEffects?"disabled":"enabled") +
+	"\nFlinching effect: " + (disableFlinching?"disabled":"enabled") +
+	"\nCrit effect: " + (disableCritText?"disabled":"enabled") +
+	"\nText: " + (disableText?"disabled":"enabled")
+	);
