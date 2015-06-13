@@ -571,34 +571,6 @@ function useNapalmIfRelevant() {
 	}
 }
 
-function useMoraleBoosterIfRelevant() {
-	// Check if Morale Booster is purchased
-	if(hasPurchasedAbility(5)) {
-		if (isAbilityCoolingDown(5)) {
-			return;
-		}
-
-		//Check lane has monsters so the hype isn't wasted
-		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
-		var enemyCount = 0;
-		var enemySpawnerExists = false;
-		//Count each slot in lane
-		for (var i = 0; i < 4; i++) {
-			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
-			if (enemy) {
-				enemyCount++;
-				if (enemy.m_data.type === 0) {
-					enemySpawnerExists = true;
-				}
-			}
-		}
-		//Hype everybody up!
-		if (enemySpawnerExists && enemyCount >= 3) {
-			triggerAbility(5);
-		}
-	}
-}
-
 // Use Moral Booster if doable
 function useMoraleBoosterIfRelevant() {
 	// check if Good Luck Charms is purchased and cooled down
