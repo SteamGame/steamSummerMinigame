@@ -15,7 +15,7 @@
 var isAlreadyRunning = false;
 var clickRate = 20;
 var setClickVariable = true; // copypasted from a guy's fork, untested
-var spammydebug = false; // set this to true to get spammed by debug messages
+var logLevel = 1; // 5 is the most spammy, 0 disables all log
 var removeInterface = false; // get rid of a bunch of pointless DOM
 
 var optimizeGraphics = true; //set this to false if you don't want effects disabled (introduces memory leak.)
@@ -56,21 +56,21 @@ function firstRun() {
 	if(!optimizeGraphics) {
 		return;
 	}
-	
+
 	if (g_Minigame !== undefined) {
 		g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
 			emitter.emit = false;
 			return emitter;
-		}
+		};
 	}
-	
+
 	// disable enemy flinching animation when they get hit
 	if (CEnemy !== undefined) {
 		CEnemy.prototype.TakeDamage = function() {};
 		CEnemySpawner.prototype.TakeDamage = function() {};
 		CEnemyBoss.prototype.TakeDamage = function() {};
 	}
-	
+
 	if ( removeInterface && document.getElementById && document.getElementsByClassName ) {
 		var node = document.getElementById("global_header");
 		if (node && node.parentNode)
@@ -89,14 +89,14 @@ function firstRun() {
 		var nodes = document.getElementsByClassName("pagecontent");
 		if (nodes[0])
 			nodes[0].style = "padding-bottom: 0";
-		
+
 		document.body.style.backgroundPosition = "0 0";
 	}
-	
+
 	if (thingTimer) {
 		window.clearInterval(thingTimer);
 	}
-	
+
 	if (window.CSceneGame !== undefined) {
 		window.CSceneGame.prototype.DoScreenShake = function() {};
 	}
@@ -120,16 +120,14 @@ function doTheThing() {
 		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
 		g_msTickRate = 1000;
 
-		if(spammydebug) {
-			console.log("Ticked. Current clicks per second " + clickRate)
-		}
-		
+		advLog("Ticked. Current clicks per second " + clickRate, 4);
+
 		isAlreadyRunning = false;
-		
+
 		var enemy = g_Minigame.m_CurrentScene.GetEnemy(
 			g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane,
 			g_Minigame.m_CurrentScene.m_rgPlayerData.target);
-		
+
 		if(enemy) {
 			displayText(enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, clickRate + " clicks", "#aaf");
 		}
@@ -152,7 +150,7 @@ function displayText(x, y, strText, color) {
 	var e = new CEasingSinOut( 2, -2, 1000 );
 	e.parent = text;
 	text.m_easeAlpha = e;
-	
+
 	g_Minigame.CurrentScene().m_rgClickNumbers.push(text);
 }
 
@@ -217,7 +215,7 @@ function goToLaneWithBestTarget() {
 				var stacks = 0;
 				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined')
 					stacks = g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17];
-					console.log('stacks: ' + stacks);
+					advLog('stacks: ' + stacks, 3);
 				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
 					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
 					if (stacks * enemyGold > potential) {
@@ -262,7 +260,7 @@ function goToLaneWithBestTarget() {
 		if(preferredLane != -1 && preferredTarget != -1){
 			lowLane = preferredLane;
 			lowTarget = preferredTarget;
-			console.log('Switching to a lane with best raining gold benefit');
+			advLog('Switching to a lane with best raining gold benefit', 2);
 		}
 
 		// If we just finished looking at spawners,
@@ -289,13 +287,13 @@ function goToLaneWithBestTarget() {
 	// go to the chosen lane
 	if (targetFound) {
 		if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
-			console.log('switching langes');
+			advLog('Switching to lane' + lowLane, 3);
 			g_Minigame.CurrentScene().TryChangeLane(lowLane);
 		}
 
 		// target the chosen enemy
 		if (g_Minigame.CurrentScene().m_nTarget != lowTarget) {
-			console.log('switching targets');
+			advLog('Switching targets', 3);
 			g_Minigame.CurrentScene().TryChangeTarget(lowTarget);
 		}
 
@@ -360,11 +358,11 @@ function useMedicsIfRelevant() {
 	if (hasPurchasedAbility(ABILITIES.MEDIC) && !isAbilityCoolingDown(ABILITIES.MEDIC)) {
 
 		// Medics is purchased, cooled down, and needed. Trigger it.
-		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
+		advLog('Medics is purchased, cooled down, and needed. Trigger it.', 2);
 		triggerAbility(ABILITIES.MEDIC);
 	} else if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
 
-		console.log('We have god mode, cooled down, and needed. Trigger it.');
+		advLog('We have god mode, cooled down, and needed. Trigger it.', 2);
 		triggerItem(ITEMS.GOD_MODE);
 	}
 };
@@ -375,7 +373,7 @@ function useGoodLuckCharmIfRelevant() {
 	// check if Crits is purchased and cooled down
 	if (hasOneUseAbility(18) && !isAbilityCoolingDown(18)){
 		// Crits is purchased, cooled down, and needed. Trigger it.
-		console.log('Crit chance is always good.');
+		advLog('Crit chance is always good.', 3);
 		triggerAbility(18);
     }
 
@@ -390,7 +388,7 @@ function useGoodLuckCharmIfRelevant() {
 		}
 
 		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
-		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
+		advLog('Good Luck Charms is purchased, cooled down, and needed. Trigger it.', 2);
 		triggerAbility(ABILITIES.GOOD_LUCK);
 	}
 }
@@ -494,7 +492,7 @@ function useMoraleBoosterIfRelevant() {
 		}
 		if(numberOfWorthwhileEnemies >= 2){
 			// Moral Booster is purchased, cooled down, and needed. Trigger it.
-			console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
+			advLog('Moral Booster is purchased, cooled down, and needed. Trigger it.', 2);
 			triggerAbility(5);
 			}
 	}
@@ -523,7 +521,7 @@ function useTacticalNukeIfRelevant() {
 
 		// If there is a spawner and it's health is between 60% and 30%, nuke it!
 		if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
-			console.log("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.");
+			advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
 			triggerAbility(ABILITIES.NUKE);
 		}
 	}
@@ -553,7 +551,7 @@ function useCrippleSpawnerIfRelevant() {
 
 		// If there is a spawner and it's health is above 95%, cripple it!
 		if (enemySpawnerExists && enemySpawnerHealthPercent > 0.95) {
-			console.log("Cripple Spawner available, and needed. Cripple 'em.");
+			advLog("Cripple Spawner available, and needed. Cripple 'em.", 2);
 			triggerItem(ITEMS.CRIPPLE_SPAWNER);
 		}
 	}
@@ -573,7 +571,7 @@ function useGoldRainIfRelevant() {
 
 			if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
 				// Gold Rain is purchased, cooled down, and needed. Trigger it.
-				console.log('Gold rain is purchased and cooled down, Triggering it on boss');
+				advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
 				triggerItem(ITEMS.GOLD_RAIN);
 			}
 		}
@@ -698,10 +696,16 @@ function sortLanesByElementals() {
     return elementPriorities[lanes[b].element - 1] - elementPriorities[lanes[a].element - 1];
 	});
 
-	// console.log("Lane IDs  : " + lanePointers[0] + " " + lanePointers[1] + " " + lanePointers[2]);
-	// console.log("Elements  : " + lanes[lanePointers[0]].element + " " + lanes[lanePointers[1]].element + " " + lanes[lanePointers[2]].element);
+	advLog("Lane IDs  : " + lanePointers[0] + " " + lanePointers[1] + " " + lanePointers[2], 4);
+	advLog("Elements  : " + lanes[lanePointers[0]].element + " " + lanes[lanePointers[1]].element + " " + lanes[lanePointers[2]].element, 4);
 
 	return lanePointers;
+}
+
+function advLog(msg, lvl) {
+	if (lvl <= logLevel) {
+		console.log(msg);
+	}
 }
 
 var thingTimer = window.setInterval(function(){
