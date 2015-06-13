@@ -24,6 +24,8 @@ var disableFlinching = false; // Set to true to disable flinching animation for 
 var disableCritText = false; // Set to true to disable the crit text.
 var disableText = false; // Remove all animated text. This includes damage, crits and gold gain. 
                          // This OVERRIDES all text related options.
+                         
+var lockElements = true; // Disable to allow upgrading all elements
 
 var isAlreadyRunning = false;
 
@@ -95,6 +97,10 @@ function firstRun() {
 	trt_oldPush = g_Minigame.m_CurrentScene.m_rgClickNumbers.push
 	if (disableText) {
 		toggleText();
+	}
+	
+	if(lockElements) {
+		lockElementToSteamID();
 	}
 
 	if(enableAutoClicker) {
@@ -722,6 +728,30 @@ function isAbilityItemEnabled(abilityId) {
 		return elem.childElements()[0].style.visibility == "visible";
 	}
 	return false;
+}
+
+function lockElementToSteamID() {
+	String.prototype.hashCode=function(){
+		var t=0;
+		if(0==this.length)
+			return t;
+		for(i=0;i<this.length;i++)
+			char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
+		return t;
+	}
+	var elem = Math.abs(g_steamID.hashCode()%4);
+	var fire = document.querySelector("a.link.element_upgrade_btn[data-type=\"3\"]")
+	var water = document.querySelector("a.link.element_upgrade_btn[data-type=\"4\"]")
+	var earth = document.querySelector("a.link.element_upgrade_btn[data-type=\"6\"]")
+	var air = document.querySelector("a.link.element_upgrade_btn[data-type=\"5\"]")
+	var elems = [fire, water, earth, air];
+	for(i=0; i< elems.length; i++) {
+		if(i == elem) {
+			continue;
+		}
+		elems[i].style.visibility = "hidden";
+		console.log('hidden');
+	}
 }
 
 var thingTimer = window.setInterval(function(){
