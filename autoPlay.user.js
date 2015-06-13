@@ -65,21 +65,6 @@ function firstRun() {
 		CEnemySpawner.prototype.TakeDamage = function() {};
 		CEnemyBoss.prototype.TakeDamage = function() {};
 	}
-	if (window.g_Minigame !== undefined) {
-		window.g_Minigame.CurrentScene().DoClickEffect = function() {};
-		window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
-		window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
-			emitter.emit = false;
-			return emitter;
-		};
-	}
-
-	if (window.CEnemy !== undefined) {
-		window.CEnemy.prototype.TakeDamage = function(){};
-		window.CEnemySpawner.prototype.TakeDamage = function(){};
-		window.CEnemyBoss.prototype.TakeDamage = function(){};
-	}
-
 
 	if (thingTimer) {
 		window.clearInterval(thingTimer);
