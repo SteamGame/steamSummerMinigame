@@ -199,7 +199,7 @@ function goToLaneWithBestTarget() {
 		if(preferredLane != -1 && preferredTarget != -1){
 			lowLane = preferredLane;
 			lowTarget = preferredTarget;
-			console.log('Switching to a lane with best raining gold benefit');
+			//console.log('Switching to a lane with best raining gold benefit');
 		}
 		
 		// If we just finished looking at spawners, 
@@ -297,11 +297,11 @@ function useMedicsIfRelevant() {
 	if (hasPurchasedAbility(ABILITIES.MEDIC) && !isAbilityCoolingDown(ABILITIES.MEDIC)) {
 
 		// Medics is purchased, cooled down, and needed. Trigger it.
-		console.log('Medics is purchased, cooled down, and needed. Trigger it.');
+		//console.log('Medics is purchased, cooled down, and needed. Trigger it.');
 		triggerAbility(ABILITIES.MEDIC);
 	} else if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
 		
-		console.log('We have god mode, cooled down, and needed. Trigger it.');
+		//console.log('We have god mode, cooled down, and needed. Trigger it.');
 		triggerItem(ITEMS.GOD_MODE);
 	}
 };
@@ -312,7 +312,7 @@ function useGoodLuckCharmIfRelevant() {
 	// check if Crits is purchased and cooled down
 	if (hasOneUseAbility(18) && !isAbilityCoolingDown(18)){
 		// Crits is purchased, cooled down, and needed. Trigger it.
-		console.log('Crit chance is always good.');
+		c//onsole.log('Crit chance is always good.');
 		triggerAbility(18);
     }
 	
@@ -327,7 +327,7 @@ function useGoodLuckCharmIfRelevant() {
 		}
 
 		// Good Luck Charms is purchased, cooled down, and needed. Trigger it.
-		console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
+		//console.log('Good Luck Charms is purchased, cooled down, and needed. Trigger it.');
 		triggerAbility(ABILITIES.GOOD_LUCK);
 	}
 }
@@ -431,7 +431,7 @@ function useMoraleBoosterIfRelevant() {
 		}
 		if(numberOfWorthwhileEnemies >= 2){
 			// Moral Booster is purchased, cooled down, and needed. Trigger it.
-			console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
+			//console.log('Moral Booster is purchased, cooled down, and needed. Trigger it.');
 			triggerAbility(5);
 		}
 	}
