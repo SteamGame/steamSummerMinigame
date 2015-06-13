@@ -38,6 +38,7 @@ var ITEMS = {
 	"GOD_MODE": 21,
 	"REFLECT_DAMAGE":24,
 	"CRIT": 18,
+	"PUMPED_UP": 19,
 	"CRIPPLE_MONSTER": 15,
 	"CRIPPLE_SPAWNER": 14,
 	"MAXIMIZE_ELEMENT": 16
@@ -288,7 +289,17 @@ function goToLaneWithBestTarget() {
 	}
 }
 
+function usePumpedUp(){
+	if (hasItem(ITEMS.PUMPED_UP) && !isAbilityCoolingDown(ITEMS.PUMPED_UP)){
+		// Crits is purchased, cooled down, and needed. Trigger it.
+		console.log('Pumped up is always good.');
+		triggerAbility(ITEMS.PUMPED_UP);
+		return;
+    }
+};
+
 function useMedicsIfRelevant() {
+	usePumpedUp();
 	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
 	
 	// check if health is below 50%
