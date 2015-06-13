@@ -138,14 +138,8 @@ function doTheThing() {
 	            displayText(
 	                enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
 	                enemy.m_Sprite.position.y - 52,
-	                clickRate + " clicks",
-	                "#aaf"
-	            );
-	            displayText(
-	                enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
-	                enemy.m_Sprite.position.y - 17,
 	                "-" + FormatNumberForDisplay((damagePerClick * clickRate), 5),
-	                "#fff"
+	                "#aaf"
 	            );
 	        }
 	}
