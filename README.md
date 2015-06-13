@@ -19,7 +19,7 @@ powerups for you.
 ### Greasemonkey ###
 
 1. Navigate to `https://raw.githubusercontent.com/mouseas/steamSummerMinigame/master/autoPlay.js`.
-2. Right click on the page, and click `Save Page Asf`.
+2. Right click on the page, and click `Save Page As`.
 3. In the name text area at the top, remove the tailing `.js` and add `.user.js` to the end (this may be redundant in the future).
 4. While Firefox is still open, open a File Manager of any sort, and navigate to the directory you saved the script.
 5. Drag & drop the script file onto the Firefox window.
