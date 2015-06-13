@@ -664,7 +664,10 @@ function disableAbilityItem(abilityId) {
 }
 
 function enableAbilityItem(abilityId) {
-    toggleAbilityItemVisibility(abilityId, true);
+    	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		elem.childElements()[0].style.visibility = "visible";
+	}
 }
 
 function isAbilityItemEnabled(abilityId) {
