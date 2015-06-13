@@ -180,7 +180,7 @@ function lockElements() {
 		g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_earth
 	];
 
-  String.prototype.hashCode=function(){
+  var hashCode=function(){
       var t=0;
       var char;
       if (0 === this.length) {
@@ -194,7 +194,7 @@ function lockElements() {
       return t;
   };
 
-  var elem = Math.abs(g_steamID.hashCode()%4);
+  var elem = Math.abs(hashCode(g_steamID)%4);
 
 	// If more than two elements are leveled to 3 or higher, do not enable lock
 	var leveled = 0;
@@ -279,6 +279,7 @@ function goToLaneWithBestTarget() {
 		ENEMY_TYPE.CREEP
 	];
 
+	var i;
 	var skippingSpawner = false;
 	var skippedSpawnerLane = 0;
 	var skippedSpawnerTarget = 0;
@@ -295,7 +296,7 @@ function goToLaneWithBestTarget() {
 		var enemies = [];
 
 		// gather all the enemies of the specified type.
-		for (var i = 0; i < 3; i++) {
+		for (i = 0; i < 3; i++) {
 			for (var j = 0; j < 4; j++) {
 				var enemy = g_Minigame.CurrentScene().GetEnemy(i, j);
 				if (enemy && enemy.m_data.type == enemyTypePriority[k]) {
@@ -332,7 +333,7 @@ function goToLaneWithBestTarget() {
 
 		// target the enemy of the specified type with the lowest hp
 		var mostHPDone = 0;
-		for (var i = 0; i < enemies.length; i++) {
+		for (i = 0; i < enemies.length; i++) {
 			if (enemies[i] && !enemies[i].m_bIsDestroyed) {
 				// Only select enemy and lane if the preferedLane matches the potential enemy lane
 				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
