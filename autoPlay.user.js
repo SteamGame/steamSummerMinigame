@@ -187,7 +187,7 @@ function lockElements() {
 			}
 
       for (i=0; i<this.length; i++) {
-        char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
+        	var char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
 			}
 
       return t;
