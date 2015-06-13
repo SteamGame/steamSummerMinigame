@@ -181,14 +181,13 @@ function lockElements() {
 	];
 
   String.prototype.hashCode=function(){
-      var t=0;
-      var char;
+      var t=0, char=0;
       if (0 === this.length) {
 				return t;
 			}
 
-      for (i=0; i<this.length; i++) {
-        	char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
+      for (var i=0; i<this.length; i++) {
+        char=this.charCodeAt(i),t=(t<<5)-t+char,t&=t;
 			}
 
       return t;
@@ -229,7 +228,7 @@ function lockToElement(element) {
 
 	var elems = [fire, water, air, earth];
 
-	for (i=0; i < elems.length; i++) {
+	for (var i=0; i < elems.length; i++) {
 		if (i === element) {
 				continue;
 		}
@@ -311,7 +310,7 @@ function goToLaneWithBestTarget() {
 			var sortedLanes = sortLanesByElementals();
 			for(var notI = 0; notI < sortedLanes.length; notI++){
 				// Maximize compability with upstream
-				i = sortedLanes[notI];
+				var i = sortedLanes[notI];
 				// ignore if lane is empty
 				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps === 0)
 					continue;
@@ -606,7 +605,7 @@ function useMoraleBoosterIfRelevant() {
 			return;
 		}
 		var numberOfWorthwhileEnemies = 0;
-		for(i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies.length; i++){
+		for(var i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies.length; i++){
 			//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
 			if(g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies[i].hp > 1000000)
 				numberOfWorthwhileEnemies++;
@@ -906,7 +905,7 @@ function getClickDamage(){
 }
 
 function enhanceTooltips(){
-    trt_oldTooltip = w.fnTooltipUpgradeDesc;
+    var trt_oldTooltip = w.fnTooltipUpgradeDesc;
     w.fnTooltipUpgradeDesc = function(context){
         var $context = $J(context);
         var desc = $context.data('desc');
