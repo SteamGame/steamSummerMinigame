@@ -80,8 +80,19 @@ function firstRun() {
 		window.CEnemyBoss.prototype.TakeDamage = function(){};
 	}
 
+
 	if (thingTimer){
 		window.clearInterval(thingTimer);
+	}
+
+	if (window.CSceneGame !== undefined)
+	{
+		window.CSceneGame.prototype.DoScreenShake = function() {};
+	}
+
+	if (thingTimer !== undefined) {
+		window.clearTimeout(thingTimer);
+
 	}
 }
 
