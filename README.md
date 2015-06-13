@@ -7,6 +7,22 @@ This javascript automatically plays the 2015 Steam Summer minigame for you in a 
 It goes beyond the autoclicker scripts already out there. It will keep you in the lane where you'll make the most money, activate abilities as they are available and best apply, and possibly purchase upgrades and
 powerups for you.
 
+## Features ##
+
+- Moves you to the lane most likely to give you gold, prioritized like so:
+	1. The lane with a Treasure Minion or Boss
+	2. The lane with the Miniboss with the lowest health
+	3. The lane with a Spawner below 40% health
+	4. The lane with a Creep below 10% health
+	5. The lane with the Spawner with the lowest health
+- Activates most reusable abilities, if they are purchased and cooled down:
+	- Medics if your health is below 50%
+	- Morale Booster, Napalm, and Cluster Bombs if the lane has a Spawner and 2-3 Creeps
+	- Good Luck Charm as soon as possible
+	- Tactical Nuke if the current Spawner is between 60% and 30% health
+- Respawns you after 5 seconds (instead of 1 minute) if you die
+- Disables certain abilities and items if facing a Boss (to try to maximize Raining Gold and Metal Detector benefits)
+
 ## Installation ##
 
 ### Tampermonkey ###
@@ -42,9 +58,7 @@ is auto-playing, try changing lanes. If it jumps back almost immediately, it's w
 ## TODO ##
 
 - use abilities if available and a suitable target exists:
-	 - Tactical Nuke on a Spawner if below 60% and above 30% of its health
 	 - Metal Detector if a spawner death is imminent (predicted in > 2 and < 7 seconds)
-	 - Decrease Cooldowns if another player used a long-cooldown ability < 10 seconds ago
-	
+	 - Decrease Cooldowns right before using another long-cooldown item. (Decrease Cooldown affects abilities triggered while it is active, not right before it's used)
 - purchase abilities and upgrades intelligently
 - automatically update the manual script by periodically checking https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.js
