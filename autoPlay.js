@@ -53,6 +53,10 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 }
 
+if (thingTimer){
+	window.clearInterval(thingTimer);
+}
+
 function firstRun() {
 	// disable particle effects - this drastically reduces the game's memory leak
 	if (g_Minigame !== undefined) {
