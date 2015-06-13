@@ -15,7 +15,7 @@ var isAlreadyRunning = false;
 var clickRate = 18;
 var setClickVariable = true; // copypasted from a guy's fork, untested
 var spammydebug = false; // set this to true to get spammed by debug messages
-var removeInterface = fales; // get rid of a bunch of pointless DOM
+var removeInterface = false; // get rid of a bunch of pointless DOM
 
 var ABILITIES = {
 	"MORALE_BOOSTER": 5,
