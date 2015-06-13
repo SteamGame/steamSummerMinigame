@@ -151,6 +151,8 @@ function displayText(x, y, strText, color) {
 	var e = new CEasingSinOut( 2, -2, 1000 );
 	e.parent = text;
 	text.m_easeAlpha = e;
+	
+	g_Minigame.CurrentScene().m_rgClickNumbers.push(text);
 }
 
 function goToLaneWithBestTarget() {
