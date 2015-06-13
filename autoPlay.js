@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name Monster Minigame AutoScript
 // @author /u/mouseasw for creating and maintaining the script, /u/WinneonSword for the Greasemonkey support, and every contributor on the GitHub repo for constant enhancements.
-// @version 1.6
+// @version 1.7
 // @namespace https://github.com/mouseas/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
 // @match http://steamcommunity.com/minigame/towerattack*
@@ -53,26 +53,26 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 }
 
+if (thingTimer){
+	window.clearInterval(thingTimer);
+}
+
 function firstRun() {
 	// disable particle effects - this drastically reduces the game's memory leak
-	if (window.g_Minigame !== undefined) {
-		window.g_Minigame.CurrentScene().DoClickEffect = function() {};
-		window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
-		window.g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
+	if (g_Minigame !== undefined) {
+		g_Minigame.CurrentScene().DoClickEffect = function() {};
+		g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+		g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
 			emitter.emit = false;
 			return emitter;
 		}
 	}
 
 	// disable enemy flinching animation when they get hit
-	if (window.CEnemy !== undefined) {
-		window.CEnemy.prototype.TakeDamage = function() {};
-		window.CEnemySpawner.prototype.TakeDamage = function() {};
-		window.CEnemyBoss.prototype.TakeDamage = function() {};
-	}
-
-	if (thingTimer !== undefined) {
-		window.clearTimeout(thingTimer);
+	if (CEnemy !== undefined) {
+		CEnemy.prototype.TakeDamage = function() {};
+		CEnemySpawner.prototype.TakeDamage = function() {};
+		CEnemyBoss.prototype.TakeDamage = function() {};
 	}
 }
 
