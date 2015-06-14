@@ -31,8 +31,8 @@ var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
 var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", typeof GM_info !== "undefined");
 
-var autoRefreshMinutes = 30; // minutes
-var autoRefreshMinutesRandomDelay = 10; // up to minutes
+var autoRefreshMinutes = 30;
+var autoRefreshMinutesRandomDelay = 10;
 
 // DO NOT MODIFY
 var isAlreadyRunning = false;
