@@ -32,6 +32,7 @@ var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 // DO NOT MODIFY
 var isAlreadyRunning = false;
 var currentClickRate = clickRate;
+var lockedElement = -1;
 var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
 
@@ -256,6 +257,7 @@ function makeCheckBox(name, desc, state, listener) {
 	checkbox.name = name;
 	checkbox.checked = state;
 	checkbox.onclick = listener;
+	w[checkbox.name] = checkbox.checked;
 
 	label.appendChild(checkbox);
 	label.appendChild(description);
@@ -426,6 +428,7 @@ function lockToElement(element) {
 		}
 		elems[i].style.visibility = "hidden";
 	}
+	lockedElement = element; // Save locked element.
 }
 
 function displayText(x, y, strText, color) {
@@ -690,6 +693,13 @@ function useCrippleMonsterIfRelevant() {
 }
 
 function useMedicsIfRelevant() {
+	if (hasItem(ITEMS.PUMPED_UP) && !isAbilityCoolingDown(ITEMS.PUMPED_UP)){
+		// Crits is purchased, cooled down, and needed. Trigger it.
+		advLog('Pumped up is always good.', 2);
+		triggerItem(ITEMS.PUMPED_UP);
+		return;
+	}
+
 	var myMaxHealth = s().m_rgPlayerTechTree.max_hp;
 
 	// check if health is below 50%
@@ -715,10 +725,10 @@ function useMedicsIfRelevant() {
 function useGoodLuckCharmIfRelevant() {
 
 	// check if Crits is purchased and cooled down
-	if (hasOneUseAbility(18) && !isAbilityCoolingDown(18)){
+	if (hasItem(ITEMS.CRIT) && !isAbilityCoolingDown(ITEMS.CRIT)){
 		// Crits is purchased, cooled down, and needed. Trigger it.
 		advLog('Crit chance is always good.', 3);
-		triggerAbility(18);
+		triggerItem(ITEMS.CRIT);
 	}
 
 	// check if Good Luck Charms is purchased and cooled down
@@ -961,6 +971,7 @@ function triggerItem(itemId) {
 }
 
 function triggerAbility(abilityId) {
+	// Queue the ability directly. No need for any DOM searching.
 	s().m_rgAbilityQueue.push({'ability': abilityId});
 }
 
@@ -1089,6 +1100,10 @@ if(breadcrumbs) {
 }
 
 // Helpers to access player stats.
+function getBossLootChance(){
+	return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.boss_loot_drop_percentage * 100;
+}
+
 function getCritChance(){
 	return s().m_rgPlayerTechTree.crit_percentage * 100;
 }
@@ -1118,6 +1133,28 @@ function startFingering() {
 	document.getElementById('newplayer').style.display = 'none';
 }
 
+function getClickDamageMultiplier(){
+    return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click_multiplier;
+}
+
+// These are the upgrade types.
+//
+//3: fire, 4: water, 6: earth, 5: water
+// This differs from the order shown on the UI.
+function getElementMultiplierById(index){
+	switch( index )
+	{
+		case 3: // fire
+			return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_fire;
+		case 4: // water
+			return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_water;
+		case 5: // air
+			return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_air;
+		case 6: // earth
+		return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_earth;
+	}
+}
+
 function enhanceTooltips(){
 	var trt_oldTooltip = w.fnTooltipUpgradeDesc;
 	w.fnTooltipUpgradeDesc = function(context){
@@ -1127,7 +1164,13 @@ function enhanceTooltips(){
 		var multiplier = parseFloat( $context.data('multiplier') );
 		switch( $context.data('upgrade_type') )
 		{
-			case 7: // Lucky Shot's type.
+		case 2: // Type for click damage. All tiers.
+			strOut = trt_oldTooltip(context);
+			var currentCrit = getClickDamage() * getCritMultiplier();
+			var newCrit = g_Minigame.CurrentScene().m_rgTuningData.player.damage_per_click *(getClickDamageMultiplier() + multiplier) * getCritMultiplier();
+			strOut += '<br><br>Crit Click: ' + FormatNumberForDisplay( currentCrit ) + ' => ' + FormatNumberForDisplay( newCrit );
+			break;
+		case 7: // Lucky Shot's type.
 			var currentMultiplier = getCritMultiplier();
 			var newMultiplier = currentMultiplier + multiplier;
 			var dps = getDPS();
@@ -1137,19 +1180,52 @@ function enhanceTooltips(){
 
 			strOut += '<br><br>Crit Percentage: ' + getCritChance().toFixed(1) + '%';
 
-			strOut += '<br><br>Current: ' + ( currentMultiplier ) + 'x';
+			strOut += '<br><br>Critical Damage Multiplier:'
+			strOut += '<br>Current: ' + ( currentMultiplier ) + 'x';
 			strOut += '<br>Next Level: ' + ( newMultiplier ) + 'x';
 
 			strOut += '<br><br>Damage with one crit:';
 			strOut += '<br>DPS: ' + FormatNumberForDisplay( currentMultiplier * dps ) + ' => ' + FormatNumberForDisplay( newMultiplier * dps );
 			strOut += '<br>Click: ' + FormatNumberForDisplay( currentMultiplier * clickDamage ) + ' => ' + FormatNumberForDisplay( newMultiplier * clickDamage );
+			strOut += '<br><br>Base Increased By: ' + FormatNumberForDisplay(multiplier) + 'x';
+		break;
+			case 9: // Boss Loot Drop's type
+			strOut += '<br><br>Boss Loot Drop Rate:'
+			strOut += '<br>Current: ' + getBossLootChance().toFixed(0) + '%';
+			strOut += '<br>Next Level: ' + (getBossLootChance() + multiplier * 100).toFixed(0) + '%';
+			strOut += '<br><br>Base Increased By: ' + FormatNumberForDisplay(multiplier * 100) + '%';
 			break;
-			default:
+		default:
 			return trt_oldTooltip(context);
 		}
 
-		return strOut;
+	return strOut;
 	};
+
+	var trt_oldElemTooltip = w.fnTooltipUpgradeElementDesc;
+		w.fnTooltipUpgradeElementDesc = function (context) {
+			var strOut = trt_oldElemTooltip(context);
+
+			var $context = $J(context);
+			var upgrades = g_Minigame.CurrentScene().m_rgTuningData.upgrades.slice(0);
+			// Element Upgrade index 3 to 6
+			var idx = $context.data('type');
+			// Is the current tooltip for the recommended element?
+			var isRecommendedElement = (lockedElement == idx - 3);
+
+			if (isRecommendedElement){
+				strOut += "<br><br>This is your recommended element. Please upgrade this.";
+
+				if (w.enableElementLock){
+					strOut += "<br><br>Other elements are LOCKED to prevent accidentally upgrading.";
+				}
+
+			} else if (-1 != lockedElement){
+				strOut += "<br><br>This is NOT your recommended element. DO NOT upgrade this.";
+			}
+
+			return strOut;
+		};
 }
 
 }(window));
