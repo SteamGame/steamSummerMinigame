@@ -258,9 +258,10 @@ function MainLoop() {
 
 			if( s().m_rgStoredCrits.length > 0 )
 			{
-				var rgDamage = s().m_rgStoredCrits.splice(0,1);
+				var rgDamage = s().m_rgStoredCrits.reduce(function(a,b){return a + b});
+				s().m_rgStoredCrits.length = 0;
 
-				s().DoCritEffect( rgDamage[0], enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, 'Crit!' );
+				s().DoCritEffect( rgDamage, enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y + 17, 'Crit!' );
 			}
 
 			var goldPerClickPercentage = s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
