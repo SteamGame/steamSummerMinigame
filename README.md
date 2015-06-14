@@ -8,14 +8,12 @@ it cheats for you.
 
 This fork has:
 * Elemental damage prioritizing, gold prioritizing
-* Auto clicking (change `clickRate` in console)
+* Auto clicking (do **not** click, this will mess with the autoclicker)
 * Tickrate set to 1000ms every second
 * Disable most particles
 * Auto use abilities
 * idk
 
-
-**DISCLAIMER:** This autoscript *will* include an auto-clicker. Automatic clicking pushes into the area of cheating, and this script is designed for cheating and automating the process of collecting gold.
 
 ## Features ##
 
