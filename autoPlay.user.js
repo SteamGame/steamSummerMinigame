@@ -158,7 +158,7 @@ function firstRun() {
 	activity.style.marginTop = "25px";
 
 	var info_box = document.querySelector(".leave_game_helper");
-	info_box.innerHTML = '<b>OPTIONS</b><br>Settings marked with a <span style="color:#a33100">*</span> requires a refresh to take effect.<hr>';
+	info_box.innerHTML = '<b>OPTIONS</b><br>Settings marked with a <span style="color:#FF5252;font-size:22px;line-height:4px;vertical-align:bottom;">*</span> requires a refresh to take effect.<hr>';
 
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
@@ -383,7 +383,10 @@ function makeNumber(name, desc, width, value, min, max, listener) {
 function makeCheckBox(name, desc, state, listener, reqRefresh) {
 	var asterisk = document.createElement('span');
 	asterisk.appendChild(document.createTextNode("*"));
-	asterisk.style.color = "#a33100";
+	asterisk.style.color = "#FF5252";
+	asterisk.style.fontSize = "22px";
+	asterisk.style.lineHeight = "14px";
+	asterisk.style.verticalAlign = "bottom";
 
 	var label= document.createElement("label");
 	var description = document.createTextNode(desc);
