@@ -933,7 +933,7 @@ function goToLaneWithBestTarget() {
 }
 
 function disableCooldownIfRelevant() {
-	if(getActiveAbilityNum(ABILITIES.COOLDOWN) > 0)
+	if(getActiveAbilityLaneCount(ABILITIES.COOLDOWN) > 0)
 	{
 		disableAbility(ABILITIES.COOLDOWN);
 		return;
@@ -1346,7 +1346,7 @@ function enableAbilityItem(abilityId) {
 	toggleAbilityItemVisibility(abilityId, true);
 }
 
-function getActiveAbilityNum(ability) {
+function getActiveAbilityLaneCount(ability) {
 	var abilities = s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].active_player_abilities;
 	var count = 0;
 	for(var i = 0; i < abilities.length; i++)
