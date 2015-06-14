@@ -19,15 +19,15 @@
 var clickRate = 10;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
 
-var enableAutoClicker = true;
+var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
 
-var removeInterface = false; // get rid of a bunch of pointless DOM
-var removeParticles = true;
-var removeFlinching = true;
-var removeCritText = false;
-var removeAllText = false;
+var removeInterface = getPreferenceBoolean("removeInterface", true); // get rid of a bunch of pointless DOM
+var removeParticles = getPreferenceBoolean("removeParticles", true);
+var removeFlinching = getPreferenceBoolean("removeFlinching", true);
+var removeCritText = getPreferenceBoolean("removeCritText", false);
+var removeAllText = getPreferenceBoolean("removeAllText", false);
 
-var enableElementLock = true;
+var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
 // DO NOT MODIFY
 var isAlreadyRunning = false;
@@ -117,7 +117,7 @@ function firstRun() {
 		}
 		node = document.querySelector(".pagecontent");
 		if (node) {
-			node.style = "padding-bottom: 0";
+			node.style["padding-bottom"] = 0;
 		}
         /*
 		node = document.querySelector(".leave_game_helper");
@@ -132,16 +132,16 @@ function firstRun() {
 		w.CSceneGame.prototype.DoScreenShake = function() {};
 	}
 
-    var info_box = document.querySelector(".leave_game_helper");
-    info_box.innerHTML = '<b>OPTIONS</b><br/>Some of these may need a refresh to take effect.<br/>';
-    info_box.style.backgroundColor = "#000000";
-    info_box.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
-    info_box.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleCheckbox));
-    info_box.appendChild(makeCheckBox("removeParticles", "Remove particle effects", removeParticles, handleCheckBox));
-    info_box.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleCheckBox));
-    info_box.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
-    info_box.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
-    info_box.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
+	var info_box = document.querySelector(".leave_game_helper");
+	info_box.innerHTML = '<b>OPTIONS</b><br/>Some of these may need a refresh to take effect.<br/>';
+	info_box.style.backgroundColor = "#000000";
+	info_box.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
+	info_box.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleEvent));
+	info_box.appendChild(makeCheckBox("removeParticles", "Remove particle effects", removeParticles, handleEvent));
+	info_box.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent));
+	info_box.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
+	info_box.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
+	info_box.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
 
 	enhanceTooltips();
 }
@@ -229,11 +229,15 @@ function makeCheckBox(name, desc, state, listener) {
     return label;
 }
 
+function handleEvent(event) {
+    handleCheckBox(event);
+}
+
 function handleCheckBox(event) {
     var checkbox = event.target;
     setPreference(checkbox.name, checkbox.checked);
     
-    w[checkbox.name] = checkbox.checked);
+    w[checkbox.name] = checkbox.checked;
     return checkbox.checked;
 }
 
@@ -265,11 +269,10 @@ function toggleCritText(event){
         value = handleCheckBox(event);
     if (value) {
             // Replaces the entire crit display function.
-            window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+            w.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
     } else {
-          window.g_Minigame.CurrentScene().DoCritEffect = trt_oldCrit;
+          w.g_Minigame.CurrentScene().DoCritEffect = trt_oldCrit;
     }
-    window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
 }
 
 function toggleAllText(event){
@@ -278,11 +281,11 @@ function toggleAllText(event){
         value = handleCheckBox(event);
     if (value) {
     // Replaces the entire text function.
-            window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = function(elem){
+            w.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = function(elem){
                 elem.container.removeChild(elem);
             };
     } else {
-            window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = trt_oldPush;
+            w.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = trt_oldPush;
     }
 }
 
