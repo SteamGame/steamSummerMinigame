@@ -77,6 +77,10 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 };
 
+// Try to disable particles straight away,
+// if not yet available, they will be disabled in firstRun
+disableParticles();
+
 function s() {
 	return w.g_Minigame.m_CurrentScene;
 }
@@ -92,21 +96,13 @@ function firstRun() {
 	if(enableElementLock) {
 		lockElements();
 	}
+
 	if (enableAutoRefresh) {
 		autoRefreshPage(autoRefreshMinutes);
 	}
 
 	// disable particle effects - this drastically reduces the game's memory leak
-	if (w.CSceneGame) {
-		w.CSceneGame.prototype.DoScreenShake = function() {};
-
-		if(removeParticles) {
-			w.CSceneGame.prototype.SpawnEmitter = function(emitter, x, y, container) {
-				emitter.emit = false;
-				return emitter;
-			};
-		}
-	}
+	disableParticles();
 
 	// disable enemy flinching animation when they get hit
 	if(removeFlinching && w.CEnemy) {
@@ -140,12 +136,6 @@ function firstRun() {
 		if (node) {
 			node.style.paddingBottom = 0;
 		}
-		/*
-		node = document.querySelector(".leave_game_helper");
-		if (node && node.parentNode) {
-			node.parentNode.removeChild( node );
-		}
-		*/
 		document.body.style.backgroundPosition = "0 0";
 	}
 
@@ -206,6 +196,19 @@ function firstRun() {
 	enhanceTooltips();
 }
 
+function disableParticles() {
+	if (w.CSceneGame) {
+		w.CSceneGame.prototype.DoScreenShake = function() {};
+
+		if(removeParticles) {
+			w.CSceneGame.prototype.SpawnEmitter = function(emitter, x, y, container) {
+				emitter.emit = false;
+				return emitter;
+			};
+		}
+	}
+}
+
 function MainLoop() {
 	var level = s().m_rgGameData.level + 1;
 
@@ -237,7 +240,7 @@ function MainLoop() {
 		if( level !== lastLevel )
 		{
 			lastLevel = level;
-			
+
 			refreshPlayerData();
 		}
 
