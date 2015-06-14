@@ -777,7 +777,6 @@ function goToLaneWithBestTarget() {
 			s().TryChangeTarget(lowTarget);
 		}
 
-
 		// Prevent attack abilities and items if up against a boss or treasure minion
 		if (targetIsTreasureOrBoss && getGameLevel() < 5000) {
 			// Morale
@@ -825,6 +824,12 @@ function goToLaneWithBestTarget() {
 			enableAbilityItem(ITEMS.REFLECT_DAMAGE);
 			// Throw Money at Screen
 			enableAbilityItem(ITEMS.THROW_MONEY);
+		}
+		
+		if(!targetIsTreasureOrBoss && getGameLevel() >= 5000) {
+			disableAbility(ABILITIES.NUKE);
+			disableAbility(ABILITIES.CLUSTER_BOMB);
+			disableAbility(ABILITIES.NAPALM);
 		}
 	}
 }
