@@ -30,7 +30,7 @@ var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", typeof GM_info
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
-var autoRefreshSeconds = 1800; // refresh page after x seconds
+var autoRefreshMinutes = 30; // refresh page after x seconds
 
 // DO NOT MODIFY
 var isAlreadyRunning = false;
@@ -137,7 +137,7 @@ function firstRun() {
 	}
 
 	if (enableAutoRefresh) {
-		autoRefreshPage(autoRefreshSeconds);
+		autoRefreshPage(autoRefreshMinutes);
 	}
 
 	if (w.CSceneGame !== undefined) {
@@ -293,7 +293,7 @@ function toggleAutoRefresh(event) {
     if(event !== undefined)
         value = handleCheckBox(event);
     if(value) {
-        autoRefreshPage(autoRefreshSeconds);
+        autoRefreshPage(autoRefreshMinutes);
     } else {
 		clearTimeout(refreshTimer);	
     }
@@ -1096,8 +1096,8 @@ function getClickDamage(){
     return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click;
 }
 
-function autoRefreshPage(autoRefreshSeconds){
-	refreshTimer = setTimeout(function(){w.location.reload(true);},autoRefreshSeconds*1000);
+function autoRefreshPage(autoRefreshMinutes){
+	refreshTimer = setTimeout(function(){w.location.reload(true);},autoRefreshMinutes*1000*60);
 }
 
 function enhanceTooltips(){
