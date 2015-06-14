@@ -272,45 +272,47 @@ function MainLoop() {
 
 		isAlreadyRunning = false;
 
-		var enemy = s().GetEnemy(
-			s().m_rgPlayerData.current_lane,
-			s().m_rgPlayerData.target);
+		if( currentClickRate > 0 ) {
+			var enemy = s().GetEnemy(
+				s().m_rgPlayerData.current_lane,
+				s().m_rgPlayerData.target);
 
-		if (enemy) {
-			displayText(
-				enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
-				enemy.m_Sprite.position.y - 52,
-				"-" + w.FormatNumberForDisplay((damagePerClick * currentClickRate), 5),
-				"#aaf"
-			);
-
-			if( s().m_rgStoredCrits.length > 0 )
-			{
-				var rgDamage = s().m_rgStoredCrits.reduce(function(a,b){return a + b});
-				s().m_rgStoredCrits.length = 0;
-
-				s().DoCritEffect( rgDamage, enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y + 17, 'Crit!' );
-			}
-
-			var goldPerClickPercentage = s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
-			if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
-			{
-				var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * currentClickRate;
-
-				s().ClientOverride('player_data', 'gold', s().m_rgPlayerData.gold + goldPerSecond);
-				s().ApplyClientOverrides('player_data', true);
-
-				advLog(
-					"Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
-					+ "%. Approximately gold per second: " + goldPerSecond,
-					4
-				);
+			if (enemy) {
 				displayText(
 					enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
-					enemy.m_Sprite.position.y - 17,
-					"+" + w.FormatNumberForDisplay(goldPerSecond, 5),
-					"#e1b21e"
+					enemy.m_Sprite.position.y - 52,
+					"-" + w.FormatNumberForDisplay((damagePerClick * currentClickRate), 5),
+					"#aaf"
 				);
+
+				if( s().m_rgStoredCrits.length > 0 )
+				{
+					var rgDamage = s().m_rgStoredCrits.reduce(function(a,b){return a + b});
+					s().m_rgStoredCrits.length = 0;
+
+					s().DoCritEffect( rgDamage, enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y + 17, 'Crit!' );
+				}
+
+				var goldPerClickPercentage = s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
+				if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
+				{
+					var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * currentClickRate;
+
+					s().ClientOverride('player_data', 'gold', s().m_rgPlayerData.gold + goldPerSecond);
+					s().ApplyClientOverrides('player_data', true);
+
+					advLog(
+						"Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
+						+ "%. Approximately gold per second: " + goldPerSecond,
+						4
+					);
+					displayText(
+						enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
+						enemy.m_Sprite.position.y - 17,
+						"+" + w.FormatNumberForDisplay(goldPerSecond, 5),
+						"#e1b21e"
+					);
+				}
 			}
 		}
 	}
