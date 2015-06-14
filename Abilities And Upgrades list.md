@@ -55,3 +55,6 @@
  - 20 "Energy Shields"
  - 21 "Farming Equipment"
  - 22 "Railgun"
+ - 23 "Personal Training"
+ - 24 "AFK Equipment
+ - 25 "New Mouse Button"
