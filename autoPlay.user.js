@@ -278,6 +278,7 @@ function makeNumber(name, desc, width, value, min, max, listener) {
 	number.type = "number";
 	number.name = name;
 	number.style.width = width;
+	number.style.marginRight = "5px";
 	number.value = value;
 	number.min = min;
 	number.max = max;
