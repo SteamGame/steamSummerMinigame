@@ -895,7 +895,7 @@ function goToLaneWithBestTarget() {
 
 function purchaseUpgrades() {
 	var oddsOfElement = 1 - (0.75*0.75*0.75); //This values elemental too much because best element lanes are not focused(0.578)
-	var avgClicksPerSecond = 3;	//Set this yourself to serve your needs
+	var currentClickRate = 3;	//Set this yourself to serve your needs
 	
 	var buyUpgrade = function(id) {
 		if(id >= 3 && 6 >= id) { //If upgrade is element damage
@@ -942,9 +942,9 @@ function purchaseUpgrades() {
 				}
 				break;
 			case UPGRADE_TYPES.CLICK_DAMAGE:
-				if(avgClicksPerSecond * upgrade.multiplier / upgradeCost > highestUpgradeValueForDamage) { // dmg increase per moneys
+				if(currentClickRate * upgrade.multiplier / upgradeCost > highestUpgradeValueForDamage) { // dmg increase per moneys
 					bestUpgradeForDamage = i;
-					highestUpgradeValueForDamage = upgrade.multiplier / upgradeCost;
+					highestUpgradeValueForDamage = currentClickRate * upgrade.multiplier / upgradeCost;
 				}
 				break;
 			case UPGRADE_TYPES.DPS:
@@ -966,7 +966,7 @@ function purchaseUpgrades() {
 				//var critMultiplier = ?
 				var critChance = g_Minigame.CurrentScene().m_rgPlayerTechTree.crit_percentage;
 				var dpc = g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_per_click;
-				if(upgrade.multiplier /* critMultiplier*/ * dpc * critChance * avgClicksPerSecond / upgradeCost > highestUpgradeValueForDamage) { // dmg increase per moneys
+				if(upgrade.multiplier /* critMultiplier*/ * dpc * critChance * currentClickRate / upgradeCost > highestUpgradeValueForDamage) { // dmg increase per moneys
 					/*bestUpgradeForDamage = i;
 					highestUpgradeValueForDamage = upgrade.multiplier / upgradeCost;*/
 				}
@@ -981,7 +981,7 @@ function purchaseUpgrades() {
 		upgradeCost = g_Minigame.CurrentScene().m_rgPlayerUpgrades[bestElement].cost_for_next_level;
 		
 		var dps = g_Minigame.CurrentScene().m_rgPlayerTechTree.dps;
-		dps = dps + (g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_per_click * avgClicksPerSecond);
+		dps = dps + (g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_per_click * currentClickRate);
 		if(0.25 * oddsOfElement * dps * upgrades[bestElement].multiplier / upgradeCost > highestUpgradeValueForDamage) { //dmg increase / moneys
 			//bestUpgradeForDamage = bestElement; // Not doing this because this values element damage too much
 		}
