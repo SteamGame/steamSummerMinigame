@@ -233,7 +233,7 @@ function disableParticles() {
 }
 
 function MainLoop() {
-	var level = s().m_rgGameData.level + 1;
+	var level = getGameLevel();
 
 	if( level < 10 ) {
 		return;
@@ -525,6 +525,11 @@ function unlockElements() {
 	for (var i=0; i < elems.length; i++) {
 		elems[i].style.visibility = "visible";
 	}
+}
+
+function getGameLevel()
+{
+	return s().m_rgGameData.level + 1;
 }
 
 function lockElements() {
@@ -841,7 +846,7 @@ function useCrippleMonsterIfRelevant() {
 	}
    }
 
-   var level = s().m_rgGameData.level + 1;
+   var level = getGameLevel();
 	// Use nukes on boss when level >3000 for faster kills
 	if (level > 1000 && level % 200 !== 0 && level % 10 === 0) {
 		var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
