@@ -167,22 +167,22 @@ function firstRun() {
 	info_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
 	info_box.style.color = "#ededed";
 
-	var checkboxes = document.createElement("div");
-	checkboxes.style["-moz-column-count"] = 2;
-	checkboxes.style["-webkit-column-count"] = 2;
-	checkboxes.style["column-count"] = 2;
+	var options = document.createElement("div");
+	options.style["-moz-column-count"] = 2;
+	options.style["-webkit-column-count"] = 2;
+	options.style["column-count"] = 2;
 
-	checkboxes.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
-	checkboxes.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
-	checkboxes.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
-	checkboxes.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
-	checkboxes.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
-	checkboxes.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
-	checkboxes.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
-	if (typeof GM_info !==  "undefined") {
-		checkboxes.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (fix memory leak)", enableAutoRefresh, toggleAutoRefresh));
-	}
-	info_box.appendChild(checkboxes);
+	options.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
+	options.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
+	options.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
+	options.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
+	options.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
+	options.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
+	options.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
+
+	options.appendChild(makeNumber("setLogLevel", "Change the log level (Only for Debugging)", "25px", logLevel, 0, 5, updateLogLevel));
+
+	info_box.appendChild(options);
 
 	enhanceTooltips();
 }
@@ -259,6 +259,27 @@ function MainLoop() {
 		}
 	}
 }
+
+function makeNumber(name, desc, width, value, min, max, listener) {
+	var label= document.createElement("label");
+	var description = document.createTextNode(desc);
+	var number = document.createElement("input");
+
+	number.type = "number";
+	number.name = name;
+	number.style.width = width;
+	number.value = value;
+	number.min = min;
+	number.max = max;
+	number.onchange = listener;
+	w[number.name] = number;
+
+	label.appendChild(number);
+	label.appendChild(description);
+	label.appendChild(document.createElement("br"));
+	return label;
+}
+
 function makeCheckBox(name, desc, state, listener) {
 	var label= document.createElement("label");
 	var description = document.createTextNode(desc);
@@ -325,7 +346,7 @@ function toggleElementLock(event) {
 	}
 }
 
-function toggleCritText(event){
+function toggleCritText(event) {
 	var value = removeCritText;
 	if(event !== undefined)
 		value = handleCheckBox(event);
@@ -337,18 +358,24 @@ function toggleCritText(event){
 		}
 	}
 
-	function toggleAllText(event){
-		var value = removeAllText;
-		if(event !== undefined)
-			value = handleCheckBox(event);
-		if (value) {
-	// Replaces the entire text function.
-	s().m_rgClickNumbers.push = function(elem){
-		elem.container.removeChild(elem);
-	};
-} else {
-	s().m_rgClickNumbers.push = trt_oldPush;
+function toggleAllText(event) {
+	var value = removeAllText;
+	if(event !== undefined)
+		value = handleCheckBox(event);
+	if (value) {
+		// Replaces the entire text function.
+		s().m_rgClickNumbers.push = function(elem){
+			elem.container.removeChild(elem);
+		};
+	} else {
+		s().m_rgClickNumbers.push = trt_oldPush;
+	}
 }
+
+function updateLogLevel(event) {
+	if(event !== undefined) {
+		logLevel = event.target.value;
+	}
 }
 
 function setPreference(key, value) {
