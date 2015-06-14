@@ -26,8 +26,11 @@ var removeParticles = getPreferenceBoolean("removeParticles", true);
 var removeFlinching = getPreferenceBoolean("removeFlinching", true);
 var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
+var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", true); // auto-refresh the page to clear out stale memory from leak
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
+
+var autoRefreshSeconds = 60; // refresh page after x seconds
 
 // DO NOT MODIFY
 var isAlreadyRunning = false;
@@ -131,6 +134,10 @@ function firstRun() {
 		document.body.style.backgroundPosition = "0 0";
 	}
 
+	if (enableAutoRefresh) {
+		autoRefreshPage(autoRefreshSeconds);
+	}
+
 	if (w.CSceneGame !== undefined) {
 		w.CSceneGame.prototype.DoScreenShake = function() {};
 	}
@@ -158,11 +165,13 @@ function firstRun() {
 	checkboxes.style["column-count"] = 2;
 	
 	checkboxes.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
+	checkboxes.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (fix memory leak)", enableAutoRefresh, toggleAutoRefresh));
 	checkboxes.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
 	checkboxes.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
 	checkboxes.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
 	checkboxes.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
 	checkboxes.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
+	checkboxes.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
 	checkboxes.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
 	info_box.appendChild(checkboxes);
 	
@@ -273,6 +282,17 @@ function toggleAutoClicker(event) {
         currentClickRate = clickRate;
     } else {
         currentClickRate = 0;
+    }
+}
+
+function toggleAutoRefresh(event) {
+    var value = enableAutoRefresh;
+    if(event !== undefined)
+        value = handleCheckBox(event);
+    if(value) {
+        autoRefreshPage(autoRefreshSeconds);
+    } else {
+		autoRefreshSeconds = 0;
     }
 }
 
@@ -1071,6 +1091,12 @@ function getDPS(){
 
 function getClickDamage(){
     return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click;
+}
+
+function autoRefreshPage(autoRefreshSeconds){
+	if(autoRefreshSeconds > 0) {
+		setTimeout("location.reload(true);",(autoRefreshSeconds*1000));
+	}
 }
 
 function enhanceTooltips(){
