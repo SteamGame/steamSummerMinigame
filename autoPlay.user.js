@@ -76,7 +76,7 @@ var ENEMY_TYPE = {
 };
 
 function s() {
-	return g_Minigame.m_CurrentScene;
+	return w.g_Minigame.m_CurrentScene;
 }
 
 function firstRun() {
@@ -86,6 +86,7 @@ function firstRun() {
 	trt_oldPush = s().m_rgClickNumbers.push;
 
 	startFingering();
+
 	if(enableElementLock) {
 		lockElements();
 	}
@@ -94,18 +95,22 @@ function firstRun() {
 	}
 
 	// disable particle effects - this drastically reduces the game's memory leak
-	if(removeParticles && CSceneGame) {
-		CSceneGame.prototype.SpawnEmitter = function(emitter, x, y, container) {
-			emitter.emit = false;
-			return emitter;
-		};
+	if (w.CSceneGame) {
+		w.CSceneGame.prototype.DoScreenShake = function() {};
+
+		if(removeParticles) {
+			w.CSceneGame.prototype.SpawnEmitter = function(emitter, x, y, container) {
+				emitter.emit = false;
+				return emitter;
+			};
+		}
 	}
 
 	// disable enemy flinching animation when they get hit
-	if(removeFlinching && CEnemy) {
-		CEnemy.prototype.TakeDamage = function() {};
-		CEnemySpawner.prototype.TakeDamage = function() {};
-		CEnemyBoss.prototype.TakeDamage = function() {};
+	if(removeFlinching && w.CEnemy) {
+		w.CEnemy.prototype.TakeDamage = function() {};
+		w.CEnemySpawner.prototype.TakeDamage = function() {};
+		w.CEnemyBoss.prototype.TakeDamage = function() {};
 	}
 
 	if(removeCritText) {
@@ -131,7 +136,7 @@ function firstRun() {
 		}
 		node = document.querySelector(".pagecontent");
 		if (node) {
-			node.style["padding-bottom"] = 0;
+			node.style.paddingBottom = 0;
 		}
 		/*
 		node = document.querySelector(".leave_game_helper");
@@ -140,10 +145,6 @@ function firstRun() {
 		}
 		*/
 		document.body.style.backgroundPosition = "0 0";
-	}
-
-	if (w.CSceneGame !== undefined) {
-		w.CSceneGame.prototype.DoScreenShake = function() {};
 	}
 
 	// Add "players in game" label
@@ -219,12 +220,12 @@ function MainLoop() {
 		attemptRespawn();
 
 		s().m_nClicks += currentClickRate;
-		g_msTickRate = 1000;
+		w.g_msTickRate = 1000;
 
 		var damagePerClick = s().CalculateDamage(
 			s().m_rgPlayerTechTree.damage_per_click,
 			s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].element
-			);
+		);
 
 		advLog("Ticked. Current clicks per second: " + currentClickRate + ". Current damage per second: " + (damagePerClick * currentClickRate), 4);
 
@@ -238,9 +239,9 @@ function MainLoop() {
 			displayText(
 				enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
 				enemy.m_Sprite.position.y - 52,
-				"-" + FormatNumberForDisplay((damagePerClick * currentClickRate), 5),
+				"-" + w.FormatNumberForDisplay((damagePerClick * currentClickRate), 5),
 				"#aaf"
-				);
+			);
 
 			if( s().m_rgStoredCrits.length > 0 )
 			{
@@ -257,13 +258,13 @@ function MainLoop() {
 					"Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
 					+ "%. Approximately gold per second: " + goldPerSecond,
 					4
-					);
+				);
 				displayText(
 					enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
 					enemy.m_Sprite.position.y - 17,
-					"+" + FormatNumberForDisplay(goldPerSecond, 5),
+					"+" + w.FormatNumberForDisplay(goldPerSecond, 5),
 					"#e1b21e"
-					);
+				);
 			}
 		}
 	}
@@ -321,9 +322,11 @@ function handleCheckBox(event) {
 
 function toggleAutoClicker(event) {
 	var value = enableAutoClicker;
+
 	if(event !== undefined) {
 		value = handleCheckBox(event);
 	}
+
 	if(value) {
 		currentClickRate = clickRate;
 	} else {
@@ -332,19 +335,22 @@ function toggleAutoClicker(event) {
 }
 
 function toggleAutoRefresh(event) {
-    var value = enableAutoRefresh;
-    if(event !== undefined)
-        value = handleCheckBox(event);
-    if(value) {
-        autoRefreshPage(autoRefreshMinutes);
-    } else {
+	var value = enableAutoRefresh;
+
+	if(event !== undefined) {
+		value = handleCheckBox(event);
+	}
+
+	if(value) {
+		autoRefreshPage(autoRefreshMinutes);
+	} else {
 		clearTimeout(refreshTimer);
-    }
+	}
 }
+
 function autoRefreshPage(autoRefreshMinutes){
 	refreshTimer = setTimeout(function(){w.location.reload(true);},autoRefreshMinutes*1000*60);
 }
-
 
 function toggleElementLock(event) {
 	var value = enableElementLock;
@@ -359,15 +365,18 @@ function toggleElementLock(event) {
 
 function toggleCritText(event) {
 	var value = removeCritText;
-	if(event !== undefined)
+
+	if(event !== undefined) {
 		value = handleCheckBox(event);
-	if (value) {
-			// Replaces the entire crit display function.
-			s().DoCritEffect = function( nDamage, x, y, additionalText ) {};
-		} else {
-			s().DoCritEffect = trt_oldCrit;
-		}
 	}
+
+	if (value) {
+		// Replaces the entire crit display function.
+		s().DoCritEffect = function() {};
+	} else {
+		s().DoCritEffect = trt_oldCrit;
+	}
+}
 
 function toggleAllText(event) {
 	var value = removeAllText;
@@ -451,7 +460,7 @@ function lockElements() {
 		return t;
 	};
 
-	var elem = Math.abs(hashCode(g_steamID)%4);
+	var elem = Math.abs(hashCode(w.g_steamID) % 4);
 
 	// If more than two elements are leveled to 3 or higher, do not enable lock
 	var leveled = 0;
@@ -496,7 +505,7 @@ function lockToElement(element) {
 }
 
 function displayText(x, y, strText, color) {
-	var text = new PIXI.Text(strText, {font: "35px 'Press Start 2P'", fill: color, stroke: '#000', strokeThickness: 2 });
+	var text = new w.PIXI.Text(strText, {font: "35px 'Press Start 2P'", fill: color, stroke: '#000', strokeThickness: 2 });
 
 	text.x = x;
 	text.y = y;
@@ -504,11 +513,11 @@ function displayText(x, y, strText, color) {
 	s().m_containerUI.addChild( text );
 	text.container = s().m_containerUI;
 
-	var e = new CEasingSinOut( text.y, -200, 1000 );
+	var e = new w.CEasingSinOut( text.y, -200, 1000 );
 	e.parent = text;
 	text.m_easeY = e;
 
-	e = new CEasingSinOut( 2, -2, 1000 );
+	e = new w.CEasingSinOut( 2, -2, 1000 );
 	e.parent = text;
 	text.m_easeAlpha = e;
 
@@ -771,7 +780,7 @@ function useMedicsIfRelevant() {
 		advLog('Medics is purchased, cooled down, and needed. Trigger it.', 2);
 		triggerAbility(ABILITIES.MEDIC);
 	}
-	
+
 	// check if God Mode is purchased and cooled down
 	if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
 
@@ -986,10 +995,9 @@ function useMetalDetectorIfRelevant() {
 }
 
 function attemptRespawn() {
-	if ((s().m_bIsDead) &&
-		((s().m_rgPlayerData.time_died) + 5) < (s().m_nTime)) {
-		RespawnPlayer();
-}
+	if ((s().m_bIsDead) && ((s().m_rgPlayerData.time_died) + 5) < (s().m_nTime)) {
+		w.RespawnPlayer();
+	}
 }
 
 function isAbilityActive(abilityId) {
@@ -1136,7 +1144,7 @@ if(w.SteamDB_Minigame_Timer) {
 }
 
 w.SteamDB_Minigame_Timer = w.setInterval(function(){
-	if (g_Minigame && s().m_bRunning && s().m_rgPlayerTechTree) {
+	if (w.g_Minigame && s().m_bRunning && s().m_rgPlayerTechTree) {
 		w.clearInterval(w.SteamDB_Minigame_Timer);
 		firstRun();
 		w.SteamDB_Minigame_Timer = w.setInterval(MainLoop, 1000);
@@ -1154,7 +1162,7 @@ if(breadcrumbs) {
 	element = document.createElement('span');
 	element.style.color = '#D4E157';
 	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
-	element.textContent = 'Room ' + g_GameID;
+	element.textContent = 'Room ' + w.g_GameID;
 	breadcrumbs.appendChild(element);
 }
 
@@ -1193,7 +1201,7 @@ function startFingering() {
 }
 
 function getClickDamageMultiplier(){
-    return s().m_rgPlayerTechTree.damage_per_click_multiplier;
+	return s().m_rgPlayerTechTree.damage_per_click_multiplier;
 }
 
 // These are the upgrade types.
@@ -1214,8 +1222,9 @@ function getElementMultiplierById(index){
 	}
 }
 
-function enhanceTooltips(){
+function enhanceTooltips() {
 	var trt_oldTooltip = w.fnTooltipUpgradeDesc;
+
 	w.fnTooltipUpgradeDesc = function(context){
 		var $context = $J(context);
 		var desc = $context.data('desc');
@@ -1223,68 +1232,68 @@ function enhanceTooltips(){
 		var multiplier = parseFloat( $context.data('multiplier') );
 		switch( $context.data('upgrade_type') )
 		{
-		case 2: // Type for click damage. All tiers.
-			strOut = trt_oldTooltip(context);
-			var currentCrit = getClickDamage() * getCritMultiplier();
-			var newCrit = s().m_rgTuningData.player.damage_per_click *(getClickDamageMultiplier() + multiplier) * getCritMultiplier();
-			strOut += '<br><br>Crit Click: ' + FormatNumberForDisplay( currentCrit ) + ' => ' + FormatNumberForDisplay( newCrit );
+			case 2: // Type for click damage. All tiers.
+				strOut = trt_oldTooltip(context);
+				var currentCrit = getClickDamage() * getCritMultiplier();
+				var newCrit = s().m_rgTuningData.player.damage_per_click *(getClickDamageMultiplier() + multiplier) * getCritMultiplier();
+				strOut += '<br><br>Crit Click: ' + w.FormatNumberForDisplay( currentCrit ) + ' => ' + w.FormatNumberForDisplay( newCrit );
+				break;
+			case 7: // Lucky Shot's type.
+				var currentMultiplier = getCritMultiplier();
+				var newMultiplier = currentMultiplier + multiplier;
+				var dps = getDPS();
+				var clickDamage = getClickDamage();
+
+				strOut += '<br><br>You can have multiple crits in a second. The server combines them into one.';
+
+				strOut += '<br><br>Crit Percentage: ' + getCritChance().toFixed(1) + '%';
+
+				strOut += '<br><br>Critical Damage Multiplier:';
+				strOut += '<br>Current: ' + ( currentMultiplier ) + 'x';
+				strOut += '<br>Next Level: ' + ( newMultiplier ) + 'x';
+
+				strOut += '<br><br>Damage with one crit:';
+				strOut += '<br>DPS: ' + w.FormatNumberForDisplay( currentMultiplier * dps ) + ' => ' + w.FormatNumberForDisplay( newMultiplier * dps );
+				strOut += '<br>Click: ' + w.FormatNumberForDisplay( currentMultiplier * clickDamage ) + ' => ' + w.FormatNumberForDisplay( newMultiplier * clickDamage );
+				strOut += '<br><br>Base Increased By: ' + w.FormatNumberForDisplay(multiplier) + 'x';
 			break;
-		case 7: // Lucky Shot's type.
-			var currentMultiplier = getCritMultiplier();
-			var newMultiplier = currentMultiplier + multiplier;
-			var dps = getDPS();
-			var clickDamage = getClickDamage();
-
-			strOut += '<br><br>You can have multiple crits in a second. The server combines them into one.';
-
-			strOut += '<br><br>Crit Percentage: ' + getCritChance().toFixed(1) + '%';
-
-			strOut += '<br><br>Critical Damage Multiplier:';
-			strOut += '<br>Current: ' + ( currentMultiplier ) + 'x';
-			strOut += '<br>Next Level: ' + ( newMultiplier ) + 'x';
-
-			strOut += '<br><br>Damage with one crit:';
-			strOut += '<br>DPS: ' + FormatNumberForDisplay( currentMultiplier * dps ) + ' => ' + FormatNumberForDisplay( newMultiplier * dps );
-			strOut += '<br>Click: ' + FormatNumberForDisplay( currentMultiplier * clickDamage ) + ' => ' + FormatNumberForDisplay( newMultiplier * clickDamage );
-			strOut += '<br><br>Base Increased By: ' + FormatNumberForDisplay(multiplier) + 'x';
-		break;
-			case 9: // Boss Loot Drop's type
-			strOut += '<br><br>Boss Loot Drop Rate:';
-			strOut += '<br>Current: ' + getBossLootChance().toFixed(0) + '%';
-			strOut += '<br>Next Level: ' + (getBossLootChance() + multiplier * 100).toFixed(0) + '%';
-			strOut += '<br><br>Base Increased By: ' + FormatNumberForDisplay(multiplier * 100) + '%';
-			break;
-		default:
-			return trt_oldTooltip(context);
+				case 9: // Boss Loot Drop's type
+				strOut += '<br><br>Boss Loot Drop Rate:';
+				strOut += '<br>Current: ' + getBossLootChance().toFixed(0) + '%';
+				strOut += '<br>Next Level: ' + (getBossLootChance() + multiplier * 100).toFixed(0) + '%';
+				strOut += '<br><br>Base Increased By: ' + w.FormatNumberForDisplay(multiplier * 100) + '%';
+				break;
+			default:
+				return trt_oldTooltip(context);
 		}
 
-	return strOut;
+		return strOut;
 	};
 
 	var trt_oldElemTooltip = w.fnTooltipUpgradeElementDesc;
-		w.fnTooltipUpgradeElementDesc = function (context) {
-			var strOut = trt_oldElemTooltip(context);
+	w.fnTooltipUpgradeElementDesc = function (context) {
+		var strOut = trt_oldElemTooltip(context);
 
-			var $context = $J(context);
-			var upgrades = s().m_rgTuningData.upgrades.slice(0);
-			// Element Upgrade index 3 to 6
-			var idx = $context.data('type');
-			// Is the current tooltip for the recommended element?
-			var isRecommendedElement = (lockedElement == idx - 3);
+		var $context = $J(context);
+		//var upgrades = s().m_rgTuningData.upgrades.slice(0);
+		// Element Upgrade index 3 to 6
+		var idx = $context.data('type');
+		// Is the current tooltip for the recommended element?
+		var isRecommendedElement = (lockedElement == idx - 3);
 
-			if (isRecommendedElement){
-				strOut += "<br><br>This is your recommended element. Please upgrade this.";
+		if (isRecommendedElement){
+			strOut += "<br><br>This is your recommended element. Please upgrade this.";
 
-				if (w.enableElementLock){
-					strOut += "<br><br>Other elements are LOCKED to prevent accidentally upgrading.";
-				}
-
-			} else if (-1 != lockedElement){
-				strOut += "<br><br>This is NOT your recommended element. DO NOT upgrade this.";
+			if (w.enableElementLock){
+				strOut += "<br><br>Other elements are LOCKED to prevent accidentally upgrading.";
 			}
 
-			return strOut;
-		};
+		} else if (-1 != lockedElement){
+			strOut += "<br><br>This is NOT your recommended element. DO NOT upgrade this.";
+		}
+
+		return strOut;
+	};
 }
 
 }(window));
