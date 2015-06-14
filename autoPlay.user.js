@@ -278,7 +278,6 @@ function makeNumber(name, desc, width, value, min, max, listener) {
 	number.type = "number";
 	number.name = name;
 	number.style.width = width;
-	number.style.marginRight = '5px';
 	number.value = value;
 	number.min = min;
 	number.max = max;
@@ -322,8 +321,9 @@ function handleCheckBox(event) {
 
 function toggleAutoClicker(event) {
 	var value = enableAutoClicker;
-	if(event !== undefined)
+	if(event !== undefined) {
 		value = handleCheckBox(event);
+	}
 	if(value) {
 		currentClickRate = clickRate;
 	} else {
@@ -537,11 +537,11 @@ function goToLaneWithBestTarget() {
 
 	// determine which lane and enemy is the optimal target
 	var enemyTypePriority = [
-	ENEMY_TYPE.TREASURE,
-	ENEMY_TYPE.BOSS,
-	ENEMY_TYPE.MINIBOSS,
-	ENEMY_TYPE.SPAWNER,
-	ENEMY_TYPE.CREEP
+		ENEMY_TYPE.TREASURE,
+		ENEMY_TYPE.BOSS,
+		ENEMY_TYPE.MINIBOSS,
+		ENEMY_TYPE.SPAWNER,
+		ENEMY_TYPE.CREEP
 	];
 
 	var i;
@@ -551,7 +551,6 @@ function goToLaneWithBestTarget() {
 	var targetIsTreasureOrBoss = false;
 
 	for (var k = 0; !targetFound && k < enemyTypePriority.length; k++) {
-
 		if (enemyTypePriority[k] == ENEMY_TYPE.TREASURE || enemyTypePriority[k] == ENEMY_TYPE.BOSS){
 			targetIsTreasureOrBoss = true;
 		} else {
@@ -579,8 +578,9 @@ function goToLaneWithBestTarget() {
 				// Maximize compability with upstream
 				i = sortedLanes[notI];
 				// ignore if lane is empty
-				if(s().m_rgGameData.lanes[i].dps === 0)
+				if(s().m_rgGameData.lanes[i].dps === 0) {
 					continue;
+				}
 				var stacks = 0;
 				if(typeof s().m_rgLaneData[i].abilities[17] != 'undefined') {
 					stacks = s().m_rgLaneData[i].abilities[17];
@@ -744,10 +744,10 @@ function useCrippleMonsterIfRelevant() {
 
    var level = s().m_rgGameData.level + 1;
 	// Use nukes on boss when level >3000 for faster kills
-	if (level > 1000 && level % 200 != 0 && level % 10 == 0) {
+	if (level > 1000 && level % 200 !== 0 && level % 10 === 0) {
 		var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp
+			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 			if (enemyBossHealthPercent>0.5){
 				advLog("Cripple Monster available and used on boss", 2);
 				triggerItem(ITEMS.CRIPPLE_MONSTER);
@@ -1244,7 +1244,7 @@ function enhanceTooltips(){
 
 			strOut += '<br><br>Crit Percentage: ' + getCritChance().toFixed(1) + '%';
 
-			strOut += '<br><br>Critical Damage Multiplier:'
+			strOut += '<br><br>Critical Damage Multiplier:';
 			strOut += '<br>Current: ' + ( currentMultiplier ) + 'x';
 			strOut += '<br>Next Level: ' + ( newMultiplier ) + 'x';
 
@@ -1254,7 +1254,7 @@ function enhanceTooltips(){
 			strOut += '<br><br>Base Increased By: ' + FormatNumberForDisplay(multiplier) + 'x';
 		break;
 			case 9: // Boss Loot Drop's type
-			strOut += '<br><br>Boss Loot Drop Rate:'
+			strOut += '<br><br>Boss Loot Drop Rate:';
 			strOut += '<br>Current: ' + getBossLootChance().toFixed(0) + '%';
 			strOut += '<br>Next Level: ' + (getBossLootChance() + multiplier * 100).toFixed(0) + '%';
 			strOut += '<br><br>Base Increased By: ' + FormatNumberForDisplay(multiplier * 100) + '%';
