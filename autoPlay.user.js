@@ -187,15 +187,20 @@ function firstRun() {
 	info_box.appendChild(options1);
 
 	var options2 = document.createElement("div");
-	options2.style["-moz-column-count"] = 2;
-	options2.style["-webkit-column-count"] = 2;
-	options2.style["column-count"] = 2;
-	options1.style.width = "50%";
+	options2.style["-moz-column-count"] = 1;
+	options2.style["-webkit-column-count"] = 1;
+	options2.style["column-count"] = 1;
+	options2.style.width = "50%";
 
 	if (typeof GM_info !==  "undefined") {
 		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh));
 	}
-	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
+	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "30px", logLevel, 0, 5, updateLogLevel));
+	options2.appendChild(makeNumber("setClickRate", "Change the click rate (you shouldn't need to touch this)", "30px", clickRate, 0, 20, updateClickRate));
+
+	options2.appendChild(makeLabel("dps", "dpsDisplay", "Current damage per second"));
+	options2.appendChild(document.createElement("br"));
+	options2.appendChild(makeLabel("gps", "gpsDisplay", "Current gold per second"));
 
 	info_box.appendChild(options2);
 
@@ -277,6 +282,14 @@ function MainLoop() {
 
 		advLog("Ticked. Current clicks per second: " + currentClickRate + ". Current damage per second: " + (damagePerClick * currentClickRate), 4);
 
+		var dps = (damagePerClick * currentClickRate);
+		var dpsText = "" + dps;
+		if (dps > 1000000000) { dpsText = (dps / 1000000000).toFixed(2) + "B"; }
+		else if (dps > 1000000) { dpsText = (dps / 1000000).toFixed(2) + "M"; }
+		else if (dps > 1000) { dpsText = (dps / 1000).toFixed(2) + "K"; }
+
+		document.getElementById('dps').innerHTML = "Current damage per second: " + dpsText;
+
 		isAlreadyRunning = false;
 
 		if( currentClickRate > 0 ) {
@@ -308,17 +321,30 @@ function MainLoop() {
 					s().ClientOverride('player_data', 'gold', s().m_rgPlayerData.gold + goldPerSecond);
 					s().ApplyClientOverrides('player_data', true);
 
+					var gpcText = (goldPerClickPercentage * 100).toFixed(0) + "%";
+					var gpsText = "" + goldPerSecond.toFixed(0);
+					if (goldPerSecond > 1000000000) { gpsText = (goldPerSecond / 1000000000).toFixed(2) + "B"; }
+					else if (goldPerSecond > 1000000) { gpsText = (goldPerSecond / 1000000).toFixed(2) + "M"; }
+					else if (goldPerSecond > 1000) { gpsText = (goldPerSecond / 1000).toFixed(2) + "K"; }
+
 					advLog(
 						"Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
 						+ "%. Approximately gold per second: " + goldPerSecond,
 						4
 					);
+
+					document.getElementById('gps').innerHTML = "Current gold per second: " + gpsText + "(" + gpcText + ")";
+
 					displayText(
 						enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
 						enemy.m_Sprite.position.y - 17,
 						"+" + w.FormatNumberForDisplay(goldPerSecond, 5),
 						"#e1b21e"
 					);
+				}
+				else
+				{
+					document.getElementById('gps').innerHTML = "";
 				}
 			}
 		}
@@ -395,6 +421,16 @@ function makeCheckBox(name, desc, state, listener) {
 	label.appendChild(description);
 	label.appendChild(document.createElement("br"));
 	return label;
+}
+
+function makeLabel(id, name, title) {
+    var label = document.createElement("label");
+
+    label.id = id;
+    label.name = name;
+    label.title = title;
+
+    return label;
 }
 
 function handleEvent(event) {
@@ -485,6 +521,12 @@ function toggleAllText(event) {
 function updateLogLevel(event) {
 	if(event !== undefined) {
 		logLevel = event.target.value;
+	}
+}
+
+function updateClickRate(event) {
+	if(event !== undefined) {
+		currentClickRate = clickRate = event.target.value;
 	}
 }
 
