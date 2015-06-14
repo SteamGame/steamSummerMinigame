@@ -193,7 +193,7 @@ function MainLoop() {
 		isAlreadyRunning = true;
 
 		goToLaneWithBestTarget();
-
+		
 		useGoodLuckCharmIfRelevant();
 		useMedicsIfRelevant();
 		useMoraleBoosterIfRelevant();
@@ -204,7 +204,7 @@ function MainLoop() {
 		useGoldRainIfRelevant();
 		useMetalDetectorIfRelevant();
 		useCrippleMonsterIfRelevant();
-
+		AutoUseMedicIfRelevant()
 		disableCooldownIfRelevant();
 
 		updatePlayersInGame();
@@ -1265,7 +1265,7 @@ function enhanceTooltips(){
 			return strOut;
 		};
 }
-function AutoUseMedicIfApplicable(){
+function AutoUseMedicIfRelevant(){
 	if (autoUseMedic = 1){
 		if (hasPurchasedAbility(ABILITIES.MEDIC) && !isAbilityCoolingDown(ABILITIES.MEDIC)) {
 
