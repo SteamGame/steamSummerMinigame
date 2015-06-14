@@ -779,7 +779,7 @@ function goToLaneWithBestTarget() {
 
 
 		// Prevent attack abilities and items if up against a boss or treasure minion
-		if (targetIsTreasureOrBoss) {
+		if (targetIsTreasureOrBoss && getGameLevel() < 5000) {
 			// Morale
 			disableAbility(ABILITIES.MORALE_BOOSTER);
 			// Luck
