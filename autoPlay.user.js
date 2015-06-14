@@ -268,6 +268,7 @@ function MainLoop() {
 		useMetalDetectorIfRelevant();
 		useCrippleMonsterIfRelevant();
 		useReviveIfRelevant();
+		useTreasureIfRelevant();
 
 		disableCooldownIfRelevant();
 
@@ -1115,6 +1116,37 @@ function useMetalDetectorIfRelevant() {
 			// Metal Detector is purchased, cooled down, and needed. Trigger it.
 			advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
 			triggerAbility(ABILITIES.METAL_DETECTOR);
+		}
+	}
+}
+
+function useTreasureIfRelevant() {
+	// Check if Treasure is purchased 
+	if (hasItem(ITEMS.TREASURE)) {
+		if (isAbilityCoolingDown(ITEMS.TREASURE) || isAbilityActive(ABILITIES.METAL_DETECTOR)) {
+			return;
+		}
+		
+		// check if current level is higher than 50
+		if (getGameLevel() > 50)
+		{
+			var enemy = s().GetTargetedEnemy();
+			// check if current target is a boss, otherwise we won't use metal detector
+			if (enemy && enemy.type == ENEMY_TYPE.BOSS) {
+				var enemyBossHealthPercent = enemy.hp / enemy.max_hp;
+
+				// we want to use Treasure at 25% hp, or even less
+				if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
+					// Treasure is purchased, cooled down, and needed. Trigger it.
+					advLog('Treasure is purchased and cooled down, triggering it.', 2);
+					triggerItem(ITEMS.TREASURE);
+				}
+			}
+		}
+		else {
+			// Treasure is purchased, cooled down, and needed. Trigger it.
+			advLog('Treasure is purchased and cooled down, triggering it.', 2);
+			triggerItem(ITEMS.TREASURE);
 		}
 	}
 }
