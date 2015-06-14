@@ -26,6 +26,7 @@ var removeParticles = getPreferenceBoolean("removeParticles", true);
 var removeFlinching = getPreferenceBoolean("removeFlinching", true);
 var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
+var enableFingering = getPreferenceBoolean("enableFingering", true);
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
@@ -91,7 +92,9 @@ function firstRun() {
 	trt_oldCrit = s().DoCritEffect;
 	trt_oldPush = s().m_rgClickNumbers.push;
 
-	startFingering();
+	if(enableFingering) {
+		startFingering();
+	}
 
 	if(enableElementLock) {
 		lockElements();
@@ -181,8 +184,6 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
 	options1.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
-	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
-	options1.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
 
 	info_box.appendChild(options1);
 
@@ -195,6 +196,10 @@ function firstRun() {
 	if (typeof GM_info !==  "undefined") {
 		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh));
 	}
+
+	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer (needs refresh)", enableFingering, handleEvent));
+	options2.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
+	options2.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
