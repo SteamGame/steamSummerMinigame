@@ -1057,6 +1057,7 @@ function useTacticalNukeIfRelevant() {
 
 		// If there is a spawner and it's health is between 60% and 30%, nuke it!
 		if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
+			useDecreaseCooldown("Tactical Nuke");
 			advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
 			triggerAbility(ABILITIES.NUKE);
 		}
@@ -1133,6 +1134,13 @@ function useMetalDetectorIfRelevant() {
 				triggerAbility(ABILITIES.METAL_DETECTOR);
 			}
 		}
+	}
+}
+
+function useDecreaseCooldown(beforeAbility) {
+	if (!isAbilityCoolingDown(ABILITIES.COOLDOWN)) {
+		advLog("Decrease Cooldown before " + beforeAbility + ".", 2);
+		triggerAbility(ABILITIES.COOLDOWN);
 	}
 }
 
