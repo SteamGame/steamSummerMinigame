@@ -29,8 +29,13 @@ var removeAllText = getPreferenceBoolean("removeAllText", false);
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
+var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", typeof GM_info !== "undefined");
+
+var autoRefreshMinutes = 30;
+
 // DO NOT MODIFY
 var isAlreadyRunning = false;
+var refreshTimer = null;
 var currentClickRate = clickRate;
 var lockedElement = -1;
 var trt_oldCrit = function() {};
@@ -83,6 +88,9 @@ function firstRun() {
 	startFingering();
 	if(enableElementLock) {
 		lockElements();
+	}
+	if (enableAutoRefresh) {
+		autoRefreshPage(autoRefreshMinutes);
 	}
 
 	// disable particle effects - this drastically reduces the game's memory leak
@@ -171,6 +179,9 @@ function firstRun() {
 	checkboxes.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
 	checkboxes.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
 	checkboxes.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
+	if (typeof GM_info !==  "undefined") {
+		checkboxes.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (fix memory leak)", enableAutoRefresh, toggleAutoRefresh));
+	}
 	info_box.appendChild(checkboxes);
 
 	enhanceTooltips();
@@ -287,6 +298,21 @@ function toggleAutoClicker(event) {
 		currentClickRate = 0;
 	}
 }
+
+function toggleAutoRefresh(event) {
+    var value = enableAutoRefresh;
+    if(event !== undefined)
+        value = handleCheckBox(event);
+    if(value) {
+        autoRefreshPage(autoRefreshMinutes);
+    } else {
+		clearTimeout(refreshTimer);	
+    }
+}
+function autoRefreshPage(autoRefreshMinutes){
+	refreshTimer = setTimeout(function(){w.location.reload(true);},autoRefreshMinutes*1000*60);
+}
+
 
 function toggleElementLock(event) {
 	var value = enableElementLock;
