@@ -30,7 +30,7 @@ var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", true); // auto
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
-var autoRefreshSeconds = 120; // refresh page after x seconds
+var autoRefreshSeconds = 1800; // refresh page after x seconds
 
 // DO NOT MODIFY
 var isAlreadyRunning = false;
