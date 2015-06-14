@@ -274,8 +274,10 @@ function toggleAutoClicker(event) {
 	if(event !== undefined)
 		value = handleCheckBox(event);
 	if(value) {
+		document.querySelector(".scanlines").style.cssText = "pointer-events: auto !important";
 		currentClickRate = clickRate;
 	} else {
+		document.querySelector(".scanlines").style.cssText = "";
 		currentClickRate = 0;
 	}
 }
