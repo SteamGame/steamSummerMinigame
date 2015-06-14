@@ -1,21 +1,17 @@
 # Steam Summer 2015 Monster Minigame AutoScript #
 
-#Buy at least 1 "Auto-fire Cannon" for lane switching to work.#
-
 ## Purpose ##
 
 it cheats for you.
 
 This fork has:
 * Elemental damage prioritizing, gold prioritizing
-* Auto clicking (change `clickRate` in console)
+* Auto clicking (do **not** click, this will mess with the autoclicker)
 * Tickrate set to 1000ms every second
 * Disable most particles
 * Auto use abilities
 * idk
 
-
-**DISCLAIMER:** This autoscript *will* include an auto-clicker. Automatic clicking pushes into the area of cheating, and this script is designed for cheating and automating the process of collecting gold.
 
 ## Features ##
 
@@ -41,7 +37,7 @@ This fork has:
 
 ### Tampermonkey ###
 
-1. Open Tampermonkey's dashboard.
+1. Open Tapermonkey's dashboard.
 2. Click on the `Utilites` tab on the right.
 3. Paste `https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js` into the text area, and click `Import`.
 4. When the editor has loaded, click `Install` (*NOT* `Process with Chrome`).
@@ -57,21 +53,21 @@ This fork has:
 ### Manual ###
 
 ##### Chrome #####
-1. Open `autoPlay.user.js` in a text editor.
+1. Open https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js
 2. Select All, Copy.
 3. Navigate to `http://steamcommunity.com/minigame/` and join or start a game.
 4. Press `Ctrl + Shift + J`.
 5. Paste into the javascript input, and hit `Enter`.
 
 ##### Firefox #####
-1. Open `autoPlay.user.js` in a text editor.
+1. Open https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js
 2. Select All, Copy.
 3. Navigate to `http://steamcommunity.com/minigame/` and join or start a game.
 4. Press `Ctrl + Shift + K`.
 5. Paste into the javascript input, and hit `Enter`.
 
 ##### Internet Explorer / Microsoft Edge #####
-1. Open `autoPlay.user.js` in a text editor.
+1. Open https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js
 2. Select All, Copy.
 3. Navigate to `http://steamcommunity.com/minigame/` and join or start a game.
 4. Press `F12` and navigate to the `Console` tab.
