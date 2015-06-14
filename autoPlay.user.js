@@ -984,8 +984,9 @@ function useMetalDetectorIfRelevant() {
 		// check if current target is a boss, otherwise we won't use metal detector
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-
-			if (enemyBossHealthPercent >= 0.9) { // We want sufficient time for the metal detector to be applicable
+			
+			// we want to use metal detector at 25% hp, or even less
+			if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
 				// Metal Detector is purchased, cooled down, and needed. Trigger it.
 				advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
 				triggerAbility(ABILITIES.METAL_DETECTOR);
