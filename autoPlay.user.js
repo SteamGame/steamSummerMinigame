@@ -710,7 +710,7 @@ function useMedicsIfRelevant() {
 function useGoodLuckCharmIfRelevant() {
 
 	// check if Crits is purchased and cooled down
-	if (hasOneUseAbility(18) && !isAbilityCoolingDown(18)){
+	if (hasItem(18) && !isAbilityCoolingDown(18)){
 		// Crits is purchased, cooled down, and needed. Trigger it.
 		advLog('Crit chance is always good.', 3);
 		triggerAbility(18);
@@ -936,11 +936,6 @@ function isAbilityCoolingDown(abilityId) {
 	return g_Minigame.CurrentScene().GetCooldownForAbility(abilityId) > 0;
 }
 
-function hasOneUseAbility(abilityId) {
-	var elem = document.getElementById('abilityitem_' + abilityId);
-	return elem !== null;
-}
-
 function hasPurchasedAbility(abilityId) {
 	// each bit in unlocked_abilities_bitfield corresponds to an ability.
 	// the above condition checks if the ability's bit is set or cleared. I.e. it checks if
@@ -949,13 +944,11 @@ function hasPurchasedAbility(abilityId) {
 }
 
 function triggerItem(itemId) {
-	var elem = document.getElementById('abilityitem_' + itemId);
-	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		g_Minigame.CurrentScene().TryAbility(document.getElementById('abilityitem_' + itemId).childElements()[0]);
-	}
+	triggerAbility(itemId);
 }
 
 function triggerAbility(abilityId) {
+	// Queue the ability directly. No need for any DOM searching.
 	g_Minigame.CurrentScene().m_rgAbilityQueue.push({'ability': abilityId});
 }
 
@@ -1084,6 +1077,10 @@ if(breadcrumbs) {
 }
 
 // Helpers to access player stats.
+function getBossLootChance(){
+	return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.boss_loot_drop_percentage * 100;
+}
+
 function getCritChance(){
 	return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.crit_percentage * 100;
 }
@@ -1113,6 +1110,25 @@ function startFingering() {
 	document.getElementById('newplayer').style.display = 'none'; 
 }
 
+function getClickDamageMultiplier(){
+    return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click_multiplier;
+}
+
+//1: fire, 2: water, 3: earth, 4: water
+function getElementMultiplierById(index){
+	switch( index )
+	{
+		case 3: // fire
+			return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_fire;
+		case 4: // water
+			return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_water;
+		case 5: // air
+			return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_air;
+		case 6: // earth
+		return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_earth;
+	}
+}
+
 function enhanceTooltips(){
 	var trt_oldTooltip = w.fnTooltipUpgradeDesc;
 	w.fnTooltipUpgradeDesc = function(context){
@@ -1122,7 +1138,13 @@ function enhanceTooltips(){
 		var multiplier = parseFloat( $context.data('multiplier') );
 		switch( $context.data('upgrade_type') )
 		{
-			case 7: // Lucky Shot's type.
+		case 2: // Type for click damage. All tiers.
+			strOut = trt_oldTooltip(context);
+			var currentCrit = getClickDamage() * getCritMultiplier();
+			var newCrit = g_Minigame.CurrentScene().m_rgTuningData.player.damage_per_click *(getClickDamageMultiplier() + multiplier) * getCritMultiplier();
+			strOut += '<br><br>Crit Click: ' + FormatNumberForDisplay( currentCrit ) + ' => ' + FormatNumberForDisplay( newCrit );
+			break;
+		case 7: // Lucky Shot's type.
 			var currentMultiplier = getCritMultiplier();
 			var newMultiplier = currentMultiplier + multiplier;
 			var dps = getDPS();
@@ -1132,18 +1154,25 @@ function enhanceTooltips(){
 
 			strOut += '<br><br>Crit Percentage: ' + getCritChance().toFixed(1) + '%';
 
-			strOut += '<br><br>Current: ' + ( currentMultiplier ) + 'x';
+			strOut += '<br><br>Critical Damage Multiplier:'
+			strOut += '<br>Current: ' + ( currentMultiplier ) + 'x';
 			strOut += '<br>Next Level: ' + ( newMultiplier ) + 'x';
 
 			strOut += '<br><br>Damage with one crit:';
-			strOut += '<br>DPS: ' + FormatNumberForDisplay( currentMultiplier * dps ) + ' => ' + FormatNumberForDisplay( newMultiplier * dps );
 			strOut += '<br>Click: ' + FormatNumberForDisplay( currentMultiplier * clickDamage ) + ' => ' + FormatNumberForDisplay( newMultiplier * clickDamage );
+			strOut += '<br><br>Base Increased By: ' + FormatNumberForDisplay(multiplier) + 'x';
+		break;
+			case 9: // Boss Loot Drop's type
+			strOut += '<br><br>Boss Loot Drop Rate:'
+			strOut += '<br>Current: ' + getBossLootChance().toFixed(0) + '%';
+			strOut += '<br>Next Level: ' + (getBossLootChance() + multiplier * 100).toFixed(0) + '%';
+			strOut += '<br><br>Base Increased By: ' + FormatNumberForDisplay(multiplier * 100) + '%';
 			break;
-			default:
+		default:
 			return trt_oldTooltip(context);
 		}
 
-		return strOut;
+	return strOut;
 	};
 }
 
