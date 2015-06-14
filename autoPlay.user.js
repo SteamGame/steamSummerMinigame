@@ -1101,7 +1101,7 @@ function getClickDamage(){
 }
 
 function autoRefreshPage(autoRefreshSeconds){
-	refreshTimer = setTimeout("location.reload(true);",(autoRefreshSeconds*1000));
+	refreshTimer = setTimeout(function(){w.location.reload(true);},autoRefreshSeconds*1000);
 }
 
 function enhanceTooltips(){
