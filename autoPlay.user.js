@@ -160,29 +160,39 @@ function firstRun() {
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
 	info_box.style.backgroundColor = "#000000";
-	info_box.style.width = "600px";
+	info_box.style.width = "800px";
 	info_box.style.top = "73px";
 	info_box.style.padding = "12px";
 	info_box.style.position = "absolute";
 	info_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
 	info_box.style.color = "#ededed";
 
-	var options = document.createElement("div");
-	options.style["-moz-column-count"] = 2;
-	options.style["-webkit-column-count"] = 2;
-	options.style["column-count"] = 2;
+	var options1 = document.createElement("div");
+	options1.style["-moz-column-count"] = 2;
+	options1.style["-webkit-column-count"] = 2;
+	options1.style["column-count"] = 2;
+	options1.style.width = "50%";
+	options1.style.float = "left";
 
-	options.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
-	options.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
-	options.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
-	options.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
-	options.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
-	options.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
-	options.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
+	options1.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
+	options1.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
+	options1.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
+	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
+	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
+	options1.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
+	options1.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
 
-	options.appendChild(makeNumber("setLogLevel", "Change the log level (Only for Debugging)", "25px", logLevel, 0, 5, updateLogLevel));
+	info_box.appendChild(options1);
 
-	info_box.appendChild(options);
+	var options2 = document.createElement("div");
+	options2.style["-moz-column-count"] = 2;
+	options2.style["-webkit-column-count"] = 2;
+	options2.style["column-count"] = 2;
+	options1.style.width = "50%";
+
+	options2.appendChild(makeNumber("setLogLevel", "Change the log level (You shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
+
+	info_box.appendChild(options2);
 
 	enhanceTooltips();
 }
