@@ -27,7 +27,7 @@ var removeFlinching = getPreferenceBoolean("removeFlinching", true);
 var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
 
-if (GM_info !== "undefined") {
+if (typeof GM_info !== "undefined") {
 	var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", true); // auto-refresh for GM/TM users
 } else {
 	var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", false); // no auto-refresh for non-GM/TM users
