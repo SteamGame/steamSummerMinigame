@@ -201,7 +201,7 @@ function disableParticles() {
 		w.CSceneGame.prototype.DoScreenShake = function() {};
 
 		if(removeParticles) {
-			w.CSceneGame.prototype.SpawnEmitter = function(emitter, x, y, container) {
+			w.CSceneGame.prototype.SpawnEmitter = function(emitter) {
 				emitter.emit = false;
 				return emitter;
 			};
@@ -319,7 +319,7 @@ function refreshPlayerData()
 			{
 				instance.m_rgPlayerTechTree = rgResult.response.tech_tree;
 				if( rgResult.response.tech_tree.upgrades ) {
-					instance.m_rgPlayerUpgrades = V_ToArray( rgResult.response.tech_tree.upgrades );
+					instance.m_rgPlayerUpgrades = w.V_ToArray( rgResult.response.tech_tree.upgrades );
 				} else {
 					instance.m_rgPlayerUpgrades = [];
 				}
@@ -327,7 +327,7 @@ function refreshPlayerData()
 
 			instance.OnReceiveUpdate();
 		},
-		function( err )
+		function()
 		{
 		},
 		true
@@ -1084,11 +1084,6 @@ function isAbilityCoolingDown(abilityId) {
 	return s().GetCooldownForAbility(abilityId) > 0;
 }
 
-function hasOneUseAbility(abilityId) {
-	var elem = document.getElementById('abilityitem_' + abilityId);
-	return elem !== null;
-}
-
 function hasPurchasedAbility(abilityId) {
 	// each bit in unlocked_abilities_bitfield corresponds to an ability.
 	// the above condition checks if the ability's bit is set or cleared. I.e. it checks if
@@ -1146,14 +1141,6 @@ function disableAbilityItem(abilityId) {
 
 function enableAbilityItem(abilityId) {
 	toggleAbilityItemVisibility(abilityId, true);
-}
-
-function isAbilityItemEnabled(abilityId) {
-	var elem = document.getElementById('abilityitem_' + abilityId);
-	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		return elem.childElements()[0].style.visibility == "visible";
-	}
-	return false;
 }
 
 function getActiveAbilityNum(ability) {
@@ -1271,24 +1258,6 @@ function startFingering() {
 
 function getClickDamageMultiplier(){
 	return s().m_rgPlayerTechTree.damage_per_click_multiplier;
-}
-
-// These are the upgrade types.
-//
-//3: fire, 4: water, 6: earth, 5: water
-// This differs from the order shown on the UI.
-function getElementMultiplierById(index){
-	switch( index )
-	{
-		case 3: // fire
-			return s().m_rgPlayerTechTree.damage_multiplier_fire;
-		case 4: // water
-			return s().m_rgPlayerTechTree.damage_multiplier_water;
-		case 5: // air
-			return s().m_rgPlayerTechTree.damage_multiplier_air;
-		case 6: // earth
-		return s().m_rgPlayerTechTree.damage_multiplier_earth;
-	}
 }
 
 function enhanceTooltips() {
