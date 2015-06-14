@@ -105,7 +105,7 @@ function firstRun() {
 	
 	// Add "players in game" label
 	var oldHTML = document.getElementsByClassName("title_activity")[0].innerHTML;
-	document.getElementsByClassName("title_activity")[0].innerHTML = "<span id=\"players_in_game\">0/1500</span>&nbsp;Players in game<br />" + oldHTML;
+	document.getElementsByClassName("title_activity")[0].innerHTML = "<span id=\"players_in_game\">0/1500</span>&nbsp;Players in room<br />" + oldHTML;
 
 	enhanceTooltips();
 }
