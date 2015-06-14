@@ -309,7 +309,9 @@ function MainLoop() {
 
 				if( s().m_rgStoredCrits.length > 0 )
 				{
-					var rgDamage = s().m_rgStoredCrits.reduce(function(a,b){return a + b});
+					var rgDamage = s().m_rgStoredCrits.reduce(function(a,b) {
+						return a + b;
+					});
 					s().m_rgStoredCrits.length = 0;
 
 					s().DoCritEffect( rgDamage, enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y + 17, 'Crit!' );
@@ -462,14 +464,14 @@ function toggleRenderer(event) {
 	if (value) {
 		w.g_Minigame.Renderer.render = trt_oldRender;
 	} else {
-		w.g_Minigame.Renderer.render = function() {}
+		w.g_Minigame.Renderer.render = function() {};
 	}
 }
 
 function autoRefreshPage(autoRefreshMinutes){
 	var timerValue = (autoRefreshMinutes + autoRefreshMinutesRandomDelay * Math.random()) * 60 * 1000;
 	refreshTimer = setTimeout(function() {
-		autoRefreshHandle();
+		autoRefreshHandler();
 	}, timerValue);
 }
 
@@ -492,8 +494,11 @@ function autoRefreshHandler() {
 
 function toggleElementLock(event) {
 	var value = enableElementLock;
-	if(event !== undefined)
+	
+	if(event !== undefined) {
 		value = handleCheckBox(event);
+	}
+	
 	if(value) {
 		lockElements();
 	} else {
@@ -518,8 +523,11 @@ function toggleCritText(event) {
 
 function toggleAllText(event) {
 	var value = removeAllText;
-	if(event !== undefined)
+	
+	if(event !== undefined) {
 		value = handleCheckBox(event);
+	}
+	
 	if (value) {
 		// Replaces the entire text function.
 		s().m_rgClickNumbers.push = function(elem){
