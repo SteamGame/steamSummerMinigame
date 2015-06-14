@@ -1274,4 +1274,5 @@ function AutoUseMedicIfApplicable(){
 		triggerAbility(ABILITIES.MEDIC);
 	}
 }
+}
 }(window));
