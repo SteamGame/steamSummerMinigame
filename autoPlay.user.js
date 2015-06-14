@@ -270,13 +270,19 @@ function handleCheckBox(event) {
 	return checkbox.checked;
 }
 
+function enableClickingPrevention(value) {
+	document.querySelector(".scanlines").style.cssText = value ? "pointer-events: auto ! important;" : "";
+}
+
 function toggleAutoClicker(event) {
 	var value = enableAutoClicker;
 	if(event !== undefined)
 		value = handleCheckBox(event);
 	if(value) {
+		enableClickingPrevention(true);
 		currentClickRate = clickRate;
 	} else {
+		enableClickingPrevention(false);
 		currentClickRate = 0;
 	}
 }

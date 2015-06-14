@@ -8,7 +8,7 @@ it cheats for you.
 
 This fork has:
 * Elemental damage prioritizing, gold prioritizing
-* Auto clicking (do **not** click, this will mess with the autoclicker)
+* Auto clicking
 * Tickrate set to 1000ms every second
 * Disable most particles
 * Auto use abilities
