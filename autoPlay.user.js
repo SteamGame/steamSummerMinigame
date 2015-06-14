@@ -69,11 +69,16 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 };
 
+function s() {
+	return g_Minigame.m_CurrentScene;
+}
 
 function firstRun() {
-	trt_oldCrit = w.g_Minigame.CurrentScene().DoCritEffect;
-	trt_oldPush = w.g_Minigame.m_CurrentScene.m_rgClickNumbers.push;
-		
+	advLog("Starting SteamDB's Steam Summer 2015 Monster Minigame Script.", 1);
+
+	trt_oldCrit = s().DoCritEffect;
+	trt_oldPush = s().m_rgClickNumbers.push;
+
 	startFingering();
 	if(enableElementLock) {
 		lockElements();
@@ -82,7 +87,7 @@ function firstRun() {
 	// disable particle effects - this drastically reduces the game's memory leak
 	if(removeParticles) {
 		if (g_Minigame !== undefined) {
-			g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
+			s().SpawnEmitter = function(emitter) {
 				emitter.emit = false;
 				return emitter;
 			};
@@ -135,14 +140,14 @@ function firstRun() {
 	if (w.CSceneGame !== undefined) {
 		w.CSceneGame.prototype.DoScreenShake = function() {};
 	}
-	
+
 	// Add "players in game" label
 	var oldHTML = document.getElementsByClassName("title_activity")[0].innerHTML;
 	document.getElementsByClassName("title_activity")[0].innerHTML = "<span id=\"players_in_game\">0/1500</span>&nbsp;Players in room<br />" + oldHTML;
 
 	var info_box = document.querySelector(".leave_game_helper");
 	info_box.innerHTML = '<b>OPTIONS</b><br/>Some of these may need a refresh to take effect.<br/>';
-	
+
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
 	info_box.style.backgroundColor = "#000000";
@@ -152,12 +157,12 @@ function firstRun() {
 	info_box.style.position = "absolute";
 	info_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
 	info_box.style.color = "#ededed";
-	
+
 	var checkboxes = document.createElement("div");
 	checkboxes.style["-moz-column-count"] = 2;
 	checkboxes.style["-webkit-column-count"] = 2;
 	checkboxes.style["column-count"] = 2;
-	
+
 	checkboxes.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
 	checkboxes.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
 	checkboxes.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
@@ -166,7 +171,7 @@ function firstRun() {
 	checkboxes.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
 	checkboxes.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
 	info_box.appendChild(checkboxes);
-	
+
 	enhanceTooltips();
 }
 
@@ -175,7 +180,7 @@ function MainLoop() {
 		isAlreadyRunning = true;
 
 		goToLaneWithBestTarget();
-		
+
 		useGoodLuckCharmIfRelevant();
 		useMedicsIfRelevant();
 		useMoraleBoosterIfRelevant();
@@ -186,27 +191,27 @@ function MainLoop() {
 		useGoldRainIfRelevant();
 		useMetalDetectorIfRelevant();
 		useCrippleMonsterIfRelevant();
-		
+
 		disableCooldownIfRelevant();
-		
+
 		updatePlayersInGame();
 		attemptRespawn();
 
-		g_Minigame.m_CurrentScene.m_nClicks += currentClickRate;
+		s().m_nClicks += currentClickRate;
 		g_msTickRate = 1000;
 
-		var damagePerClick = g_Minigame.m_CurrentScene.CalculateDamage(
-			g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click,
-			g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].element
+		var damagePerClick = s().CalculateDamage(
+			s().m_rgPlayerTechTree.damage_per_click,
+			s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].element
 			);
 
 		advLog("Ticked. Current clicks per second: " + currentClickRate + ". Current damage per second: " + (damagePerClick * currentClickRate), 4);
 
 		isAlreadyRunning = false;
 
-		var enemy = g_Minigame.m_CurrentScene.GetEnemy(
-			g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane,
-			g_Minigame.m_CurrentScene.m_rgPlayerData.target);
+		var enemy = s().GetEnemy(
+			s().m_rgPlayerData.current_lane,
+			s().m_rgPlayerData.target);
 
 		if (enemy) {
 			displayText(
@@ -216,14 +221,14 @@ function MainLoop() {
 				"#aaf"
 				);
 
-			if( g_Minigame.m_CurrentScene.m_rgStoredCrits.length > 0 )
+			if( s().m_rgStoredCrits.length > 0 )
 			{
-				var rgDamage = g_Minigame.m_CurrentScene.m_rgStoredCrits.splice(0,1);
+				var rgDamage = s().m_rgStoredCrits.splice(0,1);
 
-				g_Minigame.m_CurrentScene.DoCritEffect( rgDamage[0], enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, 'Crit!' );
+				s().DoCritEffect( rgDamage[0], enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y - 52, 'Crit!' );
 			}
 
-			var goldPerClickPercentage = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
+			var goldPerClickPercentage = s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
 			if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
 			{
 				var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * currentClickRate;
@@ -265,7 +270,7 @@ function handleEvent(event) {
 function handleCheckBox(event) {
 	var checkbox = event.target;
 	setPreference(checkbox.name, checkbox.checked);
-	
+
 	w[checkbox.name] = checkbox.checked;
 	return checkbox.checked;
 }
@@ -298,9 +303,9 @@ function toggleCritText(event){
 		value = handleCheckBox(event);
 	if (value) {
 			// Replaces the entire crit display function.
-			w.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+			s().DoCritEffect = function( nDamage, x, y, additionalText ) {};
 		} else {
-			w.g_Minigame.CurrentScene().DoCritEffect = trt_oldCrit;
+			s().DoCritEffect = trt_oldCrit;
 		}
 	}
 
@@ -310,11 +315,11 @@ function toggleCritText(event){
 			value = handleCheckBox(event);
 		if (value) {
 	// Replaces the entire text function.
-	w.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = function(elem){
+	s().m_rgClickNumbers.push = function(elem){
 		elem.container.removeChild(elem);
 	};
 } else {
-	w.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = trt_oldPush;
+	s().m_rgClickNumbers.push = trt_oldPush;
 }
 }
 
@@ -359,10 +364,10 @@ function unlockElements() {
 
 function lockElements() {
 	var elementMultipliers = [
-	g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_fire,
-	g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_water,
-	g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_air,
-	g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_earth
+	s().m_rgPlayerTechTree.damage_multiplier_fire,
+	s().m_rgPlayerTechTree.damage_multiplier_water,
+	s().m_rgPlayerTechTree.damage_multiplier_air,
+	s().m_rgPlayerTechTree.damage_multiplier_earth
 	];
 
 	var hashCode=function(str) {
@@ -429,8 +434,8 @@ function displayText(x, y, strText, color) {
 	text.x = x;
 	text.y = y;
 
-	g_Minigame.CurrentScene().m_containerUI.addChild( text );
-	text.container = g_Minigame.CurrentScene().m_containerUI;
+	s().m_containerUI.addChild( text );
+	text.container = s().m_containerUI;
 
 	var e = new CEasingSinOut( text.y, -200, 1000 );
 	e.parent = text;
@@ -440,13 +445,13 @@ function displayText(x, y, strText, color) {
 	e.parent = text;
 	text.m_easeAlpha = e;
 
-	g_Minigame.CurrentScene().m_rgClickNumbers.push(text);
+	s().m_rgClickNumbers.push(text);
 }
 
 function updatePlayersInGame() {
-	var totalPlayers =  g_Minigame.m_CurrentScene.m_rgLaneData[ 0 ].players +
-	g_Minigame.m_CurrentScene.m_rgLaneData[ 1 ].players +
-	g_Minigame.m_CurrentScene.m_rgLaneData[ 2 ].players;
+	var totalPlayers =  s().m_rgLaneData[ 0 ].players +
+	s().m_rgLaneData[ 1 ].players +
+	s().m_rgLaneData[ 2 ].players;
 	document.getElementById("players_in_game").innerHTML = totalPlayers + "/1500";
 }
 
@@ -491,7 +496,7 @@ function goToLaneWithBestTarget() {
 		// gather all the enemies of the specified type.
 		for (i = 0; i < 3; i++) {
 			for (var j = 0; j < 4; j++) {
-				var enemy = g_Minigame.CurrentScene().GetEnemy(i, j);
+				var enemy = s().GetEnemy(i, j);
 				if (enemy && enemy.m_data.type == enemyTypePriority[k]) {
 					enemies[enemies.length] = enemy;
 				}
@@ -507,18 +512,18 @@ function goToLaneWithBestTarget() {
 				// Maximize compability with upstream
 				i = sortedLanes[notI];
 				// ignore if lane is empty
-				if(g_Minigame.CurrentScene().m_rgGameData.lanes[i].dps === 0)
+				if(s().m_rgGameData.lanes[i].dps === 0)
 					continue;
 				var stacks = 0;
-				if(typeof g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17] != 'undefined') {
-					stacks = g_Minigame.m_CurrentScene.m_rgLaneData[i].abilities[17];
+				if(typeof s().m_rgLaneData[i].abilities[17] != 'undefined') {
+					stacks = s().m_rgLaneData[i].abilities[17];
 					advLog('stacks: ' + stacks, 3);
 				}
-				for(var m = 0; m < g_Minigame.m_CurrentScene.m_rgEnemies.length; m++) {
-					var enemyGold = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_data.gold;
+				for(var m = 0; m < s().m_rgEnemies.length; m++) {
+					var enemyGold = s().m_rgEnemies[m].m_data.gold;
 					if (stacks * enemyGold > potential) {
 						potential = stacks * enemyGold;
-						preferredTarget = g_Minigame.m_CurrentScene.m_rgEnemies[m].m_nID;
+						preferredTarget = s().m_rgEnemies[m].m_nID;
 						preferredLane = i;
 					}
 				}
@@ -531,10 +536,10 @@ function goToLaneWithBestTarget() {
 			if (enemies[i] && !enemies[i].m_bIsDestroyed) {
 				// Only select enemy and lane if the preferedLane matches the potential enemy lane
 				if(lowHP < 1 || enemies[i].m_flDisplayedHP < lowHP) {
-					var element = g_Minigame.CurrentScene().m_rgGameData.lanes[enemies[i].m_nLane].element;
+					var element = s().m_rgGameData.lanes[enemies[i].m_nLane].element;
 
-					var dmg = g_Minigame.CurrentScene().CalculateDamage(
-						g_Minigame.CurrentScene().m_rgPlayerTechTree.dps,
+					var dmg = s().CalculateDamage(
+						s().m_rgPlayerTechTree.dps,
 						element
 						);
 					if(mostHPDone <= dmg)
@@ -585,15 +590,15 @@ function goToLaneWithBestTarget() {
 
 	// go to the chosen lane
 	if (targetFound) {
-		if (g_Minigame.CurrentScene().m_nExpectedLane != lowLane) {
+		if (s().m_nExpectedLane != lowLane) {
 			advLog('Switching to lane' + lowLane, 3);
-			g_Minigame.CurrentScene().TryChangeLane(lowLane);
+			s().TryChangeLane(lowLane);
 		}
 
 		// target the chosen enemy
-		if (g_Minigame.CurrentScene().m_nTarget != lowTarget) {
+		if (s().m_nTarget != lowTarget) {
 			advLog('Switching targets', 3);
-			g_Minigame.CurrentScene().TryChangeTarget(lowTarget);
+			s().TryChangeTarget(lowTarget);
 		}
 
 
@@ -669,11 +674,11 @@ function useCrippleMonsterIfRelevant() {
 		return;
 	}
    }
-   
-   var level = g_Minigame.m_CurrentScene.m_rgGameData.level + 1;
+
+   var level = s().m_rgGameData.level + 1;
 	// Use nukes on boss when level >3000 for faster kills
 	if (level > 1000 && level % 200 != 0 && level % 10 == 0) {
-		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
+		var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp
 			if (enemyBossHealthPercent>0.5){
@@ -681,15 +686,15 @@ function useCrippleMonsterIfRelevant() {
 				triggerItem(ITEMS.CRIPPLE_MONSTER);
 			}
 		}
-	}  
+	}
 }
 
 function useMedicsIfRelevant() {
-	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
+	var myMaxHealth = s().m_rgPlayerTechTree.max_hp;
 
 	// check if health is below 50%
-	var hpPercent = g_Minigame.CurrentScene().m_rgPlayerData.hp / myMaxHealth;
-	if (hpPercent > 0.5 || g_Minigame.CurrentScene().m_rgPlayerData.hp < 1) {
+	var hpPercent = s().m_rgPlayerData.hp / myMaxHealth;
+	if (hpPercent > 0.5 || s().m_rgPlayerData.hp < 1) {
 		return; // no need to heal - HP is above 50% or already dead
 	}
 
@@ -740,12 +745,12 @@ function useClusterBombIfRelevant() {
 		}
 
 		//Check lane has monsters to explode
-		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var currentLane = s().m_nExpectedLane;
 		var enemyCount = 0;
 		var enemySpawnerExists = false;
 		//Count each slot in lane
 		for (var i = 0; i < 4; i++) {
-			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			var enemy = s().GetEnemy(currentLane, i);
 			if (enemy) {
 				enemyCount++;
 				if (enemy.m_data.type === 0) {
@@ -768,12 +773,12 @@ function useNapalmIfRelevant() {
 		}
 
 		//Check lane has monsters to burn
-		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var currentLane = s().m_nExpectedLane;
 		var enemyCount = 0;
 		var enemySpawnerExists = false;
 		//Count each slot in lane
 		for (var i = 0; i < 4; i++) {
-			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			var enemy = s().GetEnemy(currentLane, i);
 			if (enemy) {
 				enemyCount++;
 				if (enemy.m_data.type === 0) {
@@ -796,9 +801,9 @@ function useMoraleBoosterIfRelevant() {
 			return;
 		}
 		var numberOfWorthwhileEnemies = 0;
-		for(var i = 0; i < g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies.length; i++){
+		for(var i = 0; i < s().m_rgGameData.lanes[s().m_nExpectedLane].enemies.length; i++){
 			//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
-			if(g_Minigame.CurrentScene().m_rgGameData.lanes[g_Minigame.CurrentScene().m_nExpectedLane].enemies[i].hp > 1000000) {
+			if(s().m_rgGameData.lanes[s().m_nExpectedLane].enemies[i].hp > 1000000) {
 				numberOfWorthwhileEnemies++;
 			}
 		}
@@ -817,12 +822,12 @@ function useTacticalNukeIfRelevant() {
 		}
 
 		//Check that the lane has a spawner and record it's health percentage
-		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var currentLane = s().m_nExpectedLane;
 		var enemySpawnerExists = false;
 		var enemySpawnerHealthPercent = 0.0;
 		//Count each slot in lane
 		for (var i = 0; i < 4; i++) {
-			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			var enemy = s().GetEnemy(currentLane, i);
 			if (enemy) {
 				if (enemy.m_data.type === 0) {
 					enemySpawnerExists = true;
@@ -847,12 +852,12 @@ function useCrippleSpawnerIfRelevant() {
 		}
 
 		//Check that the lane has a spawner and record it's health percentage
-		var currentLane = g_Minigame.CurrentScene().m_nExpectedLane;
+		var currentLane = s().m_nExpectedLane;
 		var enemySpawnerExists = false;
 		var enemySpawnerHealthPercent = 0.0;
 		//Count each slot in lane
 		for (var i = 0; i < 4; i++) {
-			var enemy = g_Minigame.CurrentScene().GetEnemy(currentLane, i);
+			var enemy = s().GetEnemy(currentLane, i);
 			if (enemy) {
 				if (enemy.m_data.type === 0) {
 					enemySpawnerExists = true;
@@ -876,7 +881,7 @@ function useGoldRainIfRelevant() {
 			return;
 		}
 
-		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
+		var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 		// check if current target is a boss, otherwise its not worth using the gold rain
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
@@ -897,7 +902,7 @@ function useMetalDetectorIfRelevant() {
 			return;
 		}
 
-		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
+		var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 		// check if current target is a boss, otherwise we won't use metal detector
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
@@ -912,19 +917,19 @@ function useMetalDetectorIfRelevant() {
 }
 
 function attemptRespawn() {
-	if ((g_Minigame.CurrentScene().m_bIsDead) &&
-		((g_Minigame.CurrentScene().m_rgPlayerData.time_died) + 5) < (g_Minigame.CurrentScene().m_nTime)) {
+	if ((s().m_bIsDead) &&
+		((s().m_rgPlayerData.time_died) + 5) < (s().m_nTime)) {
 		RespawnPlayer();
 }
 }
 
 function isAbilityActive(abilityId) {
-	return g_Minigame.CurrentScene().bIsAbilityActive(abilityId);
+	return s().bIsAbilityActive(abilityId);
 }
 
 function hasItem(itemId) {
-	for ( var i = 0; i < g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items.length; ++i ) {
-		var abilityItem = g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items[i];
+	for ( var i = 0; i < s().m_rgPlayerTechTree.ability_items.length; ++i ) {
+		var abilityItem = s().m_rgPlayerTechTree.ability_items[i];
 		if (abilityItem.ability == itemId) {
 			return true;
 		}
@@ -933,7 +938,7 @@ function hasItem(itemId) {
 }
 
 function isAbilityCoolingDown(abilityId) {
-	return g_Minigame.CurrentScene().GetCooldownForAbility(abilityId) > 0;
+	return s().GetCooldownForAbility(abilityId) > 0;
 }
 
 function hasOneUseAbility(abilityId) {
@@ -945,18 +950,18 @@ function hasPurchasedAbility(abilityId) {
 	// each bit in unlocked_abilities_bitfield corresponds to an ability.
 	// the above condition checks if the ability's bit is set or cleared. I.e. it checks if
 	// the player has purchased the specified ability.
-	return (1 << abilityId) & g_Minigame.CurrentScene().m_rgPlayerTechTree.unlocked_abilities_bitfield;
+	return (1 << abilityId) & s().m_rgPlayerTechTree.unlocked_abilities_bitfield;
 }
 
 function triggerItem(itemId) {
 	var elem = document.getElementById('abilityitem_' + itemId);
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		g_Minigame.CurrentScene().TryAbility(document.getElementById('abilityitem_' + itemId).childElements()[0]);
+		s().TryAbility(document.getElementById('abilityitem_' + itemId).childElements()[0]);
 	}
 }
 
 function triggerAbility(abilityId) {
-	g_Minigame.CurrentScene().m_rgAbilityQueue.push({'ability': abilityId});
+	s().m_rgAbilityQueue.push({'ability': abilityId});
 }
 
 function toggleAbilityVisibility(abilityId, show) {
@@ -1008,7 +1013,7 @@ function isAbilityItemEnabled(abilityId) {
 }
 
 function getActiveAbilityNum(ability) {
-	var abilities = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_abilities;
+	var abilities = s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].active_player_abilities;
 	var count = 0;
 	for(var i = 0; i < abilities.length; i++)
 	{
@@ -1027,13 +1032,13 @@ function getActiveAbilityNum(ability) {
 
 function sortLanesByElementals() {
 	var elementPriorities = [
-	g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_fire,
-	g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_water,
-	g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_air,
-	g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_earth
+	s().m_rgPlayerTechTree.damage_multiplier_fire,
+	s().m_rgPlayerTechTree.damage_multiplier_water,
+	s().m_rgPlayerTechTree.damage_multiplier_air,
+	s().m_rgPlayerTechTree.damage_multiplier_earth
 	];
 
-	var lanes = g_Minigame.CurrentScene().m_rgGameData.lanes;
+	var lanes = s().m_rgGameData.lanes;
 	var lanePointers = [];
 
 	for (var i = 0; i < lanes.length; i++) {
@@ -1061,7 +1066,7 @@ if(w.SteamDB_Minigame_Timer) {
 }
 
 w.SteamDB_Minigame_Timer = w.setInterval(function(){
-	if (g_Minigame && g_Minigame.CurrentScene().m_bRunning && g_Minigame.CurrentScene().m_rgPlayerTechTree) {
+	if (g_Minigame && s().m_bRunning && s().m_rgPlayerTechTree) {
 		w.clearInterval(w.SteamDB_Minigame_Timer);
 		firstRun();
 		w.SteamDB_Minigame_Timer = w.setInterval(MainLoop, 1000);
@@ -1085,32 +1090,32 @@ if(breadcrumbs) {
 
 // Helpers to access player stats.
 function getCritChance(){
-	return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.crit_percentage * 100;
+	return s().m_rgPlayerTechTree.crit_percentage * 100;
 }
 
 function getCritMultiplier(){
-	return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_multiplier_crit;
+	return s().m_rgPlayerTechTree.damage_multiplier_crit;
 }
 
 function getDPS(){
-	return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.dps;
+	return s().m_rgPlayerTechTree.dps;
 }
 
 function getClickDamage(){
-	return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click;
+	return s().m_rgPlayerTechTree.damage_per_click;
 }
 
 function startFingering() {
 	w.CSceneGame.prototype.ClearNewPlayer = function(){};
 
-	if(!g_Minigame.m_CurrentScene.m_spriteFinger)
+	if(!s().m_spriteFinger)
 	{
 		w.WebStorage.SetLocal('mg_how2click', 0);
-		g_Minigame.m_CurrentScene.CheckNewPlayer();
+		s().CheckNewPlayer();
 		w.WebStorage.SetLocal('mg_how2click', 1);
 	}
 
-	document.getElementById('newplayer').style.display = 'none'; 
+	document.getElementById('newplayer').style.display = 'none';
 }
 
 function enhanceTooltips(){
