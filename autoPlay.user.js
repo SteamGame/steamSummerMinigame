@@ -27,6 +27,7 @@ var removeFlinching = getPreferenceBoolean("removeFlinching", true);
 var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
 var enableFingering = getPreferenceBoolean("enableFingering", true);
+var enableRenderer = getPreferenceBoolean("enableRenderer", true);
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
@@ -43,6 +44,7 @@ var lockedElement = -1;
 var lastLevel = 0;
 var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
+var trt_oldRender = function() {};
 
 var ABILITIES = {
 	"MORALE_BOOSTER": 5,
@@ -91,6 +93,7 @@ function firstRun() {
 
 	trt_oldCrit = s().DoCritEffect;
 	trt_oldPush = s().m_rgClickNumbers.push;
+	trt_oldRender = w.g_Minigame.Renderer.render;
 
 	if(enableFingering) {
 		startFingering();
@@ -102,6 +105,10 @@ function firstRun() {
 
 	if (enableAutoRefresh) {
 		autoRefreshPage(autoRefreshMinutes);
+	}
+	
+	if (enableRenderer) {
+		toggleRenderer();
 	}
 
 	// disable particle effects - this drastically reduces the game's memory leak
@@ -184,6 +191,7 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
 	options1.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
+	options1.appendChild(makeCheckBox("enableRenderer", "Enable game renderer", enableRenderer, toggleRenderer));
 
 	info_box.appendChild(options1);
 
@@ -439,6 +447,20 @@ function toggleAutoRefresh(event) {
 		autoRefreshPage(autoRefreshMinutes);
 	} else {
 		clearTimeout(refreshTimer);
+	}
+}
+
+function toggleRenderer(event) {
+	var value = enableRenderer;
+	
+	if (event !== undefined) {
+		value = handleCheckBox(event);
+	}
+	
+	if (value) {
+		w.g_Minigame.Renderer.render = trt_oldRender;
+	} else {
+		w.g_Minigame.Renderer.render = function() {}
 	}
 }
 
