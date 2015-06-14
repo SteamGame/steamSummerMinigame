@@ -824,12 +824,6 @@ function goToLaneWithBestTarget() {
 			enableAbility(ABILITIES.MORALE_BOOSTER);
 			// Luck
 			enableAbility(ABILITIES.GOOD_LUCK);
-			// Nuke
-			enableAbility(ABILITIES.NUKE);
-			// Clusterbomb
-			enableAbility(ABILITIES.CLUSTER_BOMB);
-			// Napalm
-			enableAbility(ABILITIES.NAPALM);
 			// Crit
 			enableAbilityItem(ITEMS.CRIT);
 			// Cripple Spawner
