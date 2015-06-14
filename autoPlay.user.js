@@ -119,8 +119,15 @@ function firstRun() {
 		toggleAllText();
 	}
 
-	if ( removeInterface ) {
-		var node = document.getElementById("global_header");
+	var node = document.getElementById("abilities");
+
+	if( node ) {
+		node.style.textAlign = 'left';
+		node.style.marginLeft = '300px';
+	}
+
+	if( removeInterface ) {
+		node = document.getElementById("global_header");
 		if (node && node.parentNode) {
 			node.parentNode.removeChild( node );
 		}
