@@ -148,11 +148,18 @@ function firstRun() {
 	}
 
 	// Add "players in game" label
-	var oldHTML = document.getElementsByClassName("title_activity")[0].innerHTML;
-	document.getElementsByClassName("title_activity")[0].innerHTML = "<span id=\"players_in_game\">0/1500</span>&nbsp;Players in room<br />" + oldHTML;
-
+	var titleActivity = document.querySelector( '.title_activity' );
+	var playersInGame = document.createElement( 'span' );
+	playersInGame.innerHTML = '<span id=\"players_in_game\">0/1500</span>&nbsp;Players in room<br>';
+	
+	titleActivity.insertBefore(playersInGame, titleActivity.firstChild);
+	
+	// Fix alignment
+	var activity = document.getElementById("activitylog");
+	activity.style.marginTop = "25px";
+	
 	var info_box = document.querySelector(".leave_game_helper");
-	info_box.innerHTML = '<b>OPTIONS</b><br/>Some of these may need a refresh to take effect.<br/>';
+	info_box.innerHTML = '<b>OPTIONS</b><br>Some of these may need a refresh to take effect.<br>';
 
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
