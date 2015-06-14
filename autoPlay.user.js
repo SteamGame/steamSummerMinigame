@@ -383,7 +383,7 @@ function makeNumber(name, desc, width, value, min, max, listener) {
 function makeCheckBox(name, desc, state, listener, reqRefresh) {
 	var asterisk = document.createElement('span');
 	asterisk.appendChild(document.createTextNode("*"));
-	asterisk.setAttribute("STYLE","color:#a33100");
+	asterisk.style.color = "#a33100";
 
 	var label= document.createElement("label");
 	var description = document.createTextNode(desc);
