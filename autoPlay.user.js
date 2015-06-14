@@ -258,7 +258,8 @@ function MainLoop() {
 
 			if( s().m_rgStoredCrits.length > 0 )
 			{
-				var rgDamage = s().m_rgStoredCrits.splice(0,s().m_rgStoredCrits.length).reduce(function(a,b){return a + b});
+				var rgDamage = s().m_rgStoredCrits.reduce(function(a,b){return a + b});
+				s().m_rgStoredCrits.length = 0;
 
 				s().DoCritEffect( rgDamage, enemy.m_Sprite.position.x - (enemy.m_nLane * 440), enemy.m_Sprite.position.y + 17, 'Crit!' );
 			}
