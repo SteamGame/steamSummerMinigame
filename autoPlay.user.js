@@ -176,7 +176,6 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
 	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
 	options1.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
-	options1.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
 
 	info_box.appendChild(options1);
 
@@ -193,6 +192,23 @@ function firstRun() {
 
 	info_box.appendChild(options2);
 
+	//Elemental upgrades lock
+	var ab_box = document.getElementById("abilities");
+	var lock_elements_box = document.createElement("div");
+	lock_elements_box.className = "lock_elements_box";
+	lock_elements_box.style.backgroundColor = "#000000";
+	lock_elements_box.style.width = "160px";
+	lock_elements_box.style.top = "0px";
+	lock_elements_box.style.left = "4px";
+	lock_elements_box.style.padding = "2px";
+	lock_elements_box.style.position = "absolute";
+	lock_elements_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
+	lock_elements_box.style.color = "#ededed";
+	lock_elements_box.title = "To maximise team damage players should max only one element. But distributions of elements through people should be equal. So we calculated your element using your unique ID. Upgrade your element to make maximum performance or disable this checkbox.";
+	var lock_elements_checkbox = makeCheckBox("enableElementLock", "Lock element upgrades for more team dps", enableElementLock, toggleElementLock);
+	lock_elements_box.appendChild(lock_elements_checkbox);
+	ab_box.appendChild(lock_elements_box);
+	
 	enhanceTooltips();
 }
 
