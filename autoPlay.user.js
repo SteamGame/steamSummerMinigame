@@ -94,22 +94,18 @@ function firstRun() {
 	}
 
 	// disable particle effects - this drastically reduces the game's memory leak
-	if(removeParticles) {
-		if (g_Minigame !== undefined) {
-			s().SpawnEmitter = function(emitter) {
-				emitter.emit = false;
-				return emitter;
-			};
-		}
+	if(removeParticles && CSceneGame) {
+		CSceneGame.prototype.SpawnEmitter = function(emitter, x, y, container) {
+			emitter.emit = false;
+			return emitter;
+		};
 	}
 
 	// disable enemy flinching animation when they get hit
-	if(removeFlinching) {
-		if (CEnemy !== undefined) {
-			CEnemy.prototype.TakeDamage = function() {};
-			CEnemySpawner.prototype.TakeDamage = function() {};
-			CEnemyBoss.prototype.TakeDamage = function() {};
-		}
+	if(removeFlinching && CEnemy) {
+		CEnemy.prototype.TakeDamage = function() {};
+		CEnemySpawner.prototype.TakeDamage = function() {};
+		CEnemyBoss.prototype.TakeDamage = function() {};
 	}
 
 	if(removeCritText) {
@@ -1208,13 +1204,13 @@ function getElementMultiplierById(index){
 	switch( index )
 	{
 		case 3: // fire
-			return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_fire;
+			return s().m_rgPlayerTechTree.damage_multiplier_fire;
 		case 4: // water
-			return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_water;
+			return s().m_rgPlayerTechTree.damage_multiplier_water;
 		case 5: // air
-			return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_air;
+			return s().m_rgPlayerTechTree.damage_multiplier_air;
 		case 6: // earth
-		return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_earth;
+		return s().m_rgPlayerTechTree.damage_multiplier_earth;
 	}
 }
 
@@ -1230,7 +1226,7 @@ function enhanceTooltips(){
 		case 2: // Type for click damage. All tiers.
 			strOut = trt_oldTooltip(context);
 			var currentCrit = getClickDamage() * getCritMultiplier();
-			var newCrit = g_Minigame.CurrentScene().m_rgTuningData.player.damage_per_click *(getClickDamageMultiplier() + multiplier) * getCritMultiplier();
+			var newCrit = s().m_rgTuningData.player.damage_per_click *(getClickDamageMultiplier() + multiplier) * getCritMultiplier();
 			strOut += '<br><br>Crit Click: ' + FormatNumberForDisplay( currentCrit ) + ' => ' + FormatNumberForDisplay( newCrit );
 			break;
 		case 7: // Lucky Shot's type.
@@ -1270,7 +1266,7 @@ function enhanceTooltips(){
 			var strOut = trt_oldElemTooltip(context);
 
 			var $context = $J(context);
-			var upgrades = g_Minigame.CurrentScene().m_rgTuningData.upgrades.slice(0);
+			var upgrades = s().m_rgTuningData.upgrades.slice(0);
 			// Element Upgrade index 3 to 6
 			var idx = $context.data('type');
 			// Is the current tooltip for the recommended element?
