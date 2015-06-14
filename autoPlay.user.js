@@ -687,6 +687,14 @@ function useCrippleMonsterIfRelevant() {
 }
 
 function useMedicsIfRelevant() {
+
+	if (hasItem(ITEMS.PUMPED_UP) && !isAbilityCoolingDown(ITEMS.PUMPED_UP)){
+		// Crits is purchased, cooled down, and needed. Trigger it.
+		advLog('Pumped up is always good.', 2);
+		triggerItem(ITEMS.PUMPED_UP);
+		return;
+	}
+
 	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
 
 	// check if health is below 50%
@@ -712,10 +720,10 @@ function useMedicsIfRelevant() {
 function useGoodLuckCharmIfRelevant() {
 
 	// check if Crits is purchased and cooled down
-	if (hasItem(18) && !isAbilityCoolingDown(18)){
+	if (hasItem(ITEMS.CRIT) && !isAbilityCoolingDown(ITEMS.CRIT)){
 		// Crits is purchased, cooled down, and needed. Trigger it.
 		advLog('Crit chance is always good.', 3);
-		triggerAbility(18);
+		triggerItem(ITEMS.CRIT);
 	}
 
 	// check if Good Luck Charms is purchased and cooled down
