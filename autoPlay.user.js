@@ -190,7 +190,10 @@ function firstRun() {
 	options2.style["column-count"] = 2;
 	options1.style.width = "50%";
 
-	options2.appendChild(makeNumber("setLogLevel", "Change the log level (You shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
+	if (typeof GM_info !==  "undefined") {
+		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh));
+	}
+	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
 
@@ -339,7 +342,7 @@ function toggleAutoRefresh(event) {
     if(value) {
         autoRefreshPage(autoRefreshMinutes);
     } else {
-		clearTimeout(refreshTimer);	
+		clearTimeout(refreshTimer);
     }
 }
 function autoRefreshPage(autoRefreshMinutes){
