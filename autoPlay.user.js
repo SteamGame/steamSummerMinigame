@@ -271,6 +271,7 @@ function MainLoop() {
 		useCrippleMonsterIfRelevant();
 		useReviveIfRelevant();
 		useTreasureIfRelevant();
+		useMaxElementalDmgIfRelevant();
 
 		disableCooldownIfRelevant();
 
@@ -1166,6 +1167,20 @@ function useTreasureIfRelevant() {
 			// Treasure is purchased, cooled down, and needed. Trigger it.
 			advLog('Treasure is purchased and cooled down, triggering it.', 2);
 			triggerItem(ITEMS.TREASURE);
+		}
+	}
+}
+
+function useMaxElementalDmgIfRelevant() {
+	// Check if Max Elemental Damage is purchased
+	if (hasItem(ITEMS.MAXIMIZE_ELEMENT)) {
+		if (isAbilityCoolingDown(ITEMS.MAXIMIZE_ELEMENT) || !canUseItem(ITEMS.MAXIMIZE_ELEMENT) || isAbilityActive(ITEMS.MAXIMIZE_ELEMENT)) {
+			return;
+		}
+		else {
+			// Max Elemental Damage is purchased, cooled down, and needed. Trigger it.
+			advLog('Max Elemental Damage is purchased and cooled down, triggering it.', 2);
+			triggerItem(ITEMS.MAXIMIZE_ELEMENT);
 		}
 	}
 }
