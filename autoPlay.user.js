@@ -144,9 +144,9 @@ function firstRun() {
 	checkboxes.style["-webkit-column-count"] = 2;
 	checkboxes.style["column-count"] = 2;
 	checkboxes.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
-	checkboxes.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleEvent));
-	checkboxes.appendChild(makeCheckBox("removeParticles", "Remove particle effects", removeParticles, handleEvent));
-	checkboxes.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent));
+	checkboxes.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
+	checkboxes.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
+	checkboxes.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
 	checkboxes.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
 	checkboxes.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
 	checkboxes.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
