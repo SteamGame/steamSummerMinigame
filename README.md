@@ -14,6 +14,8 @@ This fork has:
 * Auto use abilities
 * idk
 
+** This fork is designed for use as a group (specifically the MSG2015 Steam group). **
+
 
 **DISCLAIMER:** This autoscript *will* include an auto-clicker. Automatic clicking pushes into the area of cheating, and this script is designed for cheating and automating the process of collecting gold.
 
@@ -43,12 +45,12 @@ This fork has:
 
 1. Open Tapermonkey's dashboard.
 2. Click on the `Utilites` tab on the right.
-3. Paste `https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js` into the text area, and click `Import`.
+3. Paste `https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.user.js` into the text area, and click `Import`.
 4. When the editor has loaded, click `Install` (*NOT* `Process with Chrome`).
 
 ### Greasemonkey ###
 
-1. Navigate to `https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js`.
+1. Navigate to `https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.user.js`.
 2. Right click on the page, and click `Save Page As`.
 3. While Firefox is still open, open a File Manager of any sort, and navigate to the directory you saved the script.
 4. Drag & drop the script file onto the Firefox window.
