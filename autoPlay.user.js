@@ -174,6 +174,7 @@ function MainLoop() {
 		isAlreadyRunning = true;
 
 		goToLaneWithBestTarget();
+		
 		useGoodLuckCharmIfRelevant();
 		useMedicsIfRelevant();
 		useMoraleBoosterIfRelevant();
@@ -183,9 +184,12 @@ function MainLoop() {
 		useCrippleSpawnerIfRelevant();
 		useGoldRainIfRelevant();
 		useMetalDetectorIfRelevant();
-		attemptRespawn();
+		useCrippleMonsterIfRelevant();
+		
 		disableCooldownIfRelevant();
+		
 		updatePlayersInGame();
+		attemptRespawn();
 
 		g_Minigame.m_CurrentScene.m_nClicks = currentClickRate;
 		g_msTickRate = 1000;
@@ -655,6 +659,28 @@ function disableCooldownIfRelevant() {
 		enableAbility(ABILITIES.COOLDOWN);
 	}
 
+}
+
+function useCrippleMonsterIfRelevant() {
+   // Check if Cripple Spawner is available
+    if(hasItem(ITEMS.CRIPPLE_MONSTER)) {
+   		if (isAbilityCoolingDown(ITEMS.CRIPPLE_MONSTER)) {
+        	return;
+       	}
+  	}
+   
+    var level = g_Minigame.m_CurrentScene.m_rgGameData.level + 1;
+    // Use nukes on boss when level >3000 for faster kills
+    if (level > 1000 && level % 200 != 0 && level % 10 == 0) {
+    	var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
+    	if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+    		var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp
+    		if (enemyBossHealthPercent>0.5){
+    			advLog("Cripple Monster available and used on boss", 2);
+    			triggerItem(ITEMS.CRIPPLE_MONSTER);
+    		}
+    	}
+    }  
 }
 
 function useMedicsIfRelevant() {
