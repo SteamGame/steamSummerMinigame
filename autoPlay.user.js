@@ -536,7 +536,7 @@ function goToLaneWithBestTarget() {
 						g_Minigame.CurrentScene().m_rgPlayerTechTree.dps,
 						element
 						);
-					if(mostHPDone < dmg)
+					if(mostHPDone <= dmg)
 					{
 						mostHPDone = dmg;
 					} else {
