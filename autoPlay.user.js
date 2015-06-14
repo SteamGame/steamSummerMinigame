@@ -324,6 +324,10 @@ function firstRun() {
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, toggleFingering, false));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", logLevel, 0, 5, updateLogLevel));
 
+	options2.appendChild(makeLabel("dps", "dpsDisplay", "Current damage per second"));
+	options2.appendChild(document.createElement("br"));
+	options2.appendChild(makeLabel("gps", "gpsDisplay", "Current gold per second"));
+
 	info_box.appendChild(options2);
 
 	//Elemental upgrades lock
@@ -454,6 +458,14 @@ function MainLoop() {
 
 		advLog("Ticked. Current clicks per second: " + absoluteCurrentClickRate + ". Current damage per second: " + (damagePerClick * absoluteCurrentClickRate), 4);
 
+		var dps = (damagePerClick * currentClickRate);
+		var dpsText = "" + dps;
+		if (dps > 1000000000) { dpsText = (dps / 1000000000).toFixed(2) + "B"; }
+		else if (dps > 1000000) { dpsText = (dps / 1000000).toFixed(2) + "M"; }
+		else if (dps > 1000) { dpsText = (dps / 1000).toFixed(2) + "K"; }
+
+		document.getElementById('dps').innerHTML = "Current damage per second:<br/>" + dpsText;
+
 		if(disableRenderer) {
 			s().Tick();
 
@@ -493,17 +505,30 @@ function MainLoop() {
 					s().ClientOverride('player_data', 'gold', s().m_rgPlayerData.gold + goldPerSecond);
 					s().ApplyClientOverrides('player_data', true);
 
+					var gpcText = (goldPerClickPercentage * 100).toFixed(0) + "%";
+					var gpsText = "" + goldPerSecond.toFixed(0);
+					if (goldPerSecond > 1000000000) { gpsText = (goldPerSecond / 1000000000).toFixed(2) + "B"; }
+					else if (goldPerSecond > 1000000) { gpsText = (goldPerSecond / 1000000).toFixed(2) + "M"; }
+					else if (goldPerSecond > 1000) { gpsText = (goldPerSecond / 1000).toFixed(2) + "K"; }
+
 					advLog(
 						"Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
 						+ "%. Approximately gold per second: " + goldPerSecond,
 						4
 					);
+
+					document.getElementById('gps').innerHTML = "Current gold per second:<br/>" + gpsText + "(" + gpcText + ")";
+
 					displayText(
 						enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
 						enemy.m_Sprite.position.y - 17,
 						"+" + w.FormatNumberForDisplay(goldPerSecond, 5),
 						"#e1b21e"
 					);
+				}
+				else
+				{
+					document.getElementById('gps').innerHTML = "Current gold per second:<br/>0 (NOT ACTIVE)";
 				}
 			}
 		}
@@ -771,6 +796,16 @@ function makeCheckBox(name, desc, state, listener, reqRefresh) {
 	}
 	label.appendChild(document.createElement("br"));
 	return label;
+}
+
+function makeLabel(id, name, title) {
+    var label = document.createElement("label");
+
+    label.id = id;
+    label.name = name;
+    label.title = title;
+
+    return label;
 }
 
 function handleEvent(event) {
