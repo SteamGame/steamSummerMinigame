@@ -654,6 +654,10 @@ function predictBossDeath() {
 	if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 		var enemyBossHealth = enemy.m_flDisplayedHP;
 		var teamDps = g_Minigame.m_CurrentScene.m_rgLaneData[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].friendly_dps;
+		if(teamDps == 0 || enemyBossHealth == 0)
+		{
+			return 0;
+		}
 		var secsToBossDeath = teamDps / enemyBossHealth;
 		return secsToBossDeath;
 	}			
@@ -913,7 +917,7 @@ function useMetalDetectorIfRelevant() {
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 			var secsToBossDeath = predictBossDeath();
 
-			if (secsToBossDeath <= 10) { // We want sufficient time for the metal detector to be applicable
+			if (secsToBossDeath <= 10 && secsToBossDeath > 0) { // We want sufficient time for the metal detector to be applicable
 				// Metal Detector is purchased, cooled down, and needed. Trigger it.
 				advLog('Metal Detector is purchased and cooled down, triggering it on boss', 2);
 				triggerAbility(ABILITIES.METAL_DETECTOR);
