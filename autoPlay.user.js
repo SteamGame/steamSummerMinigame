@@ -762,18 +762,10 @@ function useCrippleMonsterIfRelevant() {
 
 function useMedicsIfRelevant() {
 	if (hasItem(ITEMS.PUMPED_UP) && !isAbilityCoolingDown(ITEMS.PUMPED_UP)){
-		// Crits is purchased, cooled down, and needed. Trigger it.
+		// Pumped Up is purchased, cooled down, and needed. Trigger it.
 		advLog('Pumped up is always good.', 2);
 		triggerItem(ITEMS.PUMPED_UP);
 		return;
-	}
-
-	var myMaxHealth = s().m_rgPlayerTechTree.max_hp;
-
-	// check if health is below 50%
-	var hpPercent = s().m_rgPlayerData.hp / myMaxHealth;
-	if (hpPercent > 0.5 || s().m_rgPlayerData.hp < 1) {
-		return; // no need to heal - HP is above 50% or already dead
 	}
 
 	// check if Medics is purchased and cooled down
@@ -782,7 +774,10 @@ function useMedicsIfRelevant() {
 		// Medics is purchased, cooled down, and needed. Trigger it.
 		advLog('Medics is purchased, cooled down, and needed. Trigger it.', 2);
 		triggerAbility(ABILITIES.MEDIC);
-	} else if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
+	}
+	
+	// check if God Mode is purchased and cooled down
+	if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
 
 		advLog('We have god mode, cooled down, and needed. Trigger it.', 2);
 		triggerItem(ITEMS.GOD_MODE);
