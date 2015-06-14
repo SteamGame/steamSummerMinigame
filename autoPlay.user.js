@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 3.9.1
+// @version 3.9
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -29,13 +29,8 @@ var removeAllText = getPreferenceBoolean("removeAllText", false);
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
-var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", typeof GM_info !== "undefined");
-
-var autoRefreshMinutes = 30;
-
 // DO NOT MODIFY
 var isAlreadyRunning = false;
-var refreshTimer = null;
 var currentClickRate = clickRate;
 var lockedElement = -1;
 var trt_oldCrit = function() {};
@@ -88,9 +83,6 @@ function firstRun() {
 	startFingering();
 	if(enableElementLock) {
 		lockElements();
-	}
-	if (enableAutoRefresh) {
-		autoRefreshPage(autoRefreshMinutes);
 	}
 
 	// disable particle effects - this drastically reduces the game's memory leak
@@ -160,42 +152,28 @@ function firstRun() {
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
 	info_box.style.backgroundColor = "#000000";
-	info_box.style.width = "800px";
+	info_box.style.width = "600px";
 	info_box.style.top = "73px";
 	info_box.style.padding = "12px";
 	info_box.style.position = "absolute";
 	info_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
 	info_box.style.color = "#ededed";
 
-	var options1 = document.createElement("div");
-	options1.style["-moz-column-count"] = 2;
-	options1.style["-webkit-column-count"] = 2;
-	options1.style["column-count"] = 2;
-	options1.style.width = "50%";
-	options1.style.float = "left";
+	var controls = document.createElement("div");
+	controls.style["-moz-column-count"] = 2;
+	controls.style["-webkit-column-count"] = 2;
+	controls.style["column-count"] = 2;
 
-	options1.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
-	options1.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
-	options1.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
-	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
-	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
-	options1.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
-	options1.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
-
-	info_box.appendChild(options1);
-
-	var options2 = document.createElement("div");
-	options2.style["-moz-column-count"] = 2;
-	options2.style["-webkit-column-count"] = 2;
-	options2.style["column-count"] = 2;
-	options1.style.width = "50%";
-
-	if (typeof GM_info !==  "undefined") {
-		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh));
-	}
-	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
-
-	info_box.appendChild(options2);
+	controls.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
+	controls.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
+	controls.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
+	controls.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
+	controls.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
+	controls.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
+	controls.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
+	controls.appendChild(makeSelect("logLevel", "Set Log Level (1 least verbose, 5 most verbose)", [1,2,3,4,5], logLevel, setLogLevel));
+	
+	info_box.appendChild(controls);
 
 	enhanceTooltips();
 }
@@ -272,28 +250,6 @@ function MainLoop() {
 		}
 	}
 }
-
-function makeNumber(name, desc, width, value, min, max, listener) {
-	var label= document.createElement("label");
-	var description = document.createTextNode(desc);
-	var number = document.createElement("input");
-
-	number.type = "number";
-	number.name = name;
-	number.style.width = width;
-	number.style.marginRight = "5px";
-	number.value = value;
-	number.min = min;
-	number.max = max;
-	number.onchange = listener;
-	w[number.name] = number;
-
-	label.appendChild(number);
-	label.appendChild(description);
-	label.appendChild(document.createElement("br"));
-	return label;
-}
-
 function makeCheckBox(name, desc, state, listener) {
 	var label= document.createElement("label");
 	var description = document.createTextNode(desc);
@@ -310,7 +266,24 @@ function makeCheckBox(name, desc, state, listener) {
 	label.appendChild(document.createElement("br"));
 	return label;
 }
+function makeSelect(name, desc, list, selected, listener) {
+	var label= document.createElement("label");
+	var description = document.createTextNode(desc);
+	var select = document.createElement("select");
 
+    list.map(function(v) {
+    	select.options[select.options.length] = new Option("" + v, v);
+    })
+	select.name = name;
+	select.value = selected;
+	select.onchange = listener;
+	w[select.name] = select.value;
+
+	label.appendChild(description);
+	label.appendChild(select);
+	label.appendChild(document.createElement("br"));
+	return label;
+}
 function handleEvent(event) {
 	handleCheckBox(event);
 }
@@ -323,32 +296,24 @@ function handleCheckBox(event) {
 	return checkbox.checked;
 }
 
+function handleSelect(event) {
+	var select = event.target;
+	setPreference(select.name, select.value);
+	
+	w[select.name] = select.value;
+	return select.value;
+}
+
 function toggleAutoClicker(event) {
 	var value = enableAutoClicker;
-	if(event !== undefined) {
+	if(event !== undefined)
 		value = handleCheckBox(event);
-	}
 	if(value) {
 		currentClickRate = clickRate;
 	} else {
 		currentClickRate = 0;
 	}
 }
-
-function toggleAutoRefresh(event) {
-    var value = enableAutoRefresh;
-    if(event !== undefined)
-        value = handleCheckBox(event);
-    if(value) {
-        autoRefreshPage(autoRefreshMinutes);
-    } else {
-		clearTimeout(refreshTimer);
-    }
-}
-function autoRefreshPage(autoRefreshMinutes){
-	refreshTimer = setTimeout(function(){w.location.reload(true);},autoRefreshMinutes*1000*60);
-}
-
 
 function toggleElementLock(event) {
 	var value = enableElementLock;
@@ -361,19 +326,28 @@ function toggleElementLock(event) {
 	}
 }
 
-function toggleCritText(event) {
+function setLogLevel(event) {
+	var value = logLevel;
+	if (event !== undefined)
+		value = handleSelect(event);
+	if (value) {
+		logLevel = value
+	}
+}
+
+function toggleCritText(event){
 	var value = removeCritText;
 	if(event !== undefined)
 		value = handleCheckBox(event);
 	if (value) {
 			// Replaces the entire crit display function.
 			s().DoCritEffect = function( nDamage, x, y, additionalText ) {};
-		} else {
-			s().DoCritEffect = trt_oldCrit;
-		}
+	} else {
+		s().DoCritEffect = trt_oldCrit;
 	}
+}
 
-function toggleAllText(event) {
+function toggleAllText(event){
 	var value = removeAllText;
 	if(event !== undefined)
 		value = handleCheckBox(event);
@@ -384,12 +358,6 @@ function toggleAllText(event) {
 		};
 	} else {
 		s().m_rgClickNumbers.push = trt_oldPush;
-	}
-}
-
-function updateLogLevel(event) {
-	if(event !== undefined) {
-		logLevel = event.target.value;
 	}
 }
 
@@ -541,11 +509,11 @@ function goToLaneWithBestTarget() {
 
 	// determine which lane and enemy is the optimal target
 	var enemyTypePriority = [
-		ENEMY_TYPE.TREASURE,
-		ENEMY_TYPE.BOSS,
-		ENEMY_TYPE.MINIBOSS,
-		ENEMY_TYPE.SPAWNER,
-		ENEMY_TYPE.CREEP
+	ENEMY_TYPE.TREASURE,
+	ENEMY_TYPE.BOSS,
+	ENEMY_TYPE.MINIBOSS,
+	ENEMY_TYPE.SPAWNER,
+	ENEMY_TYPE.CREEP
 	];
 
 	var i;
@@ -555,6 +523,7 @@ function goToLaneWithBestTarget() {
 	var targetIsTreasureOrBoss = false;
 
 	for (var k = 0; !targetFound && k < enemyTypePriority.length; k++) {
+
 		if (enemyTypePriority[k] == ENEMY_TYPE.TREASURE || enemyTypePriority[k] == ENEMY_TYPE.BOSS){
 			targetIsTreasureOrBoss = true;
 		} else {
@@ -582,9 +551,8 @@ function goToLaneWithBestTarget() {
 				// Maximize compability with upstream
 				i = sortedLanes[notI];
 				// ignore if lane is empty
-				if(s().m_rgGameData.lanes[i].dps === 0) {
+				if(s().m_rgGameData.lanes[i].dps === 0)
 					continue;
-				}
 				var stacks = 0;
 				if(typeof s().m_rgLaneData[i].abilities[17] != 'undefined') {
 					stacks = s().m_rgLaneData[i].abilities[17];
@@ -748,10 +716,10 @@ function useCrippleMonsterIfRelevant() {
 
    var level = s().m_rgGameData.level + 1;
 	// Use nukes on boss when level >3000 for faster kills
-	if (level > 1000 && level % 200 !== 0 && level % 10 === 0) {
+	if (level > 1000 && level % 200 != 0 && level % 10 == 0) {
 		var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp
 			if (enemyBossHealthPercent>0.5){
 				advLog("Cripple Monster available and used on boss", 2);
 				triggerItem(ITEMS.CRIPPLE_MONSTER);
@@ -1248,7 +1216,7 @@ function enhanceTooltips(){
 
 			strOut += '<br><br>Crit Percentage: ' + getCritChance().toFixed(1) + '%';
 
-			strOut += '<br><br>Critical Damage Multiplier:';
+			strOut += '<br><br>Critical Damage Multiplier:'
 			strOut += '<br>Current: ' + ( currentMultiplier ) + 'x';
 			strOut += '<br>Next Level: ' + ( newMultiplier ) + 'x';
 
@@ -1258,7 +1226,7 @@ function enhanceTooltips(){
 			strOut += '<br><br>Base Increased By: ' + FormatNumberForDisplay(multiplier) + 'x';
 		break;
 			case 9: // Boss Loot Drop's type
-			strOut += '<br><br>Boss Loot Drop Rate:';
+			strOut += '<br><br>Boss Loot Drop Rate:'
 			strOut += '<br>Current: ' + getBossLootChance().toFixed(0) + '%';
 			strOut += '<br>Next Level: ' + (getBossLootChance() + multiplier * 100).toFixed(0) + '%';
 			strOut += '<br><br>Base Increased By: ' + FormatNumberForDisplay(multiplier * 100) + '%';
