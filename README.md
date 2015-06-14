@@ -6,7 +6,7 @@ it cheats for you.
 
 This fork has:
 * Elemental damage prioritizing, gold prioritizing
-* Auto clicking (do **not** click, this will mess with the autoclicker)
+* Auto clicking
 * Tickrate set to 1000ms every second
 * Disable most particles
 * Auto use abilities
@@ -38,7 +38,7 @@ This fork has:
 ### Tampermonkey ###
 
 1. Open Tapermonkey's dashboard.
-2. Click on the `Utilites` tab on the right.
+2. Click on the `Utilities` tab on the right.
 3. Paste `https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js` into the text area, and click `Import`.
 4. When the editor has loaded, click `Install` (*NOT* `Process with Chrome`).
 
