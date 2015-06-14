@@ -15,12 +15,25 @@
 (function(w) {
 "use strict";
 
-var isAlreadyRunning = false;
+// OPTIONS
 var clickRate = 10;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
-var removeInterface = false; // get rid of a bunch of pointless DOM
 
-var optimizeGraphics = true; //set this to false if you don't want effects disabled (introduces memory leak.)
+var enableAutoClicker = true;
+
+var removeInterface = false; // get rid of a bunch of pointless DOM
+var removeParticles = true;
+var removeFlinching = true;
+var removeCritText = false;
+var removeAllText = false;
+
+var enableElementLock = true;
+
+// DO NOT MODIFY
+var isAlreadyRunning = false;
+var currentClickRate = clickRate;
+var trt_oldCrit = w.g_Minigame.CurrentScene().DoCritEffect;
+var trt_oldPush = w.g_Minigame.m_CurrentScene.m_rgClickNumbers.push;
 
 var ABILITIES = {
 	"MORALE_BOOSTER": 5,
@@ -58,25 +71,36 @@ var ENEMY_TYPE = {
 
 
 function firstRun() {
-    lockElements();
-	// disable particle effects - this drastically reduces the game's memory leak
-	if(!optimizeGraphics) {
-		return;
-	}
+    if(enableElementLock) {
+        lockElements();
+    }
 
-	if (g_Minigame !== undefined) {
-		g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
-			emitter.emit = false;
-			return emitter;
-		};
-	}
+	// disable particle effects - this drastically reduces the game's memory leak
+    if(removeParticles) {
+        if (g_Minigame !== undefined) {
+            g_Minigame.CurrentScene().SpawnEmitter = function(emitter) {
+                emitter.emit = false;
+                return emitter;
+            };
+        }
+    }
 
 	// disable enemy flinching animation when they get hit
-	if (CEnemy !== undefined) {
-		CEnemy.prototype.TakeDamage = function() {};
-		CEnemySpawner.prototype.TakeDamage = function() {};
-		CEnemyBoss.prototype.TakeDamage = function() {};
-	}
+    if(removeFlinching) {
+        if (CEnemy !== undefined) {
+            CEnemy.prototype.TakeDamage = function() {};
+            CEnemySpawner.prototype.TakeDamage = function() {};
+            CEnemyBoss.prototype.TakeDamage = function() {};
+        }
+    }
+
+    if(removeCritText) {
+        toggleCritText();
+    }
+
+    if(removeAllText) {
+        toggleAllText();
+    }
 
 	if ( removeInterface ) {
 		var node = document.getElementById("global_header");
@@ -91,20 +115,33 @@ function firstRun() {
 		if (node && node.parentNode) {
 			node.parentNode.removeChild( node );
 		}
-		node = document.querySelector(".leave_game_helper");
-		if (node && node.parentNode) {
-			node.parentNode.removeChild( node );
-		}
 		node = document.querySelector(".pagecontent");
 		if (node) {
 			node.style = "padding-bottom: 0";
 		}
+        /*
+		node = document.querySelector(".leave_game_helper");
+		if (node && node.parentNode) {
+			node.parentNode.removeChild( node );
+		}
+        */
 		document.body.style.backgroundPosition = "0 0";
 	}
 
 	if (w.CSceneGame !== undefined) {
 		w.CSceneGame.prototype.DoScreenShake = function() {};
 	}
+
+    var info_box = document.querySelector(".leave_game_helper");
+    info_box.innerHTML = '<b>OPTIONS</b><br/>Some of these may need a refresh to take effect.<br/>';
+    info_box.style.backgroundColor = "#000000";
+    info_box.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
+    info_box.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleCheckbox));
+    info_box.appendChild(makeCheckBox("removeParticles", "Remove particle effects", removeParticles, handleCheckBox));
+    info_box.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleCheckBox));
+    info_box.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
+    info_box.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
+    info_box.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
 
 	enhanceTooltips();
 }
@@ -126,7 +163,7 @@ function MainLoop() {
 		attemptRespawn();
 		disableCooldownIfRelevant();
 
-		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
+		g_Minigame.m_CurrentScene.m_nClicks = currentClickRate;
 		g_msTickRate = 1000;
 
 		var damagePerClick = g_Minigame.m_CurrentScene.CalculateDamage(
@@ -134,7 +171,7 @@ function MainLoop() {
             		g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].element
         	);
 
-        	advLog("Ticked. Current clicks per second: " + clickRate + ". Current damage per second: " + (damagePerClick * clickRate), 4);
+        	advLog("Ticked. Current clicks per second: " + currentClickRate + ". Current damage per second: " + (damagePerClick * currentClickRate), 4);
 
 		isAlreadyRunning = false;
 
@@ -146,7 +183,7 @@ function MainLoop() {
 	        displayText(
 	            enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
 	            enemy.m_Sprite.position.y - 52,
-	            "-" + FormatNumberForDisplay((damagePerClick * clickRate), 5),
+	            "-" + FormatNumberForDisplay((damagePerClick * currentClickRate), 5),
 	            "#aaf"
 	        );
 
@@ -160,7 +197,7 @@ function MainLoop() {
 	        var goldPerClickPercentage = g_Minigame.m_CurrentScene.m_rgGameData.lanes[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
 	        if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
 	        {
-	            var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * clickRate;
+	            var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * currentClickRate;
 	            advLog(
 	                "Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
 	                + "%. Approximately gold per second: " + goldPerSecond,
@@ -174,6 +211,117 @@ function MainLoop() {
 	            );
 	        }
 	    }
+	}
+}
+function makeCheckBox(name, desc, state, listener) {
+    var label= document.createElement("label");
+    var description = document.createTextNode(desc);
+    var checkbox = document.createElement("input");
+
+    checkbox.type = "checkbox";
+    checkbox.name = name;
+    checkbox.checked = state;
+    checkbox.onclick = listener;
+
+    label.appendChild(checkbox);
+    label.appendChild(description);
+    label.appendChild(document.createElement("br"));
+    return label;
+}
+
+function handleCheckBox(event) {
+    var checkbox = event.target;
+    setPreference(checkbox.name, checkbox.checked);
+    
+    w[checkbox.name] = checkbox.checked);
+    return checkbox.checked;
+}
+
+function toggleAutoClicker(event) {
+    var value = enableAutoClicker;
+    if(event !== undefined)
+        value = handleCheckBox(event);
+    if(value) {
+        currentClickRate = clickRate;
+    } else {
+        currentClickRate = 0;
+    }
+}
+
+function toggleElementLock(event) {
+    var value = enableElementLock;
+    if(event !== undefined)
+        value = handleCheckBox(event);
+    if(value) {
+        lockElements();
+    } else {
+        unlockElements();
+    }
+}
+
+function toggleCritText(event){
+    var value = removeCritText;
+    if(event !== undefined)
+        value = handleCheckBox(event);
+    if (value) {
+            // Replaces the entire crit display function.
+            window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+    } else {
+          window.g_Minigame.CurrentScene().DoCritEffect = trt_oldCrit;
+    }
+    window.g_Minigame.CurrentScene().DoCritEffect = function( nDamage, x, y, additionalText ) {};
+}
+
+function toggleAllText(event){
+    var value = removeAllText;
+    if(event !== undefined)
+        value = handleCheckBox(event);
+    if (value) {
+    // Replaces the entire text function.
+            window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = function(elem){
+                elem.container.removeChild(elem);
+            };
+    } else {
+            window.g_Minigame.m_CurrentScene.m_rgClickNumbers.push = trt_oldPush;
+    }
+}
+
+function setPreference(key, value) {
+    try {
+        if(localStorage !== 'undefined') {
+            localStorage.setItem('steamdb-minigame/' + key, value);
+        }
+    } catch (e) {
+        console.log(e); // silently ignore error
+    }
+}
+
+function getPreference(key, defaultValue) {
+    try {
+        if(localStorage !== 'undefined') {
+            var result = localStorage.getItem('steamdb-minigame/' + key);
+            return (result !== null ? result : defaultValue);
+        }
+    } catch (e) {
+        console.log(e); // silently ignore error
+        return defaultValue;
+    }
+}
+
+function getPreferenceBoolean(key, defaultValue) {
+    return (getPreference(key, defaultValue.toString()) == "true");
+}
+
+function unlockElements() {
+	var fire = document.querySelector("a.link.element_upgrade_btn[data-type=\"3\"]");
+	var water = document.querySelector("a.link.element_upgrade_btn[data-type=\"4\"]");
+	var air = document.querySelector("a.link.element_upgrade_btn[data-type=\"5\"]");
+	var earth = document.querySelector("a.link.element_upgrade_btn[data-type=\"6\"]");
+
+	var elems = [fire, water, air, earth];
+
+	for (var i=0; i < elems.length; i++) {
+		elems[i].style.visibility = "visible";
 	}
 }
 
