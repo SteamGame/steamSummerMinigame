@@ -32,8 +32,8 @@ var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 // DO NOT MODIFY
 var isAlreadyRunning = false;
 var currentClickRate = clickRate;
-var trt_oldCrit = w.g_Minigame.CurrentScene().DoCritEffect;
-var trt_oldPush = w.g_Minigame.m_CurrentScene.m_rgClickNumbers.push;
+var trt_oldCrit = function() {};
+var trt_oldPush = function() {};
 
 var ABILITIES = {
 	"MORALE_BOOSTER": 5,
@@ -71,6 +71,9 @@ var ENEMY_TYPE = {
 
 
 function firstRun() {
+	trt_oldCrit = w.g_Minigame.CurrentScene().DoCritEffect;
+	trt_oldPush = w.g_Minigame.m_CurrentScene.m_rgClickNumbers.push;
+	
     if(enableElementLock) {
         lockElements();
     }
