@@ -198,6 +198,12 @@ function firstRun() {
 }
 
 function MainLoop() {
+	var level = s().m_rgGameData.level + 1;
+
+	if( level < 10 ) {
+		return;
+	}
+
 	if (!isAlreadyRunning) {
 		isAlreadyRunning = true;
 
@@ -984,7 +990,7 @@ function useMetalDetectorIfRelevant() {
 		// check if current target is a boss, otherwise we won't use metal detector
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-			
+
 			// we want to use metal detector at 25% hp, or even less
 			if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
 				// Metal Detector is purchased, cooled down, and needed. Trigger it.
