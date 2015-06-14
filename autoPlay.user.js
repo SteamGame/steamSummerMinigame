@@ -1163,7 +1163,10 @@ if(w.SteamDB_Minigame_Timer) {
 }
 
 w.SteamDB_Minigame_Timer = w.setInterval(function(){
-	if (w.g_Minigame && s().m_bRunning && s().m_rgPlayerTechTree) {
+	if (w.g_Minigame
+	&& s().m_bRunning
+	&& s().m_rgPlayerTechTree
+	&& s().m_rgGameData) {
 		w.clearInterval(w.SteamDB_Minigame_Timer);
 		firstRun();
 		w.SteamDB_Minigame_Timer = w.setInterval(MainLoop, 1000);
