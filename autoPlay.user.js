@@ -75,6 +75,19 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 };
 
+var UPGRADE_TYPES = {
+	"ARMOR": 0,
+	"DPS": 1,
+	"CLICK_DAMAGE": 2,
+	"ELEMENTAL_FIRE": 3,
+	"ELEMENTAL_WATER": 4,
+	"ELEMENTAL_AIR": 5,
+	"ELEMENTAL_EARTH": 6,
+	"LUCKY_SHOT": 7,
+	"ABILITY": 8,
+	"LOOT": 9
+};
+
 function s() {
 	return w.g_Minigame.m_CurrentScene;
 }
@@ -215,7 +228,7 @@ function MainLoop() {
 		isAlreadyRunning = true;
 
 		goToLaneWithBestTarget();
-
+        purchaseUpgrades();
 		useGoodLuckCharmIfRelevant();
 		useMedicsIfRelevant();
 		useMoraleBoosterIfRelevant();
@@ -744,6 +757,125 @@ function goToLaneWithBestTarget() {
 			// Throw Money at Screen
 			enableAbilityItem(ITEMS.THROW_MONEY);
 		}
+	}
+}
+
+function purchaseUpgrades() {
+	var oddsOfElement = 1 - (0.75*0.75*0.75); //This values elemental too much because best element lanes are not focused(0.578)
+	var avgClicksPerSecond = 3;	//Set this yourself to serve your needs
+	
+	var buyUpgrade = function(id) {
+		if(id >= 3 && 6 >= id) { //If upgrade is element damage
+			g_Minigame.CurrentScene().TryUpgrade(document.getElementById('upgr_' + id).childElements()[3]);
+		} else {
+			g_Minigame.CurrentScene().TryUpgrade(document.getElementById('upgr_' + id).childElements()[0].childElements()[1]);
+		}
+	}
+	
+	var myGold = g_Minigame.CurrentScene().m_rgPlayerData.gold;
+	
+	//Initial values for   armor, dps, click damage 
+	var bestUpgradeForDamage,bestUpgradeForArmor;
+	var highestUpgradeValueForDamage = 0;
+	var highestUpgradeValueForArmor = 0;
+	var bestElement = -1;
+	var highestElementLevel = 0;
+	
+	
+	var upgrades = g_Minigame.CurrentScene().m_rgTuningData.upgrades.slice(0);
+	
+	for( var i=0; i< upgrades.length; i++ ) {
+		var upgrade = upgrades[i];
+		
+		if ( upgrade.required_upgrade != undefined )
+		{
+			var requiredUpgradeLevel = upgrade.required_upgrade_level != undefined ? upgrade.required_upgrade_level : 1;
+			var parentUpgradeLevel = g_Minigame.CurrentScene().GetUpgradeLevel(upgrade.required_upgrade);
+			if ( requiredUpgradeLevel > parentUpgradeLevel )
+			{
+				//If upgrade is not available, we skip it
+				continue;
+			}
+		}
+	
+		var upgradeCurrentLevel = g_Minigame.CurrentScene().m_rgPlayerUpgrades[i].level;
+		var upgradeCost = g_Minigame.CurrentScene().m_rgPlayerUpgrades[i].cost_for_next_level;
+		
+		switch(upgrade.type) {
+			case UPGRADE_TYPES.ARMOR:
+				if(upgrade.multiplier / upgradeCost > highestUpgradeValueForArmor) { // hp increase per moneys
+					bestUpgradeForArmor = i;
+					highestUpgradeValueForArmor = upgrade.multiplier / upgradeCost;
+				}
+				break;
+			case UPGRADE_TYPES.CLICK_DAMAGE:
+				if(avgClicksPerSecond * upgrade.multiplier / upgradeCost > highestUpgradeValueForDamage) { // dmg increase per moneys
+					bestUpgradeForDamage = i;
+					highestUpgradeValueForDamage = upgrade.multiplier / upgradeCost;
+				}
+				break;
+			case UPGRADE_TYPES.DPS:
+				if(upgrade.multiplier / upgradeCost > highestUpgradeValueForDamage) { // dmg increase per moneys
+					bestUpgradeForDamage = i;
+					highestUpgradeValueForDamage = upgrade.multiplier / upgradeCost;
+				}
+				break;
+			case UPGRADE_TYPES.ELEMENTAL_FIRE:
+			case UPGRADE_TYPES.ELEMENTAL_WATER:
+			case UPGRADE_TYPES.ELEMENTAL_AIR:
+			case UPGRADE_TYPES.ELEMENTAL_EARTH:
+				if(upgradeCurrentLevel > highestElementLevel){
+					highestElementLevel = upgradeCurrentLevel;
+					bestElement = i;
+				}
+				break;
+			case UPGRADE_TYPES.LUCKY_SHOT:
+				//var critMultiplier = ?
+				var critChance = g_Minigame.CurrentScene().m_rgPlayerTechTree.crit_percentage;
+				var dpc = g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_per_click;
+				if(upgrade.multiplier /* critMultiplier*/ * dpc * critChance * avgClicksPerSecond / upgradeCost > highestUpgradeValueForDamage) { // dmg increase per moneys
+					/*bestUpgradeForDamage = i;
+					highestUpgradeValueForDamage = upgrade.multiplier / upgradeCost;*/
+				}
+				break;
+			default:
+				break;
+		}
+	}
+	
+	if(bestElement != -1) {
+		//Let user choose what element to level up by adding the point to desired element
+		upgradeCost = g_Minigame.CurrentScene().m_rgPlayerUpgrades[bestElement].cost_for_next_level;
+		
+		var dps = g_Minigame.CurrentScene().m_rgPlayerTechTree.dps;
+		dps = dps + (g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_per_click * avgClicksPerSecond);
+		if(0.25 * oddsOfElement * dps * upgrades[bestElement].multiplier / upgradeCost > highestUpgradeValueForDamage) { //dmg increase / moneys
+			//bestUpgradeForDamage = bestElement; // Not doing this because this values element damage too much
+		}
+	}
+	
+	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
+	// check if health is below 30%
+	var hpPercent = g_Minigame.CurrentScene().m_rgPlayerData.hp / myMaxHealth;
+	if (hpPercent < 0.3) {
+		// Prioritize armor over damage
+		// - Should we by any armor we can afford or just wait for the best one possible?
+		//	 currently waiting
+		upgradeCost = g_Minigame.CurrentScene().m_rgPlayerUpgrades[bestUpgradeForArmor].cost_for_next_level;
+		
+		if(myGold > upgradeCost && bestUpgradeForArmor) {
+			console.log("Buying " + upgrades[bestUpgradeForArmor].name);
+			buyUpgrade(bestUpgradeForArmor);
+			myGold = g_Minigame.CurrentScene().m_rgPlayerData.gold;
+		}
+	}
+	
+	// Try to buy some damage
+	upgradeCost = g_Minigame.CurrentScene().m_rgPlayerUpgrades[bestUpgradeForDamage].cost_for_next_level;
+
+	if(myGold > upgradeCost && bestUpgradeForDamage) {
+		console.log("Buying " + upgrades[bestUpgradeForDamage].name);
+		buyUpgrade(bestUpgradeForDamage);
 	}
 }
 
