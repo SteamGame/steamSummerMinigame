@@ -862,8 +862,8 @@ function useCrippleMonsterIfRelevant() {
 }
 
 function useReviveIfRelevant() {
-	// Check if the current level is a boss level
-	if (getGameLevel() % 10 != 0) {
+	// Check if the next level is a boss level
+	if ((getGameLevel() + 1) % 10 != 0) {
 		return;
 	}
 	
