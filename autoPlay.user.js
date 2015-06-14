@@ -1174,7 +1174,7 @@ function useTreasureIfRelevant() {
 function useMaxElementalDmgIfRelevant() {
 	// Check if Max Elemental Damage is purchased
 	if (hasItem(ITEMS.MAXIMIZE_ELEMENT)) {
-		if (isAbilityCoolingDown(ITEMS.MAXIMIZE_ELEMENT) || !canUseItem(ITEMS.MAXIMIZE_ELEMENT) || isAbilityActive(ITEMS.MAXIMIZE_ELEMENT)) {
+		if (isAbilityCoolingDown(ITEMS.MAXIMIZE_ELEMENT) || !canUseItem(ITEMS.MAXIMIZE_ELEMENT) || getActiveAbilityLaneCount(ITEMS.MAXIMIZE_ELEMENT) > 0) {
 			return;
 		}
 		else {
