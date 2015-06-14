@@ -42,7 +42,7 @@
  - 7 "Lucky Shot"
  - 8 "Heavy Armor"
  - 9 "Advanced Targeting"
- - 10 "Explosi ve Rounds"
+ - 10 "Explosive Rounds"
  - 11 "Medics"
  - 12 "Morale Booster"
  - 13 "Good Luck Charms"
