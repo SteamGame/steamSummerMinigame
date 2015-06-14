@@ -70,6 +70,9 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 };
 
+//TODO update with your base depot URL
+var GITHUB_BASE_URL = "https://raw.githubusercontent.com/pkolodziejczyk/steamSummerMinigame/master/";
+
 function s() {
 	return g_Minigame.m_CurrentScene;
 }
@@ -103,6 +106,9 @@ function firstRun() {
 			CEnemyBoss.prototype.TakeDamage = function() {};
 		}
 	}
+	
+	//Fix UI
+	fixActiveCapacityUI();
 
 	if(removeCritText) {
 		toggleCritText();
@@ -1153,6 +1159,14 @@ function getElementMultiplierById(index){
 		case 6: // earth
 		return g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_earth;
 	}
+}
+
+function fixActiveCapacityUI(){
+	$J('.tv_ui').css('background-image','url("'+GITHUB_BASE_URL+'game_frame_tv_fix.png")');
+	$J('#activeinlanecontainer').css('height','142px');
+	$J('#activitycontainer').css('height', '270px');
+	$J('#activitylog').css('margin-top', '24px')
+	$J('#activityscroll').css('height', '270px');
 }
 
 function enhanceTooltips(){
