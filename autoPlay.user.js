@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.0.2
+// @version 4.0.4
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -26,6 +26,8 @@ var removeParticles = getPreferenceBoolean("removeParticles", true);
 var removeFlinching = getPreferenceBoolean("removeFlinching", true);
 var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
+var enableFingering = getPreferenceBoolean("enableFingering", true);
+var enableRenderer = getPreferenceBoolean("enableRenderer", true);
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
@@ -42,6 +44,7 @@ var lockedElement = -1;
 var lastLevel = 0;
 var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
+var trt_oldRender = function() {};
 
 var ABILITIES = {
 	"MORALE_BOOSTER": 5,
@@ -90,8 +93,11 @@ function firstRun() {
 
 	trt_oldCrit = s().DoCritEffect;
 	trt_oldPush = s().m_rgClickNumbers.push;
+	trt_oldRender = w.g_Minigame.Renderer.render;
 
-	startFingering();
+	if(enableFingering) {
+		startFingering();
+	}
 
 	if(enableElementLock) {
 		lockElements();
@@ -99,6 +105,10 @@ function firstRun() {
 
 	if (enableAutoRefresh) {
 		autoRefreshPage(autoRefreshMinutes);
+	}
+	
+	if (enableRenderer) {
+		toggleRenderer();
 	}
 
 	// disable particle effects - this drastically reduces the game's memory leak
@@ -158,7 +168,7 @@ function firstRun() {
 	activity.style.marginTop = "25px";
 
 	var info_box = document.querySelector(".leave_game_helper");
-	info_box.innerHTML = '<b>OPTIONS</b><br>Settings marked with a <span style="color:#FF5252;font-size:22px;line-height:4px;vertical-align:bottom;">*</span> requires a refresh to take effect.<hr>';
+	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !==  "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span style="color:#FF5252;font-size:22px;line-height:4px;vertical-align:bottom;">*</span> requires a refresh to take effect.<hr>';
 
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
@@ -183,6 +193,7 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText, false));
 	options1.appendChild(makeCheckBox("removeAllText", "Remove all text", removeAllText, toggleAllText, false));
+	options1.appendChild(makeCheckBox("enableRenderer", "Enable game renderer", enableRenderer, toggleRenderer, true));
 
 	info_box.appendChild(options1);
 
@@ -195,6 +206,10 @@ function firstRun() {
 	if (typeof GM_info !==  "undefined") {
 		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh, false));
 	}
+
+	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer (needs refresh)", enableFingering, handleEvent));
+	options2.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
+	options2.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
@@ -446,9 +461,42 @@ function toggleAutoRefresh(event) {
 	}
 }
 
+function toggleRenderer(event) {
+	var value = enableRenderer;
+	
+	if (event !== undefined) {
+		value = handleCheckBox(event);
+	}
+	
+	if (value) {
+		w.g_Minigame.Renderer.render = trt_oldRender;
+	} else {
+		w.g_Minigame.Renderer.render = function() {}
+	}
+}
+
 function autoRefreshPage(autoRefreshMinutes){
 	var timerValue = (autoRefreshMinutes + autoRefreshMinutesRandomDelay * Math.random()) * 60 * 1000;
-	refreshTimer = setTimeout(function(){w.location.reload(true);}, timerValue);
+	refreshTimer = setTimeout(function() {
+		autoRefreshHandle();
+	}, timerValue);
+}
+
+function autoRefreshHandler() {
+	 var enemyData = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target).m_data; 
+	 if(typeof enemyData !== "undefined"){
+		var enemyType = enemyData.type;
+		if(enemyType != ENEMY_TYPE.BOSS) {
+			advLog('Refreshing, not boss', 5);
+			w.location.reload(true);
+		}else {
+			advLog('Not refreshing, A boss!', 5);
+			setTimeout(autoRefreshHandler, 3000);
+		}
+	}else{
+		//Wait until it is defined
+		setTimeout(autoRefreshHandler, 1000);
+	}
 }
 
 function toggleElementLock(event) {
