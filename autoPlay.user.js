@@ -268,6 +268,10 @@ function MainLoop() {
 			if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
 			{
 				var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * currentClickRate;
+				
+				s().ClientOverride('player_data', 'gold', s().m_rgPlayerData.gold + goldPerSecond);
+				s().ApplyClientOverrides('player_data', true);
+				
 				advLog(
 					"Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
 					+ "%. Approximately gold per second: " + goldPerSecond,
