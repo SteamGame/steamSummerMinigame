@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 3.9.4
+// @version 4.0.0
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -38,6 +38,7 @@ var isAlreadyRunning = false;
 var refreshTimer = null;
 var currentClickRate = clickRate;
 var lockedElement = -1;
+var lastLevel = 0;
 var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
 
@@ -151,13 +152,13 @@ function firstRun() {
 	var titleActivity = document.querySelector( '.title_activity' );
 	var playersInGame = document.createElement( 'span' );
 	playersInGame.innerHTML = '<span id=\"players_in_game\">0/1500</span>&nbsp;Players in room<br>';
-	
+
 	titleActivity.insertBefore(playersInGame, titleActivity.firstChild);
-	
+
 	// Fix alignment
 	var activity = document.getElementById("activitylog");
 	activity.style.marginTop = "25px";
-	
+
 	var info_box = document.querySelector(".leave_game_helper");
 	info_box.innerHTML = '<b>OPTIONS</b><br>Some of these may need a refresh to take effect.<br>';
 
@@ -232,6 +233,13 @@ function MainLoop() {
 		updatePlayersInGame();
 		attemptRespawn();
 
+		if( level !== lastLevel )
+		{
+			lastLevel = level;
+			
+			refreshPlayerData();
+		}
+
 		s().m_nClicks += currentClickRate;
 		w.g_msTickRate = 1000;
 
@@ -268,10 +276,10 @@ function MainLoop() {
 			if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
 			{
 				var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * currentClickRate;
-				
+
 				s().ClientOverride('player_data', 'gold', s().m_rgPlayerData.gold + goldPerSecond);
 				s().ApplyClientOverrides('player_data', true);
-				
+
 				advLog(
 					"Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
 					+ "%. Approximately gold per second: " + goldPerSecond,
@@ -286,6 +294,40 @@ function MainLoop() {
 			}
 		}
 	}
+}
+
+function refreshPlayerData()
+{
+	advLog("Refreshing player data", 2);
+
+	w.g_Server.GetPlayerData(
+		function(rgResult) {
+			var instance = s();
+
+			if( rgResult.response.player_data )
+			{
+				instance.m_rgPlayerData = rgResult.response.player_data;
+				instance.ApplyClientOverrides('player_data');
+				instance.ApplyClientOverrides('ability');
+			}
+
+			if( rgResult.response.tech_tree )
+			{
+				instance.m_rgPlayerTechTree = rgResult.response.tech_tree;
+				if( rgResult.response.tech_tree.upgrades ) {
+					instance.m_rgPlayerUpgrades = V_ToArray( rgResult.response.tech_tree.upgrades );
+				} else {
+					instance.m_rgPlayerUpgrades = [];
+				}
+			}
+
+			instance.OnReceiveUpdate();
+		},
+		function( err )
+		{
+		},
+		true
+	);
 }
 
 function makeNumber(name, desc, width, value, min, max, listener) {
