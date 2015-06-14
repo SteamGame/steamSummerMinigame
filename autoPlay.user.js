@@ -466,7 +466,26 @@ function toggleRenderer(event) {
 
 function autoRefreshPage(autoRefreshMinutes){
 	var timerValue = (autoRefreshMinutes + autoRefreshMinutesRandomDelay * Math.random()) * 60 * 1000;
-	refreshTimer = setTimeout(function(){w.location.reload(true);}, timerValue);
+	refreshTimer = setTimeout(function() {
+		autoRefreshHandle();
+	}, timerValue);
+}
+
+function autoRefreshHandler() {
+	 var enemyData = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target).m_data; 
+	 if(typeof enemyData !== "undefined"){
+		var enemyType = enemyData.type;
+		if(enemyType != ENEMY_TYPE.BOSS) {
+			advLog('Refreshing, not boss', 5);
+			w.location.reload(true);
+		}else {
+			advLog('Not refreshing, A boss!', 5);
+			setTimeout(autoRefreshHandler, 3000);
+		}
+	}else{
+		//Wait until it is defined
+		setTimeout(autoRefreshHandler, 1000);
+	}
 }
 
 function toggleElementLock(event) {
