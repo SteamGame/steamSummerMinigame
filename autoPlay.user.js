@@ -30,7 +30,7 @@ var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", true); // auto
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
-var autoRefreshSeconds = 60; // refresh page after x seconds
+var autoRefreshSeconds = 120; // refresh page after x seconds
 
 // DO NOT MODIFY
 var isAlreadyRunning = false;
@@ -71,6 +71,8 @@ var ENEMY_TYPE = {
 	"MINIBOSS":3,
 	"TREASURE":4
 };
+
+var refreshTimer = null; // global to cancel running timers if disabled after timer has already started
 
 
 function firstRun() {
@@ -292,7 +294,7 @@ function toggleAutoRefresh(event) {
     if(value) {
         autoRefreshPage(autoRefreshSeconds);
     } else {
-		enableAutoRefresh = false;	
+		clearTimeout(refreshTimer);	
     }
 }
 
@@ -1094,12 +1096,7 @@ function getClickDamage(){
 }
 
 function autoRefreshPage(autoRefreshSeconds){
-	if(enableAutoRefresh) {
-		setTimeout("location.reload(true);",(autoRefreshSeconds*1000));
-	}
-	else {
-		console.log("auto-refresh has been disabled, so no refresh);
-	}
+	refreshTimer = setTimeout("location.reload(true);",(autoRefreshSeconds*1000));
 }
 
 function enhanceTooltips(){
