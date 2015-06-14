@@ -5,7 +5,7 @@
 // @version 3.7.0
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
-// @grant none
+// @grant none 
 // @updateURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.user.js
 // @downloadURL https://raw.githubusercontent.com/wchill/steamSummerMinigame/master/autoPlay.user.js
 // ==/UserScript==
@@ -26,7 +26,7 @@ var removeParticles = getPreferenceBoolean("removeParticles", true);
 var removeFlinching = getPreferenceBoolean("removeFlinching", true);
 var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
-var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", true); // auto-refresh the page to clear out stale memory from leak
+var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", false); // auto-refresh the page to clear out stale memory from leak
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
@@ -167,7 +167,9 @@ function firstRun() {
 	checkboxes.style["column-count"] = 2;
 	
 	checkboxes.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
-	checkboxes.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (fix memory leak)", enableAutoRefresh, toggleAutoRefresh));
+	if (typeof GM_info !==  "undefined") {
+		checkboxes.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (fix memory leak)", enableAutoRefresh, toggleAutoRefresh));
+	};
 	checkboxes.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
 	checkboxes.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
 	checkboxes.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
