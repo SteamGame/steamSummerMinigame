@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 3.8
+// @version 3.8.1
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -73,7 +73,8 @@ var ENEMY_TYPE = {
 function firstRun() {
 	trt_oldCrit = w.g_Minigame.CurrentScene().DoCritEffect;
 	trt_oldPush = w.g_Minigame.m_CurrentScene.m_rgClickNumbers.push;
-	
+		
+	startFingering();
 	if(enableElementLock) {
 		lockElements();
 	}
@@ -664,9 +665,9 @@ function disableCooldownIfRelevant() {
 function useCrippleMonsterIfRelevant() {
    // Check if Cripple Spawner is available
    if(hasItem(ITEMS.CRIPPLE_MONSTER)) {
-   	if (isAbilityCoolingDown(ITEMS.CRIPPLE_MONSTER)) {
-   		return;
-   	}
+	if (isAbilityCoolingDown(ITEMS.CRIPPLE_MONSTER)) {
+		return;
+	}
    }
    
    var level = g_Minigame.m_CurrentScene.m_rgGameData.level + 1;
@@ -1097,6 +1098,19 @@ function getDPS(){
 
 function getClickDamage(){
 	return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click;
+}
+
+function startFingering() {
+	w.CSceneGame.prototype.ClearNewPlayer = function(){};
+
+	if(!g_Minigame.m_CurrentScene.m_spriteFinger)
+	{
+		w.WebStorage.SetLocal('mg_how2click', 0);
+		g_Minigame.m_CurrentScene.CheckNewPlayer();
+		w.WebStorage.SetLocal('mg_how2click', 1);
+	}
+
+	document.getElementById('newplayer').style.display = 'none'; 
 }
 
 function enhanceTooltips(){
