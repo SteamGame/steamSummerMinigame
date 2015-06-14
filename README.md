@@ -40,16 +40,15 @@ This fork has:
 - Disables certain abilities and items if facing a Boss (to try to maximize Raining Gold and Metal Detector benefits)
 
 ## Installation ##
-**It is recommended to use either [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en) (Chrome) or [Greasemonkey](https://addons.mozilla.org/en-us/firefox/addon/greasemonkey/) (Firefox).** This allows the script to auto-update to the most recent version. The rate of this update can be changed in each extension's preferences.
 
-### [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en) ###
+### Tampermonkey ###
 
 1. Open Tapermonkey's dashboard.
 2. Click on the `Utilites` tab on the right.
 3. Paste `https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js` into the text area, and click `Import`.
 4. When the editor has loaded, click `Install` (*NOT* `Process with Chrome`).
 
-### [Greasemonkey](https://addons.mozilla.org/en-us/firefox/addon/greasemonkey/) ###
+### Greasemonkey ###
 
 1. Navigate to `https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/autoPlay.user.js`.
 2. Right click on the page, and click `Save Page As`.
