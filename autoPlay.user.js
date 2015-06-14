@@ -1094,7 +1094,12 @@ function getClickDamage(){
 }
 
 function autoRefreshPage(autoRefreshSeconds){
-	setTimeout("location.reload(true);",(autoRefreshSeconds*1000));
+	if(enableAutoRefresh) {
+		setTimeout("location.reload(true);",(autoRefreshSeconds*1000));
+	}
+	else {
+		console.log("auto-refresh has been disabled, so no refresh);
+	}
 }
 
 function enhanceTooltips(){
