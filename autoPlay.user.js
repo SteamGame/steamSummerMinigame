@@ -30,7 +30,7 @@ var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", typeof GM_info
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
-var autoRefreshMinutes = 30; // refresh page after x seconds
+var autoRefreshMinutes = 30; // refresh page after x minutes 
 
 // DO NOT MODIFY
 var isAlreadyRunning = false;
