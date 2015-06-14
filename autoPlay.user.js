@@ -802,6 +802,24 @@ function goToLaneWithBestTarget() {
 			// Throw Money at Screen
 			disableAbilityItem(ITEMS.THROW_MONEY);
 		} else {
+			
+			// Only disable abilities on non-boss and as long as the game level is over 5000
+			if(!targetIsTreasureOrBoss && getGameLevel() >= 5000) {
+				// Nuke
+				disableAbility(ABILITIES.NUKE);
+				// Clusterbomb
+				disableAbility(ABILITIES.CLUSTER_BOMB);
+				// Napalm
+				disableAbility(ABILITIES.NAPALM);
+			} else {
+				// Nuke
+				enableAbility(ABILITIES.NUKE);
+				// Clusterbomb
+				enableAbility(ABILITIES.CLUSTER_BOMB);
+				// Napalm
+				enableAbility(ABILITIES.NAPALM);
+			}
+		
 			// Morale
 			enableAbility(ABILITIES.MORALE_BOOSTER);
 			// Luck
@@ -827,9 +845,7 @@ function goToLaneWithBestTarget() {
 		}
 		
 		if(!targetIsTreasureOrBoss && getGameLevel() >= 5000) {
-			disableAbility(ABILITIES.NUKE);
-			disableAbility(ABILITIES.CLUSTER_BOMB);
-			disableAbility(ABILITIES.NAPALM);
+			
 		}
 	}
 }
