@@ -158,7 +158,7 @@ function firstRun() {
 	activity.style.marginTop = "25px";
 
 	var info_box = document.querySelector(".leave_game_helper");
-	info_box.innerHTML = '<b>OPTIONS</b><br>Some of these may need a refresh to take effect.<br>';
+	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !==  "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Some of these may need a refresh to take effect.<br>';
 
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
