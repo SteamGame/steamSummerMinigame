@@ -138,14 +138,19 @@ function firstRun() {
 	var info_box = document.querySelector(".leave_game_helper");
 	info_box.innerHTML = '<b>OPTIONS</b><br/>Some of these may need a refresh to take effect.<br/>';
 	info_box.style.backgroundColor = "#000000";
-	info_box.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
-	info_box.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleEvent));
-	info_box.appendChild(makeCheckBox("removeParticles", "Remove particle effects", removeParticles, handleEvent));
-	info_box.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent));
-	info_box.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
-	info_box.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
-	info_box.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
-
+	info_box.style.width = "600px";
+	var checkboxes = document.createElement("div");
+	checkboxes.style["-moz-column-count"] = 2;
+	checkboxes.style["-webkit-column-count"] = 2;
+	checkboxes.style["column-count"] = 2;
+	checkboxes.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
+	checkboxes.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleEvent));
+	checkboxes.appendChild(makeCheckBox("removeParticles", "Remove particle effects", removeParticles, handleEvent));
+	checkboxes.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent));
+	checkboxes.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
+	checkboxes.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
+	checkboxes.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
+	info_box.appendChild(checkboxes);
 	enhanceTooltips();
 }
 
