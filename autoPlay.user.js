@@ -107,9 +107,7 @@ function firstRun() {
 		autoRefreshPage(autoRefreshMinutes);
 	}
 	
-	if (enableRenderer) {
-		toggleRenderer();
-	}
+	toggleRenderer();
 
 	// disable particle effects - this drastically reduces the game's memory leak
 	disableParticles();
