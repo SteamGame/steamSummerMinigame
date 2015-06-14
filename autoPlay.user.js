@@ -269,15 +269,19 @@ function handleCheckBox(event) {
 	return checkbox.checked;
 }
 
+function enableClickingPrevention(value) {
+	document.querySelector(".scanlines").style.cssText = value ? "pointer-events: auto ! important;" : "";
+}
+
 function toggleAutoClicker(event) {
 	var value = enableAutoClicker;
 	if(event !== undefined)
 		value = handleCheckBox(event);
 	if(value) {
-		document.querySelector(".scanlines").style.cssText = "pointer-events: auto !important";
+		enableClickingPrevention(true);
 		currentClickRate = clickRate;
 	} else {
-		document.querySelector(".scanlines").style.cssText = "";
+		enableClickingPrevention(false);
 		currentClickRate = 0;
 	}
 }
