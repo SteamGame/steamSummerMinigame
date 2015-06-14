@@ -1143,7 +1143,7 @@ function useMetalDetectorIfRelevant() {
 function useTreasureIfRelevant() {
 	// Check if Treasure is purchased 
 	if (hasItem(ITEMS.TREASURE)) {
-		if (isAbilityCoolingDown(ITEMS.TREASURE) || isAbilityActive(ABILITIES.METAL_DETECTOR)) {
+		if (isAbilityCoolingDown(ITEMS.TREASURE)) {
 			return;
 		}
 		
