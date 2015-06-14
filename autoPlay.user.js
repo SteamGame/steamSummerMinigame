@@ -31,7 +31,8 @@ var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
 var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", typeof GM_info !== "undefined");
 
-var autoRefreshMinutes = 30;
+var autoRefreshMinutes = 30; // minutes
+var autoRefreshMinutesRandomDelay = 10; // up to minutes
 
 // DO NOT MODIFY
 var isAlreadyRunning = false;
@@ -367,7 +368,8 @@ function toggleAutoRefresh(event) {
 }
 
 function autoRefreshPage(autoRefreshMinutes){
-	refreshTimer = setTimeout(function(){w.location.reload(true);},autoRefreshMinutes*1000*60);
+	var timerValue = (autoRefreshMinutes + autoRefreshMinutesRandomDelay * Math.random()) * 60 * 1000;
+	refreshTimer = setTimeout(function(){w.location.reload(true);}, timerValue);
 }
 
 function toggleElementLock(event) {
