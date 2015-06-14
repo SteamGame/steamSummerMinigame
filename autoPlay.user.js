@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name [SteamDB] Monster Minigame Auto-Script w/ Auto-Click
+// @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.0.1
+// @version 4.0.2
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
