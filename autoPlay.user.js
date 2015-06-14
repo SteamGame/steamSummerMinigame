@@ -843,10 +843,6 @@ function goToLaneWithBestTarget() {
 			// Throw Money at Screen
 			enableAbilityItem(ITEMS.THROW_MONEY);
 		}
-		
-		if(!targetIsTreasureOrBoss && getGameLevel() >= 5000) {
-			
-		}
 	}
 }
 
