@@ -169,7 +169,7 @@ function firstRun() {
 	checkboxes.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
 	if (typeof GM_info !==  "undefined") {
 		checkboxes.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (fix memory leak)", enableAutoRefresh, toggleAutoRefresh));
-	};
+	}
 	checkboxes.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
 	checkboxes.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
 	checkboxes.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
