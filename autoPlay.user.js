@@ -158,7 +158,7 @@ function firstRun() {
 	activity.style.marginTop = "25px";
 
 	var info_box = document.querySelector(".leave_game_helper");
-	info_box.innerHTML = '<b>OPTIONS</b><br>Some of these may need a refresh to take effect.<br>';
+	info_box.innerHTML = '<b>OPTIONS</b><br>Settings marked with a <span style="color:#a33100">*</span> requires a refresh to take effect.<hr>';
 
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
@@ -177,12 +177,12 @@ function firstRun() {
 	options1.style.width = "50%";
 	options1.style.float = "left";
 
-	options1.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
-	options1.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
-	options1.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
-	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects (needs refresh)", removeFlinching, handleEvent));
-	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
-	options1.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
+	options1.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker, false));
+	options1.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleEvent, true));
+	options1.appendChild(makeCheckBox("removeParticles", "Remove particle effects", removeParticles, handleEvent, true));
+	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent, true));
+	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText, false));
+	options1.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText, false));
 
 	info_box.appendChild(options1);
 
@@ -193,7 +193,7 @@ function firstRun() {
 	options1.style.width = "50%";
 
 	if (typeof GM_info !==  "undefined") {
-		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh));
+		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh, false));
 	}
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
@@ -212,7 +212,7 @@ function firstRun() {
 	lock_elements_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
 	lock_elements_box.style.color = "#ededed";
 	lock_elements_box.title = "To maximise team damage players should max only one element. But distributions of elements through people should be equal. So we calculated your element using your unique ID. Upgrade your element to make maximum performance or disable this checkbox.";
-	var lock_elements_checkbox = makeCheckBox("enableElementLock", "Lock element upgrades for more team dps", enableElementLock, toggleElementLock);
+	var lock_elements_checkbox = makeCheckBox("enableElementLock", "Lock element upgrades for more team dps", enableElementLock, toggleElementLock, false);
 	lock_elements_box.appendChild(lock_elements_checkbox);
 	ab_box.appendChild(lock_elements_box);
 	
@@ -380,7 +380,11 @@ function makeNumber(name, desc, width, value, min, max, listener) {
 	return label;
 }
 
-function makeCheckBox(name, desc, state, listener) {
+function makeCheckBox(name, desc, state, listener, reqRefresh) {
+	var asterisk = document.createElement('span');
+	asterisk.appendChild(document.createTextNode("*"));
+	asterisk.setAttribute("STYLE","color:#a33100");
+
 	var label= document.createElement("label");
 	var description = document.createTextNode(desc);
 	var checkbox = document.createElement("input");
@@ -393,6 +397,8 @@ function makeCheckBox(name, desc, state, listener) {
 
 	label.appendChild(checkbox);
 	label.appendChild(description);
+	if(reqRefresh)
+		label.appendChild(asterisk);
 	label.appendChild(document.createElement("br"));
 	return label;
 }
