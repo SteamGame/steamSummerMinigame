@@ -102,6 +102,10 @@ function firstRun() {
 	if (w.CSceneGame !== undefined) {
 		w.CSceneGame.prototype.DoScreenShake = function() {};
 	}
+	
+	// Add "players in game" label
+	var oldHTML = document.getElementsByClassName("title_activity")[0].innerHTML;
+	document.getElementsByClassName("title_activity")[0].innerHTML = "<span id=\"players_in_game\">0/1500</span>&nbsp;Players in game<br />" + oldHTML;
 
 	enhanceTooltips();
 }
@@ -122,6 +126,7 @@ function MainLoop() {
 		useMetalDetectorIfRelevant();
 		attemptRespawn();
 		disableCooldownIfRelevant();
+		updatePlayersInGame();
 
 		g_Minigame.m_CurrentScene.m_nClicks = clickRate;
 		g_msTickRate = 1000;
@@ -258,6 +263,13 @@ function displayText(x, y, strText, color) {
 	text.m_easeAlpha = e;
 
 	g_Minigame.CurrentScene().m_rgClickNumbers.push(text);
+}
+
+function updatePlayersInGame() {
+	var totalPlayers = 	g_Minigame.m_CurrentScene.m_rgLaneData[ 0 ].players +
+						g_Minigame.m_CurrentScene.m_rgLaneData[ 1 ].players +
+						g_Minigame.m_CurrentScene.m_rgLaneData[ 2 ].players;
+	document.getElementById("players_in_game").innerHTML = totalPlayers + "/1500";
 }
 
 function goToLaneWithBestTarget() {
