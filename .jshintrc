@@ -3,5 +3,6 @@
 	"browser": true,
 	"curly": true,
 	"newcap": false,
-	"strict": true
+	"strict": true,
+	"laxbreak": true
 }
