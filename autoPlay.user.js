@@ -26,12 +26,8 @@ var removeParticles = getPreferenceBoolean("removeParticles", true);
 var removeFlinching = getPreferenceBoolean("removeFlinching", true);
 var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
+var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", typeof GM_info !== "undefined");
 
-if (typeof GM_info !== "undefined") {
-	var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", true); // auto-refresh for GM/TM users
-} else {
-	var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", false); // no auto-refresh for non-GM/TM users
-}
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
 var autoRefreshSeconds = 1800; // refresh page after x seconds
