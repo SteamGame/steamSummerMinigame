@@ -2,7 +2,7 @@
 // @name Monster Minigame Auto-script w/ auto-click
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 3.9.1
+// @version 3.9.2
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -20,7 +20,7 @@ var clickRate = 10;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
 
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
-
+var autoUseMedic = getPreferenceBoolean("autoUseMedic", false);
 var removeInterface = getPreferenceBoolean("removeInterface", true); // get rid of a bunch of pointless DOM
 var removeParticles = getPreferenceBoolean("removeParticles", true);
 var removeFlinching = getPreferenceBoolean("removeFlinching", true);
@@ -179,6 +179,7 @@ function firstRun() {
 	checkboxes.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
 	checkboxes.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
 	checkboxes.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
+	checkboxes.appendChild(makeCheckBox("autoUseMedic", "Uses medic instantly when off cooldown", autoUseMedic, toggleAutoUseMedic));
 	if (typeof GM_info !==  "undefined") {
 		checkboxes.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (fix memory leak)", enableAutoRefresh, toggleAutoRefresh));
 	}
@@ -296,6 +297,17 @@ function toggleAutoClicker(event) {
 		currentClickRate = clickRate;
 	} else {
 		currentClickRate = 0;
+	}
+}
+
+function toggleAutoUseMedic(event) {
+	var value = autoUseMedic;
+	if(event !== undefined)
+		value = handleCheckBox(event);
+	if(value) {
+		autoUseMedic = 1;
+	} else {
+		autoUseMedic = 0;
 	}
 }
 
@@ -1253,5 +1265,13 @@ function enhanceTooltips(){
 			return strOut;
 		};
 }
+function AutoUseMedicIfApplicable(){
+	if autoUseMedic = 1{
+		if (hasPurchasedAbility(ABILITIES.MEDIC) && !isAbilityCoolingDown(ABILITIES.MEDIC)) {
 
+		// Medics is purchased, and cooled down, Trigger it.
+		advLog('Medics is purchased and cooled down. Trigger it.', 2);
+		triggerAbility(ABILITIES.MEDIC);
+	}
+}
 }(window));
