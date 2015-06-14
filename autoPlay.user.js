@@ -16,7 +16,7 @@
 "use strict";
 
 // OPTIONS
-var clickRate = 20;
+var clickRate = 10;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
 
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
