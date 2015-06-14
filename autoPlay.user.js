@@ -461,6 +461,17 @@ function goToLaneWithBestTarget() {
 	}
 }
 
+function predictBossDeath() {
+    var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
+	// check if current target is a boss
+	if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+		var enemyBossHealth = enemy.m_flDisplayedHP;
+		var teamDps = g_Minigame.m_CurrentScene.m_rgLaneData[g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane].friendly_dps;
+		var secsToBossDeath = teamDps / enemyBossHealth;
+		return secsToBossDeath;
+	}			
+}
+
 function disableCooldownIfRelevant() {
 	if(getActiveAbilityNum(ABILITIES.COOLDOWN) > 0)
 	{
@@ -691,11 +702,11 @@ function useMetalDetectorIfRelevant() {
 		var enemy = g_Minigame.m_CurrentScene.GetEnemy(g_Minigame.m_CurrentScene.m_rgPlayerData.current_lane, g_Minigame.m_CurrentScene.m_rgPlayerData.target);
 		// check if current target is a boss, otherwise we won't use metal detector
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+			var secsToBossDeath = predictBossDeath();
 
-			if (enemyBossHealthPercent >= 0.9) { // We want sufficient time for the metal detector to be applicable
+			if (secsToBossDeath <= 10) { // We want sufficient time for the metal detector to be applicable
 				// Metal Detector is purchased, cooled down, and needed. Trigger it.
-				advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
+				advLog('Metal Detector is purchased and cooled down, triggering it on boss', 2);
 				triggerAbility(ABILITIES.METAL_DETECTOR);
 			}
 		}
