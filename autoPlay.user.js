@@ -267,6 +267,7 @@ function MainLoop() {
 		useGoldRainIfRelevant();
 		useMetalDetectorIfRelevant();
 		useCrippleMonsterIfRelevant();
+		useReviveIfRelevant();
 
 		disableCooldownIfRelevant();
 
@@ -903,6 +904,19 @@ function useCrippleMonsterIfRelevant() {
 				triggerItem(ITEMS.CRIPPLE_MONSTER);
 			}
 		}
+	}
+}
+
+function useReviveIfRelevant() {
+	// Check if the next level is a boss level
+	if ((getGameLevel() + 1) % 10 != 0) {
+		return;
+	}
+	
+	if (hasItem(ITEMS.REVIVE) && !isAbilityCoolingDown(ITEMS.REVIVE)) {
+		// Revive is purchased, cooled down, and needed. Trigger it.
+		advLog('Used Resurrect ability.', 2);
+		triggerItem(ITEMS.REVIVE);
 	}
 }
 
