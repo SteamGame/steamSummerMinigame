@@ -836,43 +836,57 @@ function goToLaneWithBestTarget() {
 			advLog('Switching targets', 3);
 			s().TryChangeTarget(lowTarget);
 		}
-
+		
+		if(getGameLevel() >= 5000) {
+			// Only disable abilities on non-boss and as long as the game level is over 5000
+			if(targetIsTreasureOrBoss) {
+				enableAbility(ABILITIES.NUKE);
+				enableAbility(ABILITIES.CLUSTER_BOMB);
+				enableAbility(ABILITIES.NAPALM);
+			} else {
+				disableAbility(ABILITIES.NUKE);
+				disableAbility(ABILITIES.CLUSTER_BOMB);
+				disableAbility(ABILITIES.NAPALM);
+			}
+		} else {
+			if(targetIsTreasureOrBoss) {
+				disableAbility(ABILITIES.MORALE_BOOSTER);
+				disableAbility(ABILITIES.GOOD_LUCK);
+				disableAbility(ABILITIES.NUKE);
+				disableAbility(ABILITIES.CLUSTER_BOMB);
+				disableAbility(ABILITIES.NAPALM);
+				disableAbilityItem(ITEMS.CRIT);
+				disableAbilityItem(ITEMS.CRIPPLE_SPAWNER);
+				disableAbilityItem(ITEMS.CRIPPLE_MONSTER);
+				disableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
+				disableAbilityItem(ITEMS.REFLECT_DAMAGE);
+				disableAbilityItem(ITEMS.THROW_MONEY);
+			} else {
+				enableAbility(ABILITIES.MORALE_BOOSTER);
+				enableAbility(ABILITIES.GOOD_LUCK);
+				enableAbility(ABILITIES.NUKE);
+				enableAbility(ABILITIES.CLUSTER_BOMB);
+				enableAbility(ABILITIES.NAPALM);
+				enableAbilityItem(ITEMS.CRIT);
+				enableAbilityItem(ITEMS.CRIPPLE_SPAWNER);
+				enableAbilityItem(ITEMS.CRIPPLE_MONSTER);
+				enableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
+				enableAbilityItem(ITEMS.REFLECT_DAMAGE);
+				enableAbilityItem(ITEMS.THROW_MONEY);
+			}
+		}
 
 		// Prevent attack abilities and items if up against a boss or treasure minion
-		if (targetIsTreasureOrBoss) {
-			// Morale
-			disableAbility(ABILITIES.MORALE_BOOSTER);
-			// Luck
-			disableAbility(ABILITIES.GOOD_LUCK);
-			// Nuke
-			disableAbility(ABILITIES.NUKE);
-			// Clusterbomb
-			disableAbility(ABILITIES.CLUSTER_BOMB);
-			// Napalm
-			disableAbility(ABILITIES.NAPALM);
-			// Crit
-			disableAbilityItem(ITEMS.CRIT);
-			// Cripple Spawner
-			disableAbilityItem(ITEMS.CRIPPLE_SPAWNER);
-			// Cripple Monster
-			disableAbilityItem(ITEMS.CRIPPLE_MONSTER);
-			// Max Elemental Damage
-			disableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
-			// Reflect Damage
-			disableAbilityItem(ITEMS.REFLECT_DAMAGE);
-			// Throw Money at Screen
-			disableAbilityItem(ITEMS.THROW_MONEY);
+		if (targetIsTreasureOrBoss && getGameLevel() < 5000) {
+			
 		} else {
+			
+			
+		
 			// Morale
 			enableAbility(ABILITIES.MORALE_BOOSTER);
 			// Luck
 			enableAbility(ABILITIES.GOOD_LUCK);
-			// Nuke
-			enableAbility(ABILITIES.NUKE);
-			// Clusterbomb
-			enableAbility(ABILITIES.CLUSTER_BOMB);
-			// Napalm
-			enableAbility(ABILITIES.NAPALM);
 			// Crit
 			enableAbilityItem(ITEMS.CRIT);
 			// Cripple Spawner
