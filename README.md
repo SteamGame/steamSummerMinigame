@@ -17,8 +17,6 @@ This fork has:
 
 **DISCLAIMER:** This autoscript *will* include an auto-clicker. Automatic clicking pushes into the area of cheating, and this script is designed for cheating and automating the process of collecting gold.
 
-**Notice:** The script 'auto-clicks' a combined ammount once a second, so it may seems as if it isn't auto-clicking. The Raining Gold and damage values are combined and processed once a second to be more efficient and reduce client load (as compared to the previous method of simulating 20 clicks-per-second). As long as the 'Enable autoclicker' is checked at the bottom of the screen in the options box, it is autoclicking.
-
 ## Features ##
 
 - Moves you to the lane most likely to give you gold, prioritized like so:
