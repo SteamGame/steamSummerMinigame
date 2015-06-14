@@ -137,12 +137,22 @@ function firstRun() {
 
 	var info_box = document.querySelector(".leave_game_helper");
 	info_box.innerHTML = '<b>OPTIONS</b><br/>Some of these may need a refresh to take effect.<br/>';
+	
+	// reset the CSS for the info box for aesthetics
+	info_box.className = "options_box";
 	info_box.style.backgroundColor = "#000000";
 	info_box.style.width = "600px";
+	info_box.style.top = "73px";
+	info_box.style.padding = "12px";
+	info_box.style.position = "absolute";
+	info_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
+	info_box.style.color = "#ededed";
+	
 	var checkboxes = document.createElement("div");
 	checkboxes.style["-moz-column-count"] = 2;
 	checkboxes.style["-webkit-column-count"] = 2;
 	checkboxes.style["column-count"] = 2;
+	
 	checkboxes.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker));
 	checkboxes.appendChild(makeCheckBox("removeInterface", "Remove interface (needs refresh)", removeInterface, handleEvent));
 	checkboxes.appendChild(makeCheckBox("removeParticles", "Remove particle effects (needs refresh)", removeParticles, handleEvent));
@@ -151,6 +161,7 @@ function firstRun() {
 	checkboxes.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
 	checkboxes.appendChild(makeCheckBox("enableElementLock", "Lock element upgrades", enableElementLock, toggleElementLock));
 	info_box.appendChild(checkboxes);
+	
 	enhanceTooltips();
 }
 
