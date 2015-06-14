@@ -1266,7 +1266,7 @@ function enhanceTooltips(){
 		};
 }
 function AutoUseMedicIfApplicable(){
-	if autoUseMedic = 1{
+	if (autoUseMedic = 1){
 		if (hasPurchasedAbility(ABILITIES.MEDIC) && !isAbilityCoolingDown(ABILITIES.MEDIC)) {
 
 		// Medics is purchased, and cooled down, Trigger it.
