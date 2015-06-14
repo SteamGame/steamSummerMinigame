@@ -32,6 +32,7 @@ var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 // DO NOT MODIFY
 var isAlreadyRunning = false;
 var currentClickRate = clickRate;
+var lockedElement = -1;
 var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
 
@@ -68,7 +69,6 @@ var ENEMY_TYPE = {
 	"MINIBOSS":3,
 	"TREASURE":4
 };
-
 
 function firstRun() {
 	trt_oldCrit = w.g_Minigame.CurrentScene().DoCritEffect;
@@ -251,6 +251,7 @@ function makeCheckBox(name, desc, state, listener) {
 	checkbox.name = name;
 	checkbox.checked = state;
 	checkbox.onclick = listener;
+	w[checkbox.name] = checkbox.checked;
 
 	label.appendChild(checkbox);
 	label.appendChild(description);
@@ -421,6 +422,7 @@ function lockToElement(element) {
 		}
 		elems[i].style.visibility = "hidden";
 	}
+	lockedElement = element; // Save locked element.
 }
 
 function displayText(x, y, strText, color) {
@@ -1114,7 +1116,10 @@ function getClickDamageMultiplier(){
     return g_Minigame.m_CurrentScene.m_rgPlayerTechTree.damage_per_click_multiplier;
 }
 
-//1: fire, 2: water, 3: earth, 4: water
+// These are the upgrade types.
+//
+//3: fire, 4: water, 6: earth, 5: water
+// This differs from the order shown on the UI.
 function getElementMultiplierById(index){
 	switch( index )
 	{
@@ -1130,6 +1135,7 @@ function getElementMultiplierById(index){
 }
 
 function enhanceTooltips(){
+
 	var trt_oldTooltip = w.fnTooltipUpgradeDesc;
 	w.fnTooltipUpgradeDesc = function(context){
 		var $context = $J(context);
@@ -1147,7 +1153,6 @@ function enhanceTooltips(){
 		case 7: // Lucky Shot's type.
 			var currentMultiplier = getCritMultiplier();
 			var newMultiplier = currentMultiplier + multiplier;
-			var dps = getDPS();
 			var clickDamage = getClickDamage();
 
 			strOut += '<br><br>You can have multiple crits in a second. The server combines them into one.';
@@ -1174,6 +1179,31 @@ function enhanceTooltips(){
 
 	return strOut;
 	};
+
+	var trt_oldElemTooltip = w.fnTooltipUpgradeElementDesc;
+		w.fnTooltipUpgradeElementDesc = function (context) {
+			var strOut = trt_oldElemTooltip(context);
+			
+			var $context = $J(context);
+			var upgrades = g_Minigame.CurrentScene().m_rgTuningData.upgrades.slice(0);
+			// Element Upgrade index 3 to 6
+			var idx = $context.data('type');
+			// Is the current tooltip for the recommended element?
+			var isRecommendedElement = (lockedElement == idx - 3);
+			 
+			if (isRecommendedElement){
+				strOut += "<br><br>This is your recommended element. Please upgrade this.";
+
+				if (w.enableElementLock){
+					strOut += "<br><br>Other elements are LOCKED to prevent accidentally upgrading.";
+				}
+
+			} else if (-1 != lockedElement){
+				strOut += "<br><br>This is NOT your recommended element. DO NOT upgrade this.";
+			} 
+
+			return strOut;
+		};
 }
 
 }(window));
