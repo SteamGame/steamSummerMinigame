@@ -417,8 +417,9 @@ function makeCheckBox(name, desc, state, listener, reqRefresh) {
 
 	label.appendChild(checkbox);
 	label.appendChild(description);
-	if(reqRefresh)
+	if(reqRefresh) {
 		label.appendChild(asterisk);
+	}
 	label.appendChild(document.createElement("br"));
 	return label;
 }
