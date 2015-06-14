@@ -191,7 +191,7 @@ function MainLoop() {
 		updatePlayersInGame();
 		attemptRespawn();
 
-		g_Minigame.m_CurrentScene.m_nClicks = currentClickRate;
+		g_Minigame.m_CurrentScene.m_nClicks += currentClickRate;
 		g_msTickRate = 1000;
 
 		var damagePerClick = g_Minigame.m_CurrentScene.CalculateDamage(
