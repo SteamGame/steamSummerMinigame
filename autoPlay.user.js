@@ -292,7 +292,7 @@ function toggleAutoRefresh(event) {
     if(value) {
         autoRefreshPage(autoRefreshSeconds);
     } else {
-		autoRefreshSeconds = 0;
+		enableAutoRefresh = false;	
     }
 }
 
@@ -1094,9 +1094,7 @@ function getClickDamage(){
 }
 
 function autoRefreshPage(autoRefreshSeconds){
-	if(autoRefreshSeconds > 0) {
-		setTimeout("location.reload(true);",(autoRefreshSeconds*1000));
-	}
+	setTimeout("location.reload(true);",(autoRefreshSeconds*1000));
 }
 
 function enhanceTooltips(){
