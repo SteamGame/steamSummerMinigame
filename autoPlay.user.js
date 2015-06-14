@@ -1415,7 +1415,7 @@ function enhanceTooltips() {
 	var trt_oldTooltip = w.fnTooltipUpgradeDesc;
 
 	w.fnTooltipUpgradeDesc = function(context){
-		var $context = $J(context);
+		var $context = w.$J(context);
 		var desc = $context.data('desc');
 		var strOut = desc;
 		var multiplier = parseFloat( $context.data('multiplier') );
@@ -1463,7 +1463,7 @@ function enhanceTooltips() {
 	w.fnTooltipUpgradeElementDesc = function (context) {
 		var strOut = trt_oldElemTooltip(context);
 
-		var $context = $J(context);
+		var $context = w.$J(context);
 		//var upgrades = s().m_rgTuningData.upgrades.slice(0);
 		// Element Upgrade index 3 to 6
 		var idx = $context.data('type');
