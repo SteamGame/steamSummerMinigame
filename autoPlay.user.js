@@ -50,6 +50,7 @@ var lastLevel = 0;
 var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
 var trt_oldRender = function() {};
+var ELEMENTS = {};
 
 var UPGRADES = {
 	LIGHT_ARMOR: 0,
@@ -356,7 +357,7 @@ function MainLoop() {
 
 		if( level !== lastLevel ) {
 			lastLevel = level;
-			updateLevelInfoTitle();
+			updateLevelInfoTitle(level);
 			refreshPlayerData();
 		}
 
@@ -1477,12 +1478,7 @@ w.setTimeout(function() {
 	}
 }, autoRefreshSecondsCheckLoadedDelay * 1000);
 
-// Append gameid to breadcrumbs
-var breadcrumbs = document.querySelector('.breadcrumbs');
-
-if(breadcrumbs) {
-	appendBreadcrumbsTitleInfo();
-}
+appendBreadcrumbsTitleInfo();
 
 function startFingering() {
 	w.CSceneGame.prototype.ClearNewPlayer = function(){};
@@ -1590,7 +1586,7 @@ function countdown(time) {
     return {hours : hours, minutes : minutes};
 }
 
-function expectedLevel() {
+function expectedLevel(level) {
     var time = Math.floor(g_Minigame.CurrentScene().m_nTime) % 86400;
     time = time - 16*3600;
     if (time < 0) {
@@ -1600,7 +1596,6 @@ function expectedLevel() {
     var remaining_time = 86400 - time;
     var gametime = game_time.innerHTML.split(":");
     var passed_time = (3600*Number(gametime[0]) + 60*Number(gametime[1]) + Number(gametime[2]));
-    var level = g_Minigame.CurrentScene().m_rgGameData.level;
     var expected_level = Math.floor(((level/passed_time)*remaining_time)+level);
     var likely_level = Math.floor((expected_level - level)/Math.log(3))+ level;
     return {expected_level : expected_level, likely_level : likely_level, remaining_time : remaining_time};
@@ -1608,17 +1603,31 @@ function expectedLevel() {
 
 function appendBreadcrumbsTitleInfo() {
 	var breadcrumbs = document.querySelector('.breadcrumbs');
+
+	if(!breadcrumbs) {
+		return;
+	}
+
     var element = document.createElement('span');
+    element.textContent = ' > ';
+    breadcrumbs.appendChild(element);
+
+	element = document.createElement('span');
+	element.style.color = '#D4E157';
+	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
+	element.textContent = 'Room ' + w.g_GameID;
+	breadcrumbs.appendChild(element);
+
+	element = document.createElement('span');
     element.textContent = ' > ';
     breadcrumbs.appendChild(element);
 
     element = document.createElement('span');
     element.style.color = '#FFA07A';
-    element.id = "lv_explv";
     element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
-    var exp_lvl = expectedLevel();
-    element.textContent = 'Level: ' + (g_Minigame.CurrentScene().m_rgGameData.level + 1) + ', Expected Level: ' + exp_lvl.expected_level + ', Likely Level: ' + exp_lvl.likely_level;
+    element.textContent = 'Level: 0, Expected Level: 0, Likely Level: 0';
     breadcrumbs.appendChild(element);
+	ELEMENTS.ExpectedLevel = element;
 
     var element = document.createElement('span');
     element.textContent = ' > ';
@@ -1626,27 +1635,21 @@ function appendBreadcrumbsTitleInfo() {
 
     element = document.createElement('span');
     element.style.color = '#7AA0FF';
-    element.id = "rem_tim";
     element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
-    var rem_time = countdown(exp_lvl.remaining_time);
-    element.textContent = 'Remaining Time: ' + rem_time.hours + ' hours, ' + rem_time.minutes + ' minutes.';
+    element.textContent = 'Remaining Time: 0 hours, 0 minutes.';
     breadcrumbs.appendChild(element);
+	ELEMENTS.RemainingTime = element;
 }
 
-function updateLevelInfoTitle()
+function updateLevelInfoTitle(level)
 {
 	var breadcrumbs = document.querySelector('.breadcrumbs');
 
-    var exp_lvl = expectedLevel();
+    var exp_lvl = expectedLevel(level);
     var rem_time = countdown(exp_lvl.remaining_time);
-    for (i = 0; i < breadcrumbs.childElementCount; i++) {
-        if (breadcrumbs.childElements()[i].id == "lv_explv") {
-            breadcrumbs.childElements()[i].innerHTML = 'Level: ' + (g_Minigame.CurrentScene().m_rgGameData.level + 1) + ', Expected Level: ' + exp_lvl.expected_level + ', Likely Level: ' + exp_lvl.likely_level;
-        }
-        if (breadcrumbs.childElements()[i].id == "rem_tim") {
-            breadcrumbs.childElements()[i].innerHTML = 'Remaining Time: ' + rem_time.hours + ' hours, ' + rem_time.minutes + ' minutes.';
-        }
-    }
+	
+	ELEMENTS.ExpectedLevel.textContent = 'Level: ' + level + ', Expected Level: ' + exp_lvl.expected_level + ', Likely Level: ' + exp_lvl.likely_level;
+	ELEMENTS.RemainingTime.textContent = 'Remaining Time: ' + rem_time.hours + ' hours, ' + rem_time.minutes + ' minutes.';
 }
 
 }(window));
