@@ -906,7 +906,7 @@ function goToLaneWithBestTarget(level) {
 				// Napalm
 				enableAbility(ABILITIES.NAPALM);
 				
-				enableAbilityItem(ABILITIES.WORMHOLE)
+				enableAbilityItem(ABILITIES.WORMHOLE);
 		} else {
 			if(targetIsTreasureOrBoss) {
 				// Morale
