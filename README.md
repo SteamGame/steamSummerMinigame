@@ -87,4 +87,9 @@ This project is open-source on github. There are different ways you can help:
 - Find an Issue that's marked `help wanted`. Make the changes needed by that issue, and create a Pull Request with your enhancement or bugfix.
 - Pick an item off the TODO list, below, and implement it. When it's done (and tested and working), create a Pull Request.
 - Got an idea for an improvement that's not already listed? Code it up, test it out, then make a Pull Request when it's ready.
+
+### Pull Request Guidelines ###
+
 - Do NOT change the script version in your PR as it could be incremented before your PR is merged.
+- Test your changes both in console and Greasemonkey/Tampermonkey.
+- Squash your commits before submitting the PR.
