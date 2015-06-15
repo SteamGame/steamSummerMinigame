@@ -234,11 +234,24 @@ function firstRun() {
 	abilities_extra_styles.textContent = '#activeinlanecontainer:hover {height:auto;background:rgba(50,50,50,0.9);padding-bottom:10px;position:absolute;z-index:1} #activeinlanecontainer:hover + #activitylog {margin-top:88px} #activitylog {margin-top: 20px}';
 	document.getElementsByTagName('head')[0].appendChild(abilities_extra_styles);
 
+	// space for option menu
+	var options_menu = document.querySelector(".game_options");
+	var sfx_btn = document.querySelector(".toggle_sfx_btn");
+	sfx_btn.style.marginLeft = "2px";
+	sfx_btn.style.marginRight = "7px";
+	sfx_btn.style.cssFloat = "right";
+	sfx_btn.style.styleFloat = "right";
+	var music_btn = document.querySelector(".toggle_music_btn");
+	music_btn.style.marginRight = "2px";
+	music_btn.style.cssFloat = "right";
+	music_btn.style.styleFloat = "right";
+	var leave_btn = document.querySelector(".leave_game_btn");
+	leave_btn.style.display = "none";
+
 	var info_box = document.querySelector(".leave_game_helper");
 	var pagecontent = document.querySelector(".pagecontent");
 	pagecontent.style.padding = "0";
-	pagecontent.appendChild(info_box);
-	document.querySelector(".game_options").style.overflow = "hidden";
+	options_menu.insertBefore(info_box, sfx_btn);
 
 	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !==  "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span style="color:#FF5252;font-size:22px;line-height:4px;vertical-align:bottom;">*</span> requires a refresh to take effect.<hr>';
 
@@ -251,6 +264,8 @@ function firstRun() {
 	info_box.style.color = "#ededed";
 	info_box.style.margin = "2px auto";
 	info_box.style.overflow = "auto";
+	info_box.style.cssFloat = "left";
+	info_box.style.styleFloat = "left";
 
 	var options1 = document.createElement("div");
 	options1.style["-moz-column-count"] = 2;
@@ -1162,7 +1177,6 @@ function useAbilities(level)
 			triggerAbility(ABILITIES.NAPALM);
 		}
 	}
-
 
 	// Morale Booster
 	if (canUseAbility(ABILITIES.MORALE_BOOSTER)) {
