@@ -976,12 +976,17 @@ function purchaseUpgrades() {
 
 	var myGold = s().m_rgPlayerData.gold;
 
-	// Initial values for   armor, dps, click damage 
-	var bestUpgradeForDamage,bestUpgradeForArmor;
+	// Initial values for armor, dps, click damage 
+	var bestUpgradeForDamage, bestUpgradeForArmor;
 	var highestUpgradeValueForDamage = 0;
 	var highestUpgradeValueForArmor = 0;
 	var bestElement = -1;
 	var highestElementLevel = 0;
+
+	var critMultiplier = g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_crit;
+	var critChance = g_Minigame.CurrentScene().m_rgPlayerTechTree.crit_percentage;
+	var dpc = g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_per_click;
+
 	var upgradeCost;
 
 	var upgrades = s().m_rgTuningData.upgrades.slice(0);
@@ -1012,9 +1017,9 @@ function purchaseUpgrades() {
 				break;
 			case UPGRADE_TYPES.CLICK_DAMAGE:
 				// Damage increase per cost
-				if (currentClickRate * upgrade.multiplier / upgradeCost > highestUpgradeValueForDamage) {
+				if ((critChance * critMultiplier + 1) * currentClickRate * upgrade.multiplier / upgradeCost > highestUpgradeValueForDamage) {
 					bestUpgradeForDamage = i;
-					highestUpgradeValueForDamage = currentClickRate * upgrade.multiplier / upgradeCost;
+					highestUpgradeValueForDamage = (critChance * critMultiplier + 1) * currentClickRate * upgrade.multiplier / upgradeCost;
 				}
 				break;
 			case UPGRADE_TYPES.DPS:
@@ -1034,6 +1039,10 @@ function purchaseUpgrades() {
 				}
 				break;
 			case UPGRADE_TYPES.LUCKY_SHOT:
+				if (upgrade.multiplier * dpc * critChance * avgClicksPerSecond / upgradeCost > highestUpgradeValueForDamage) { // dmg increase per moneys
+					bestUpgradeForDamage = i;
+					highestUpgradeValueForDamage = upgrade.multiplier * dpc * critChance * avgClicksPerSecond / upgradeCost;
+				}
 				break;
 			default:
 				break;
