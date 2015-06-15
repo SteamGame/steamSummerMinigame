@@ -968,6 +968,7 @@ function purchaseUpgrades() {
 	var highestUpgradeValueForArmor = 0;
 	var bestElement = -1;
 	var highestElementLevel = 0;
+	var upgradeCost;
 
 	var upgrades = g_Minigame.CurrentScene().m_rgTuningData.upgrades.slice(0);
 
@@ -985,7 +986,7 @@ function purchaseUpgrades() {
 		}
 
 		var upgradeCurrentLevel = g_Minigame.CurrentScene().m_rgPlayerUpgrades[i].level;
-		var upgradeCost = g_Minigame.CurrentScene().m_rgPlayerUpgrades[i].cost_for_next_level;
+		upgradeCost = g_Minigame.CurrentScene().m_rgPlayerUpgrades[i].cost_for_next_level;
 
 		switch(upgrade.type) {
 			case UPGRADE_TYPES.ARMOR:
@@ -1028,7 +1029,6 @@ function purchaseUpgrades() {
 	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
 	// Check if health is below 30%
 	var hpPercent = g_Minigame.CurrentScene().m_rgPlayerData.hp / myMaxHealth;
-	var upgradeCost;
 	if (hpPercent < 0.3) {
 		// Prioritize armor over damage
 		// - Should we buy any armor we can afford or just wait for the best one possible?
