@@ -432,6 +432,13 @@ function MainLoop() {
 				}
 			}
 		}
+		
+		// Prune older entries (for real)
+		var e = s().m_rgActionLog;
+		if(e.length > 20)
+		{
+			s().m_rgActionLog = e.slice(-20);
+		}
 	}
 }
 
