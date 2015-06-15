@@ -980,7 +980,6 @@ function purchaseUpgrades() {
 	var bestUpgradeForDamage, bestUpgradeForArmor;
 	var highestUpgradeValueForDamage = 0;
 	var highestUpgradeValueForArmor = 0;
-	var bestElement = -1;
 	var highestElementLevel = 0;
 	var purchasedShieldsWhileRespawning = false;
 
@@ -1034,10 +1033,6 @@ function purchaseUpgrades() {
 			case UPGRADE_TYPES.ELEMENTAL_WATER:
 			case UPGRADE_TYPES.ELEMENTAL_AIR:
 			case UPGRADE_TYPES.ELEMENTAL_EARTH:
-				if (upgradeCurrentLevel > highestElementLevel) {
-					highestElementLevel = upgradeCurrentLevel;
-					bestElement = i;
-				}
 				break;
 			case UPGRADE_TYPES.LUCKY_SHOT:
 				if (upgrade.multiplier * dpc * critChance * avgClicksPerSecond / upgradeCost > highestUpgradeValueForDamage) { // dmg increase per moneys
