@@ -29,6 +29,7 @@ var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
 var enableFingering = getPreferenceBoolean("enableFingering", true);
 var disableRenderer = getPreferenceBoolean("disableRenderer", true);
+var removeLowUpgrades = getPreferenceBoolean("removeLowUpgrades", true);
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
@@ -115,6 +116,23 @@ var ENEMY_TYPE = {
 	TREASURE: 4
 };
 
+var UPGRADE_OBJ = {
+	ARMOR_1: {type: 'armor', lvl: 1, selector: document.getElementById("upgr_0") },
+	ARMOR_2: {type: 'armor', lvl: 2, selector: document.getElementById("upgr_8") },
+	ARMOR_3: {type: 'armor', lvl: 3, selector: document.getElementById("upgr_20") },
+	ARMOR_4: {type: 'armor', lvl: 4, selector: document.getElementById("upgr_23") },
+	AUTO_1: {type: 'auto', lvl: 1, selector: document.getElementById("upgr_1") },
+	AUTO_2: {type: 'auto', lvl: 2, selector: document.getElementById("upgr_9") },
+	AUTO_3: {type: 'auto', lvl: 3, selector: document.getElementById("upgr_21") },
+	AUTO_4: {type: 'auto', lvl: 4, selector: document.getElementById("upgr_24") },
+	DMG_1: {type: 'dmg', lvl: 1, selector: document.getElementById("upgr_2") },
+	DMG_2: {type: 'dmg', lvl: 2, selector: document.getElementById("upgr_10") },
+	DMG_3: {type: 'dmg', lvl: 3, selector: document.getElementById("upgr_22") },
+	DMG_4: {type: 'dmg', lvl: 4, selector: document.getElementById("upgr_25") },
+	LUCKY: {type: 'add', lvl: 1, selector: document.getElementById("upgr_7") },
+	LOOT: {type: 'add', lvl: 1, selector: document.getElementById("upgr_19") },
+};
+
 // Try to disable particles straight away,
 // if not yet available, they will be disabled in firstRun
 disableParticles();
@@ -140,6 +158,10 @@ function firstRun() {
 
 	if (enableAutoRefresh) {
 		autoRefreshPage(autoRefreshMinutes);
+	}
+
+	if (removeLowUpgrades) {
+		doRemoveLowUpgrades();
 	}
 
 	toggleRenderer();
@@ -226,6 +248,7 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText, false));
 	options1.appendChild(makeCheckBox("removeAllText", "Remove all text", removeAllText, toggleAllText, false));
 	options1.appendChild(makeCheckBox("disableRenderer", "Throttle game renderer", disableRenderer, toggleRenderer, false));
+	options1.appendChild(makeCheckBox("removeLowUpgrades", "Remove Low Tier Upgrades", removeLowUpgrades, doRemoveLowUpgrades, true));
 
 	info_box.appendChild(options1);
 
@@ -339,7 +362,7 @@ function MainLoop() {
 
 		if(disableRenderer) {
 			s().Tick();
-			
+
 			requestAnimationFrame(function() {
 				w.g_Minigame.Renderer.render(s().m_Container);
 			});
@@ -902,7 +925,7 @@ function goToLaneWithBestTarget(level) {
 				enableAbility(ABILITIES.CLUSTER_BOMB);
 				// Napalm
 				enableAbility(ABILITIES.NAPALM);
-				
+
 				enableAbilityItem(ABILITIES.WORMHOLE);
 		} else {
 			if(targetIsTreasureOrBoss) {
@@ -1581,6 +1604,50 @@ function enhanceTooltips() {
 
 		return strOut;
 	};
+}
+
+function doRemoveLowUpgrades(event) {
+	var isCheckBoxMarked = removeLowUpgrades,
+		boxSelector = document.getElementById("upgradescontainer");
+
+	if(event !== undefined) {
+		isCheckBoxMarked = handleCheckBox(event);
+	}
+
+	if(isCheckBoxMarked) {
+		boxSelector.addEventListener("click", checkUpgrades, false);
+	} else {
+		boxSelector.removeEventListener("click", checkUpgrades, false);
+	}
+}
+
+function checkUpgrades() {
+	Object.keys(UPGRADE_IDS).forEach(function(el) {
+		if(!el.selector.length) {
+			continue;
+		}
+
+		var actualLevel = parseInt(el.selector.querySelector('.level').innerHTML, 10),
+			upgradeType = el.type;
+
+		// Hide all Armor Upgrades above level 10
+		if(upgradeType === 'armor' && actualLevel >= 10) {
+			el.selector.style.display = 'none';
+		}
+
+		// Hide all auto-fire upgrade above level 10, expect "Auto-Fire Cannon", that one will go to level 20
+		if(
+			(upgradeType === 'auto') &&
+			((el.lvl > 1) || (el.lvl === 1 && actualLevel >= 20))
+		) {
+			el.selector.style.display = 'none';
+		}
+
+		// Hide all Click Damage Upgrades above level 10
+		if(upgradeType === 'dmg' && actualLevel >= 10) {
+			el.selector.style.display = 'none';
+		}
+	});
 }
 
 }(window));
