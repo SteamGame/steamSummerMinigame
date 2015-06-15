@@ -222,16 +222,13 @@ function firstRun() {
 	var ab_box = document.getElementById("abilities");
 	var lock_elements_box = document.createElement("div");
 	lock_elements_box.className = "lock_elements_box";
-	lock_elements_box.style.backgroundColor = "#000000";
 	lock_elements_box.style.width = "165px";
 	lock_elements_box.style.top = "-76px";
 	lock_elements_box.style.left = "303px";
-	lock_elements_box.style.borderRadius = "0 0 0 14px";
 	lock_elements_box.style.boxSizing = "border-box";
-	lock_elements_box.style.lineHeight = "1.005rem";
+	lock_elements_box.style.lineHeight = "1rem";
 	lock_elements_box.style.padding = "7px 10px";
 	lock_elements_box.style.position = "absolute";
-	lock_elements_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
 	lock_elements_box.style.color = "#ededed";
 	lock_elements_box.title = "To maximise team damage players should max only one element. But distributions of elements through people should be equal. So we calculated your element using your unique ID. Upgrade your element to make maximum performance or disable this checkbox.";
 	var lock_elements_checkbox = makeCheckBox("enableElementLock", "Lock element upgrades for more team dps", enableElementLock, toggleElementLock, false);
