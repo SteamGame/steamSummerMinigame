@@ -984,16 +984,16 @@ function goToLaneWithBestTarget(level) {
 }
 
 function useCooldownIfRelevant() {
-	if(getActiveAbilityLaneCount(ABILITIES.COOLDOWN) > 0) {
-		disableAbility(ABILITIES.COOLDOWN);
+	if(getActiveAbilityLaneCount(ABILITIES.DECREASE_COOLDOWNS) > 0) {
+		disableAbility(ABILITIES.DECREASE_COOLDOWNS);
 		return;
 	}
 
-	if(!isAbilityActive(ABILITIES.COOLDOWN)) {
-		enableAbility(ABILITIES.COOLDOWN);
+	if(!isAbilityActive(ABILITIES.DECREASE_COOLDOWNS)) {
+		enableAbility(ABILITIES.DECREASE_COOLDOWNS);
 	}
 
-	tryUsingAbility(ABILITIES.COOLDOWN);
+	tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
 }
 
 function useCrippleMonsterIfRelevant(level) {
