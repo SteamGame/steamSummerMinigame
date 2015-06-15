@@ -998,7 +998,7 @@ function goToLaneWithBestTarget(level) {
 		}
 
 		// Prevent attack abilities and items if up against a boss or treasure minion
-		if (targetIsTreasure || (targetIsBoss && (level < CONTROL.speedThreshold || level % CONTROL.rainingRounds == 0))) {
+		if (targetIsTreasure || (targetIsBoss && (level < CONTROL.speedThreshold || level % CONTROL.rainingRounds === 0))) {
 			BOSS_DISABLED_ABILITIES.forEach(disableAbility);
 		} else {
 			BOSS_DISABLED_ABILITIES.forEach(enableAbility);
@@ -1515,9 +1515,9 @@ function enhanceTooltips() {
 		switch( $context.data('upgrade_type') ) {
 			case 2: // Type for click damage. All tiers.
 				strOut = trt_oldTooltip(context);
-				var currentMultiplier = s().m_rgPlayerTechTree.damage_multiplier_crit;
-				var currentCrit = s().m_rgPlayerTechTree.damage_per_click * currentMultiplier;
-				var newCrit = s().m_rgTuningData.player.damage_per_click * (s().m_rgPlayerTechTree.damage_per_click_multiplier + multiplier) * currentMultiplier;
+				var currentCritMultiplier = s().m_rgPlayerTechTree.damage_multiplier_crit;
+				var currentCrit = s().m_rgPlayerTechTree.damage_per_click * currentCritMultiplier;
+				var newCrit = s().m_rgTuningData.player.damage_per_click * (s().m_rgPlayerTechTree.damage_per_click_multiplier + multiplier) * currentCritMultiplier;
 				strOut += '<br><br>Crit Click: ' + w.FormatNumberForDisplay( currentCrit ) + ' => ' + w.FormatNumberForDisplay( newCrit );
 				break;
 			case 7: // Lucky Shot's type.
