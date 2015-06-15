@@ -1447,6 +1447,10 @@ function sortLanesByElementals() {
 	return lanePointers;
 }
 
+function getCurrentTime() {
+	return s().m_rgGameData.timestamp;
+}
+
 function advLog(msg, lvl) {
 	if (lvl <= logLevel) {
 		console.log(msg);
@@ -1594,9 +1598,10 @@ function expectedLevel(level) {
 	}
 
 	var remaining_time = 86400 - time;
-	var passed_time = Date.now() - s().m_rgGameData.timestamp_game_start;
+	var passed_time = getCurrentTime() - s().m_rgGameData.timestamp_game_start;
 	var expected_level = Math.floor(((level/passed_time)*remaining_time)+level);
 	var likely_level = Math.floor((expected_level - level)/Math.log(3))+ level;
+	
 	return {expected_level : expected_level, likely_level : likely_level, remaining_time : remaining_time};
 }
 
