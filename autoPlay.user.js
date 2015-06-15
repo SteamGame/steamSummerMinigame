@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.2.0
+// @version 4.2.1
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
