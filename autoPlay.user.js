@@ -829,8 +829,8 @@ function goToLaneWithBestTarget(level) {
 					continue;
 				}
 				var stacks = 0;
-				if(typeof s().m_rgLaneData[i].abilities[17] != 'undefined') {
-					stacks = s().m_rgLaneData[i].abilities[17];
+				if(typeof s().m_rgLaneData[i].abilities[ABILITIES.RAINING_GOLD] != 'undefined') {
+					stacks = s().m_rgLaneData[i].abilities[ABILITIES.RAINING_GOLD];
 					advLog('stacks: ' + stacks, 3);
 				}
 				for(var m = 0; m < s().m_rgEnemies.length; m++) {
