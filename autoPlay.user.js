@@ -1268,23 +1268,11 @@ function isAbilityCoolingDown(abilityId) {
 
 function canUseAbility(abilityId)
 {
-	if(!hasPurchasedAbility(abilityId)){
-		return false;
-	}
-	if(isAbilityCoolingDown(abilityId)) {
-		return false;
-	}
-	if(isAbilityEnabled(abilityId)) {
-		return false;
-	}
-	return true;
+	return hasPurchasedAbility(abilityId) && !isAbilityCoolingDown(abilityId) && isAbilityEnabled(abilityId);
 }
 
 function canUseItem(itemId) {
-	if (!hasItem(itemId) || isAbilityCoolingDown(itemId) || isAbilityEnabled(itemId)) {
-		return false;
-	}
-	return true;
+	return hasItem(itemId) && !isAbilityCoolingDown(itemId) && isAbilityEnabled(itemId);
 }
 
 function tryUsingAbility(abilityId) {
