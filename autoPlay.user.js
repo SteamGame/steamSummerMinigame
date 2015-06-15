@@ -289,6 +289,7 @@ function MainLoop() {
 		}
 
 		s().m_nClicks += currentClickRate;
+		s().m_nLastTick = false;
 		w.g_msTickRate = 1000;
 
 		var damagePerClick = s().CalculateDamage(
