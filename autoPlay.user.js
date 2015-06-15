@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.4.4
+// @version 4.4.5
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -941,7 +941,7 @@ function goToLaneWithBestTarget(level) {
 			var potential = 0;
 			// Loop through lanes by elemental preference
 			var sortedLanes = sortLanesByElementals();
-			for(var notI = 0; notI < sortedLanes.length; notI++){
+			for(var notI = 0; notI < sortedLanes.length; notI++) {
 				// Maximize compability with upstream
 				i = sortedLanes[notI];
 				// ignore if lane is empty
@@ -951,15 +951,22 @@ function goToLaneWithBestTarget(level) {
 				var stacks = 0;
 				if(typeof s().m_rgLaneData[i].abilities[ABILITIES.RAINING_GOLD] != 'undefined') {
 					stacks = s().m_rgLaneData[i].abilities[ABILITIES.RAINING_GOLD];
-					advLog('stacks: ' + stacks, 3);
-				}
-				for(var m = 0; m < s().m_rgEnemies.length; m++) {
-					var enemyGold = s().m_rgEnemies[m].m_data.gold;
-					if (stacks * enemyGold > potential) {
-						potential = stacks * enemyGold;
-						preferredTarget = s().m_rgEnemies[m].m_nID;
-						preferredLane = i;
+					advLog('[Gold rain] stacks: ' + stacks, 5);
+
+					for(var m = 0; m < s().m_rgEnemies.length; m++){
+						if(s().m_rgEnemies[m].m_nLane != i){
+							continue;
+						}
+						advLog("[Gold rain] An enemy exists in raining gold lane: " + (i + 1), 5);
+						var enemyGold = s().m_rgEnemies[m].m_data.gold;
+						if(stacks * enemyGold > potential) {
+							potential = stacks * enemyGold;
+							preferredTarget = s().m_rgEnemies[m].m_nID;
+							preferredLane = i;
+						}
 					}
+					advLog("[Gold rain] preferredLane: " + preferredLane, 5);
+					advLog("[Gold rain] preferredTarget: " +  preferredTarget, 5);
 				}
 			}
 		}
