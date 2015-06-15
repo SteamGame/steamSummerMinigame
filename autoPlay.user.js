@@ -38,7 +38,7 @@ var autoRefreshMinutes = 30;
 var autoRefreshMinutesRandomDelay = 10;
 
 // DO NOT MODIFY
-var cTime = new Date();
+var cTime;
 var cHours = 0;
 var cMins = 0;
 var timeLeft = 0;
@@ -220,7 +220,7 @@ function firstRun() {
 	}
 
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent,true));
-    options2.appendChild(makeNumber("setMinsLeft", "Change the number of minutes before going crazy", "25px", minsLeft, 5, 59, updateEndGameCrazy));
+	options2.appendChild(makeNumber("setMinsLeft", "Change the number of minutes before going crazy", "25px", minsLeft, 5, 59, updateEndGameCrazy));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
@@ -259,21 +259,22 @@ function disableParticles() {
 }
 
 function updateCurrentTime() {
-    cHours = cTime.getUTCHours();
-    cMins = cTime.getUTCMinutes();
-    timeLeft = 60 - cMins;
+	cTime = new Date();
+	cHours = cTime.getUTCHours();
+	cMins = cTime.getUTCMinutes();
+	timeLeft = 60 - cMins;
 }
 function isNearEndGame() {
-    if (cHours == 15 && timeLeft <= minsLeft) {
-        return true;
-    }
-    else {
-        return false;
-    }
+	if (cHours == 15 && timeLeft <= minsLeft) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 function MainLoop() {
-    updateCurrentTime();
+	updateCurrentTime();
 
 	var level = s().m_rgGameData.level + 1;
 
@@ -299,7 +300,7 @@ function MainLoop() {
 		useReviveIfRelevant(level);
 		useTreasureIfRelevant(level);
 		useMaxElementalDmgIfRelevant();
-        useWormholeIfRelevant();
+		useWormholeIfRelevant();
 
 		disableCooldownIfRelevant();
 
@@ -509,8 +510,8 @@ function autoRefreshPage(autoRefreshMinutes){
 }
 
 function autoRefreshHandler() {
-	 var enemyData = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target).m_data;
-	 if(typeof enemyData !== "undefined"){
+	var enemyData = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target).m_data;
+	if(typeof enemyData !== "undefined"){
 		var enemyType = enemyData.type;
 		if(enemyType != ENEMY_TYPE.BOSS) {
 			advLog('Refreshing, not boss', 5);
@@ -572,9 +573,9 @@ function toggleAllText(event) {
 }
 
 function updateEndGameCrazy(event) {
-    if(event !== undefined) {
-        minsLeft = event.target.value;
-    }
+	if(event !== undefined) {
+		minsLeft = event.target.value;
+	}
 }
 
 function updateLogLevel(event) {
@@ -1234,14 +1235,14 @@ function useMaxElementalDmgIfRelevant() {
 }
 
 function useWormholeIfRelevant() {
-    // Check the time before using wormhole.
-    if (!isNearEndGame()) {
-        return;
-    }
-    // Check if Wormhole is purchased
-    if (tryUsingItem(ITEMS.WORMHOLE, true)) {
-        advLog('Less than ' + minsLeft + ' minutes for game to end. Triggering wormholes...', 2);
-    }
+	// Check the time before using wormhole.
+	if (!isNearEndGame()) {
+		return;
+	}
+	// Check if Wormhole is purchased
+	if (tryUsingItem(ITEMS.WORMHOLE, true)) {
+		advLog('Less than ' + minsLeft + ' minutes for game to end. Triggering wormholes...', 2);
+	}
 }
 
 function useReviveIfRelevant(level) {
@@ -1293,17 +1294,14 @@ function tryUsingAbility(abilityId) {
 }
 
 function tryUsingItem(itemId, checkInLane) {
-    if (!canUseItem(itemId)) {
-        return false;
-    }
-    if (typeof checkInLane === "undefined") {
-        checkInLane = false;
-    }
-    if (checkInLane && getActiveAbilityLaneCount(itemId) > 0) {
-        return false;
-    }
-    triggerItem(itemId);
-    return true;
+	if (!canUseItem(itemId)) {
+		return false;
+	}
+	if (checkInLane && getActiveAbilityLaneCount(itemId) > 0) {
+		return false;
+	}
+	triggerItem(itemId);
+	return true;
 }
 
 function hasPurchasedAbility(abilityId) {
