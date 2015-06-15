@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.2.1
+// @version 4.2.2
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -1458,7 +1458,10 @@ w.SteamDB_Minigame_Timer = w.setInterval(function(){
 
 // reload page if game isn't fully loaded, regardless of autoRefresh setting
 w.setTimeout(function() {
-	if (!w.g_Minigame || !w.g_Minigame.m_rgGameData) { // m_rgGameData is 'undefined' if stuck at 97/97 or below
+	// m_rgGameData is 'undefined' if stuck at 97/97 or below
+	if (!w.g_Minigame
+	||  !w.g_Minigame.m_CurrentScene
+	||  !w.g_Minigame.m_CurrentScene.m_rgGameData) {
 		w.location.reload(true);
 	}
 }, autoRefreshSecondsCheckLoadedDelay * 1000);
