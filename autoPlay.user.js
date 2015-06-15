@@ -38,11 +38,6 @@ var autoRefreshMinutes = 30;
 var autoRefreshMinutesRandomDelay = 10;
 
 // DO NOT MODIFY
-var cTime;
-var cHours = 0;
-var cMins = 0;
-var timeLeft = 0;
-
 var isAlreadyRunning = false;
 var refreshTimer = null;
 var currentClickRate = clickRate;
@@ -258,13 +253,11 @@ function disableParticles() {
 	}
 }
 
-function updateCurrentTime() {
-	cTime = new Date();
-	cHours = cTime.getUTCHours();
-	cMins = cTime.getUTCMinutes();
-	timeLeft = 60 - cMins;
-}
 function isNearEndGame() {
+	var cTime = new Date();
+	var cHours = cTime.getUTCHours();
+	var cMins = cTime.getUTCMinutes();
+	var timeLeft = 60 - cMins;
 	if (cHours == 15 && timeLeft <= minsLeft) {
 		return true;
 	}
@@ -274,8 +267,6 @@ function isNearEndGame() {
 }
 
 function MainLoop() {
-	updateCurrentTime();
-
 	var level = s().m_rgGameData.level + 1;
 
 	if( level < 10 ) {
