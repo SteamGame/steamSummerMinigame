@@ -69,7 +69,10 @@ var ITEMS = {
 	"GOD_MODE": 21,
 	"TREASURE": 22,
 	"STEAL_HEALTH": 23,
-	"REFLECT_DAMAGE": 24
+	"REFLECT_DAMAGE": 24,
+	"FEELING_LUCKY": 25
+	"WORMHOLE": 26,
+	"LIKE_NEW": 27,
 };
 
 var ENEMY_TYPE = {
@@ -79,6 +82,12 @@ var ENEMY_TYPE = {
 	"MINIBOSS":3,
 	"TREASURE":4
 };
+
+var UPGRADES = {
+	"LIGHT_ARMOR":0,
+	"AUTO_CANNON": 1,
+	"CLICK_UPGRADE": 2,
+}
 
 // Try to disable particles straight away,
 // if not yet available, they will be disabled in firstRun
