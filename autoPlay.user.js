@@ -35,7 +35,6 @@ var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", typeof GM_info
 
 var autoRefreshMinutes = 30;
 var autoRefreshMinutesRandomDelay = 10;
-var autoRefreshCheckLoadedDelay = 30; // seconds
 
 // DO NOT MODIFY
 var isAlreadyRunning = false;
@@ -483,12 +482,6 @@ function autoRefreshPage(autoRefreshMinutes){
 	refreshTimer = setTimeout(function() {
 		autoRefreshHandler();
 	}, timerValue);
-
-	setTimeout(function() {
-		// m_rgGameData is 'undefined' if stuck at 97/97; only run this check if autoRefresh is enabled
-		if (!g_Minigame.CurrentScene().m_rgGameData)
-			w.location.reload(true);
-	},autoRefreshCheckLoadedDelay*1000);
 }
 
 function autoRefreshHandler() {
