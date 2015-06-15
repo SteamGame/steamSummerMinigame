@@ -87,7 +87,7 @@ var UPGRADES = {
 	"LIGHT_ARMOR":0,
 	"AUTO_CANNON": 1,
 	"CLICK_UPGRADE": 2,
-}
+};
 
 // Try to disable particles straight away,
 // if not yet available, they will be disabled in firstRun
