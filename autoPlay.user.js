@@ -205,7 +205,7 @@ function firstRun() {
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
 	info_box.style.backgroundColor = "#000000";
-	info_box.style.width = "800px";
+	info_box.style.width = "1256px";
 	info_box.style.top = "73px";
 	info_box.style.padding = "12px";
 	info_box.style.position = "absolute";
