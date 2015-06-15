@@ -115,6 +115,26 @@ var ENEMY_TYPE = {
 	TREASURE: 4
 };
 
+var BOSS_DISABLED_ABILITIES = [
+	ABILITIES.MORALE_BOOSTER,
+	ABILITIES.GOOD_LUCK_CHARMS,
+	ABILITIES.TACTICAL_NUKE,
+	ABILITIES.CLUSTER_BOMB,
+	ABILITIES.NAPALM,
+	ABILITIES.CRIT,
+	ABILITIES.CRIPPLE_SPAWNER,
+	ABILITIES.CRIPPLE_MONSTER,
+	ABILITIES.MAX_ELEMENTAL_DAMAGE,
+	ABILITIES.REFLECT_DAMAGE,
+	ABILITIES.THROW_MONEY_AT_SCREEN
+];
+
+var CONTROL = {
+    speedThreshold: 5000,
+    rainingRounds: 250,
+    timePerUpdate: 60000
+};
+
 // Try to disable particles straight away,
 // if not yet available, they will be disabled in firstRun
 disableParticles();
@@ -777,14 +797,12 @@ function goToLaneWithBestTarget(level) {
 	var skippingSpawner = false;
 	var skippedSpawnerLane = 0;
 	var skippedSpawnerTarget = 0;
-	var targetIsTreasureOrBoss = false;
+	var targetIsTreasure = false;
+    var targetIsBoss = false;
 
 	for (var k = 0; !targetFound && k < enemyTypePriority.length; k++) {
-		if (enemyTypePriority[k] == ENEMY_TYPE.TREASURE || enemyTypePriority[k] == ENEMY_TYPE.BOSS){
-			targetIsTreasureOrBoss = true;
-		} else {
-			targetIsTreasureOrBoss = false;
-		}
+		targetIsTreasure = (enemyTypePriority[k] == ENEMY_TYPE.TREASURE);
+		targetIsBoss = (enemyTypePriority[k] == ENEMY_TYPE.BOSS);
 
 		var enemies = [];
 
@@ -799,7 +817,7 @@ function goToLaneWithBestTarget(level) {
 		}
 
 		//Prefer lane with raining gold, unless current enemy target is a treasure or boss.
-		if(!targetIsTreasureOrBoss){
+		if(!targetIsTreasure && !targetIsBoss) {
 			var potential = 0;
 			// Loop through lanes by elemental preference
 			var sortedLanes = sortLanesByElementals();
@@ -883,7 +901,6 @@ function goToLaneWithBestTarget(level) {
 		}
 	}
 
-
 	// go to the chosen lane
 	if (targetFound) {
 		if (s().m_nExpectedLane != lowLane) {
@@ -897,91 +914,18 @@ function goToLaneWithBestTarget(level) {
 			s().TryChangeTarget(lowTarget);
 		}
 
-		if(level >= 5000) {
-			// Only disable abilities on non-boss and as long as the game level is over 5000
-				// Nuke
-				enableAbility(ABILITIES.TACTICAL_NUKE);
-				// Clusterbomb
-				enableAbility(ABILITIES.CLUSTER_BOMB);
-				// Napalm
-				enableAbility(ABILITIES.NAPALM);
-
-				enableAbility(ABILITIES.WORMHOLE);
-		} else {
-			if(targetIsTreasureOrBoss) {
-				// Morale
-				disableAbility(ABILITIES.MORALE_BOOSTER);
-				// Luck
-				disableAbility(ABILITIES.GOOD_LUCK_CHARMS);
-				// Nuke
-				disableAbility(ABILITIES.TACTICAL_NUKE);
-				// Clusterbomb
-				disableAbility(ABILITIES.CLUSTER_BOMB);
-				// Napalm
-				disableAbility(ABILITIES.NAPALM);
-				// Crit
-				disableAbility(ABILITIES.CRIT);
-				// Cripple Spawner
-				disableAbility(ABILITIES.CRIPPLE_SPAWNER);
-				// Cripple Monster
-				disableAbility(ABILITIES.CRIPPLE_MONSTER);
-				// Max Elemental Damage
-				disableAbility(ABILITIES.MAX_ELEMENTAL_DAMAGE);
-				// Reflect Damage
-				disableAbility(ABILITIES.REFLECT_DAMAGE);
-				// Throw Money at Screen
-				disableAbility(ABILITIES.THROW_MONEY);
-			} else {
-				// Morale
-				enableAbility(ABILITIES.MORALE_BOOSTER);
-				// Luck
-				enableAbility(ABILITIES.GOOD_LUCK_CHARMS);
-				// Nuke
-				enableAbility(ABILITIES.TACTICAL_NUKE);
-				// Clusterbomb
-				enableAbility(ABILITIES.CLUSTER_BOMB);
-				// Napalm
-				enableAbility(ABILITIES.NAPALM);
-				// Crit
-				enableAbility(ABILITIES.CRIT);
-				// Cripple Spawner
-				enableAbility(ABILITIES.CRIPPLE_SPAWNER);
-				// Cripple Monster
-				enableAbility(ABILITIES.CRIPPLE_MONSTER);
-				// Max Elemental Damage
-				enableAbility(ABILITIES.MAX_ELEMENTAL_DAMAGE);
-				// Reflect Damage
-				enableAbility(ABILITIES.REFLECT_DAMAGE);
-				// Throw Money at Screen
-				enableAbility(ABILITIES.THROW_MONEY);
-			}
-				disableAbility(ABILITIES.WORMHOLE);
-
-		}
-
 		// Prevent attack abilities and items if up against a boss or treasure minion
-		if (targetIsTreasureOrBoss && level < 5000) {
+        if (targetIsTreasure || (targetIsBoss && (level < CONTROL.speedThreshold || level % CONTROL.rainingRounds == 0))) {
+            BOSS_DISABLED_ABILITIES.forEach(disableAbility);
+        } else {
+            BOSS_DISABLED_ABILITIES.forEach(enableAbility);
+        }
 
+		// Always disable wormhole on lower levels
+		if(level < CONTROL.speedThreshold) {
+			disableAbility(ABILITIES.WORMHOLE);
 		} else {
-
-
-
-			// Morale
-			enableAbility(ABILITIES.MORALE_BOOSTER);
-			// Luck
-			enableAbility(ABILITIES.GOOD_LUCK_CHARMS);
-			// Crit
-			enableAbility(ABILITIES.CRIT);
-			// Cripple Spawner
-			enableAbility(ABILITIES.CRIPPLE_SPAWNER);
-			// Cripple Monster
-			enableAbility(ABILITIES.CRIPPLE_MONSTER);
-			// Max Elemental Damage
-			enableAbility(ABILITIES.MAX_ELEMENTAL_DAMAGE);
-			// Reflect Damage
-			enableAbility(ABILITIES.REFLECT_DAMAGE);
-			// Throw Money at Screen
-			enableAbility(ABILITIES.THROW_MONEY);
+			enableAbility(ABILITIES.WORMHOLE);
 		}
 	}
 }
