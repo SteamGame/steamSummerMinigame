@@ -32,6 +32,7 @@ var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
 var enableFingering = getPreferenceBoolean("enableFingering", true);
 var disableRenderer = getPreferenceBoolean("disableRenderer", true);
+var muteSFX = getPreferenceBoolean("muteSFX", false);
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
@@ -187,12 +188,15 @@ function firstRun() {
 		w.CEnemyBoss.prototype.TakeDamage = function() {};
 	}
 
-	if(removeCritText) {
+	if (removeCritText) {
 		toggleCritText();
 	}
-
-	if(removeAllText) {
+	if (removeAllText) {
 		toggleAllText();
+	}
+
+	if (muteSFX) {
+		toggleSFX();
 	}
 
 	var node = document.getElementById("abilities");
@@ -222,6 +226,7 @@ function firstRun() {
 	}
 
 	// Add "players in game" label
+
 	var titleActivity = document.querySelector( '.title_activity' );
 	var playersInGame = document.createElement( 'span' );
 	playersInGame.innerHTML = '<span id=\"players_in_game\">0/1500</span>&nbsp;Players in room<br>';
@@ -232,13 +237,35 @@ function firstRun() {
 	var activity = document.getElementById("activitylog");
 	activity.style.marginTop = "25px";
 
+	// space for option menu
+	var options_menu = document.querySelector(".game_options");
+	var sfx_btn = document.querySelector(".toggle_sfx_btn");
+	sfx_btn.style.display = "none";
+	var music_btn = document.querySelector(".toggle_music_btn");
+	music_btn.style.marginRight = "2px";
+	music_btn.style.cssFloat = "right";
+	music_btn.style.styleFloat = "right";
+	var leave_btn = document.querySelector(".leave_game_btn");
+	options_menu.insertBefore(leave_btn, music_btn);
+
 	var info_box = document.querySelector(".leave_game_helper");
 	var pagecontent = document.querySelector(".pagecontent");
 	pagecontent.style.padding = "0";
-	pagecontent.appendChild(info_box);
-	document.querySelector(".game_options").style.overflow = "hidden";
+	options_menu.insertBefore(info_box, leave_btn);
 
 	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !==  "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span style="color:#FF5252;font-size:22px;line-height:4px;vertical-align:bottom;">*</span> requires a refresh to take effect.<hr>';
+
+	var oldHTML = document.getElementsByClassName("title_activity")[0].innerHTML;
+	document.getElementsByClassName("title_activity")[0].innerHTML = "<span id=\"players_in_game\">0/1500</span>&nbsp;Players in room<br>" + oldHTML;
+	// Fix alignment issues after adding "players in game" label
+	var activity = document.getElementById("activitylog");
+	activity.style.marginTop = "19px";
+	activity = document.getElementById("activitycontainer");
+	activity.style.height = "368px";
+	activity.style.marginTop = "8px";
+
+	var info_box = document.querySelector(".leave_game_helper");
+	info_box.innerHTML = '<b>OPTIONS</b><br>Some of these may need a refresh to take effect.<br>';
 
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
@@ -247,8 +274,10 @@ function firstRun() {
 	info_box.style.padding = "12px";
 	info_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
 	info_box.style.color = "#ededed";
-	info_box.style.margin = "2px auto";
+	info_box.style.margin = "auto 2px";
 	info_box.style.overflow = "auto";
+	info_box.style.cssFloat = "left";
+	info_box.style.styleFloat = "left";
 
 	var options1 = document.createElement("div");
 	options1.style["-moz-column-count"] = 2;
@@ -280,7 +309,8 @@ function firstRun() {
 		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh, false));
 	}
 
-	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent,true));
+	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent, true));
+	options2.appendChild(makeCheckBox("muteSFX", "Mute sound effects", muteSFX, toggleSFX, false));
 	options2.appendChild(makeNumber("setMinsLeft", "Spam abilities before this many minutes to end of the game", "45px", minsLeft, 5, 59, updateEndGameCrazy));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
@@ -712,6 +742,20 @@ function toggleAllText(event) {
 		};
 	} else {
 		s().m_rgClickNumbers.push = trt_oldPush;
+	}
+}
+
+function toggleSFX(event) {
+	var value = muteSFX;
+
+	if (event !== undefined) {
+		value = handleCheckBox(event);
+	}
+
+	if (value) {
+		WebStorage.SetLocal('minigame_mute', true);
+	} else {
+		WebStorage.SetLocal('minigame_mute', false);
 	}
 }
 
