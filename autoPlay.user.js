@@ -462,12 +462,12 @@ function useAutoUpgrade() {
 	var cache = s().m_UI.m_rgElementCache;
 
 	if(enableAutoUpgradeDPS) {
-		key = 'upgr_' + upg_map[UPGRADES.AUTO_CANNON].idx;
+		key = 'upgr_' + upg_map[UPGRADES.AUTO_FIRE_CANNON].idx;
 		if(cache.hasOwnProperty(key)) { s().TryUpgrade(cache[key].find('.link')[0]); }
 	}
 
 	if(enableAutoUpgradeClick) {
-		key = 'upgr_' + upg_map[UPGRADES.CLICK_UPGRADE].idx;
+		key = 'upgr_' + upg_map[UPGRADES.ARMOR_PIERCING_ROUND].idx;
 		if(cache.hasOwnProperty(key)) { s().TryUpgrade(cache[key].find('.link')[0]); }
 	}
 }
