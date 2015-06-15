@@ -1073,8 +1073,8 @@ function purchaseUpgrades() {
 		}
 	}
 	else if (purchasedShieldsWhileRespawning) {
-+		purchasedShieldsWhileRespawning = false;
-+	}
+		purchasedShieldsWhileRespawning = false;
+	}
 
 	// Try to buy some damage
 	upgradeCost = s().m_rgPlayerUpgrades[bestUpgradeForDamage].cost_for_next_level;
