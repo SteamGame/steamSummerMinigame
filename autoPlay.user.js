@@ -2,7 +2,7 @@
 // @name TESTING Fugitoid Monster Minigame Script ([SteamDB] fork) 
 // @namespace https://github.com/Fugitoid/steamSummerMinigame/tree/testing
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 1.0.0
+// @version 1.0
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
