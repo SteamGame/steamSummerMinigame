@@ -1614,7 +1614,7 @@ function appendBreadcrumbsTitleInfo() {
 	breadcrumbs.appendChild(element);
 
 	element = document.createElement('span');
-	element.style.color = '#7AA0FF';
+	element.style.color = '#9AC0FF';
 	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
 	element.textContent = 'Remaining Time: 0 hours, 0 minutes.';
 	breadcrumbs.appendChild(element);
