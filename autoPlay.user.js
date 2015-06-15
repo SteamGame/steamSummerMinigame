@@ -226,6 +226,7 @@ function firstRun() {
 	}
 
 	// Add "players in game" label
+
 	var titleActivity = document.querySelector( '.title_activity' );
 	var playersInGame = document.createElement( 'span' );
 	playersInGame.innerHTML = '<span id=\"players_in_game\">0/1500</span>&nbsp;Players in room<br>';
@@ -253,6 +254,18 @@ function firstRun() {
 	options_menu.insertBefore(info_box, leave_btn);
 
 	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !==  "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span style="color:#FF5252;font-size:22px;line-height:4px;vertical-align:bottom;">*</span> requires a refresh to take effect.<hr>';
+
+	var oldHTML = document.getElementsByClassName("title_activity")[0].innerHTML;
+	document.getElementsByClassName("title_activity")[0].innerHTML = "<span id=\"players_in_game\">0/1500</span>&nbsp;Players in room<br>" + oldHTML;
+	// Fix alignment issues after adding "players in game" label
+	var activity = document.getElementById("activitylog");
+	activity.style.marginTop = "19px";
+	activity = document.getElementById("activitycontainer");
+	activity.style.height = "368px";
+	activity.style.marginTop = "8px";
+
+	var info_box = document.querySelector(".leave_game_helper");
+	info_box.innerHTML = '<b>OPTIONS</b><br>Some of these may need a refresh to take effect.<br>';
 
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
