@@ -2,7 +2,7 @@
 // @name Fugitoid Monster Minigame Script (testing branch) 
 // @namespace https://github.com/Fugitoid/steamSummerMinigame/tree/testing
 // @description A script that runs the Steam Monster Minigame for you. Forked from https://github.com/SteamDatabase/steamSummerMinigame. 
-// @version 1.0.0
+// @version 1.0.1
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -23,13 +23,13 @@ var minsLeft = 30; // Minutes left before daily reset
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
 
 var enableAutoUpgradeDPS = getPreferenceBoolean("enableAutoUpgradeDPS", false);
-var enableAutoUpgradeClick = getPreferenceBoolean("enableAutoUpgradeClick", false);
+var enableAutoUpgradeClick = getPreferenceBoolean("enableAutoUpgradeClick", true);
 
 var removeInterface = getPreferenceBoolean("removeInterface", true); // get rid of a bunch of pointless DOM
 var removeParticles = getPreferenceBoolean("removeParticles", true);
 var removeFlinching = getPreferenceBoolean("removeFlinching", true);
 var removeCritText = getPreferenceBoolean("removeCritText", false);
-var removeAllText = getPreferenceBoolean("removeAllText", false);
+var removeAllText = getPreferenceBoolean("removeAllText", true);
 var enableFingering = getPreferenceBoolean("enableFingering", true);
 var disableRenderer = getPreferenceBoolean("disableRenderer", true);
 
