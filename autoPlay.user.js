@@ -954,13 +954,13 @@ function purchaseUpgrades() {
 	var buyUpgrade = function(id) {
 		// If upgrade is element damage
 		if (id >= 3 && 6 >= id) {
-			g_Minigame.CurrentScene().TryUpgrade(document.getElementById('upgr_' + id).childElements()[3]);
+			w.g_Minigame.CurrentScene().TryUpgrade(document.getElementById('upgr_' + id).childElements()[3]);
 		} else {
-			g_Minigame.CurrentScene().TryUpgrade(document.getElementById('upgr_' + id).childElements()[0].childElements()[1]);
+			w.g_Minigame.CurrentScene().TryUpgrade(document.getElementById('upgr_' + id).childElements()[0].childElements()[1]);
 		}
 	};
 
-	var myGold = g_Minigame.CurrentScene().m_rgPlayerData.gold;
+	var myGold = w.g_Minigame.CurrentScene().m_rgPlayerData.gold;
 
 	// Initial values for   armor, dps, click damage 
 	var bestUpgradeForDamage,bestUpgradeForArmor;
