@@ -141,6 +141,12 @@ var CONTROL = {
 	rainingRounds: 250
 };
 
+var GAME_STATUS = {
+	LOBBY: 1,
+	RUNNING: 2,
+	OVER: 3
+};
+
 // Try to disable particles straight away,
 // if not yet available, they will be disabled in firstRun
 disableParticles();
@@ -327,7 +333,7 @@ function isNearEndGame() {
 
 function MainLoop() {
 	var status = s().m_rgGameData.status;
-	if(status != 2)
+	if(status != GAME_STATUS.RUNNING)
 	{
 		return;
 	}
