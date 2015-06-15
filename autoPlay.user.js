@@ -31,7 +31,7 @@ var removeFlinching = getPreferenceBoolean("removeFlinching", true);
 var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
 var enableFingering = getPreferenceBoolean("enableFingering", true);
-var disableRenderer = getPreferenceBoolean("disableRenderer", true);
+var throttleRenderer = getPreferenceBoolean("throttleRenderer", true);
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
@@ -264,7 +264,7 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText, false));
 	options1.appendChild(makeCheckBox("removeAllText", "Remove all text", removeAllText, toggleAllText, false));
-	options1.appendChild(makeCheckBox("disableRenderer", "Throttle game renderer", disableRenderer, toggleRenderer, false));
+	options1.appendChild(makeCheckBox("throttleRenderer", "Throttle game renderer", throttleRenderer, toggleRenderer, false));
 
 	info_box.appendChild(options1);
 
@@ -385,7 +385,7 @@ function MainLoop() {
 
 		advLog("Ticked. Current clicks per second: " + currentClickRate + ". Current damage per second: " + (damagePerClick * currentClickRate), 4);
 
-		if(disableRenderer) {
+		if(throttleRenderer) {
 			s().Tick();
 
 			requestAnimationFrame(function() {
@@ -636,10 +636,10 @@ function toggleAutoRefresh(event) {
 }
 
 function toggleRenderer(event) {
-	var value = disableRenderer;
+	var value = throttleRenderer;
 
 	if (event !== undefined) {
-		value = disableRenderer = handleCheckBox(event);
+		value = throttleRenderer = handleCheckBox(event);
 	}
 
 	var ticker = w.PIXI.ticker.shared;
