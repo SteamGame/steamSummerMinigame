@@ -265,7 +265,7 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText, false));
 	options1.appendChild(makeCheckBox("removeAllText", "Remove all text", removeAllText, toggleAllText, false));
-	options1.appendChild(makeCheckBox("disableRenderer", "Throttle game renderer", disableRenderer, toggleRenderer, false));
+	options1.appendChild(makeCheckBox("disableRenderer", "Throttle game renderer (uses less CPU)", disableRenderer, toggleRenderer, false));
 
 	info_box.appendChild(options1);
 
@@ -281,7 +281,7 @@ function firstRun() {
 	}
 
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent,true));
-	options2.appendChild(makeNumber("setMinsLeft", "Change the number of minutes before going crazy", "45px", minsLeft, 5, 59, updateEndGameCrazy));
+	options2.appendChild(makeNumber("setMinsLeft", "Spam abilities before this many minutes to end of the game", "45px", minsLeft, 5, 59, updateEndGameCrazy));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
