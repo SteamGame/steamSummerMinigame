@@ -215,7 +215,7 @@ function firstRun() {
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent,true));
 	options2.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
 	options2.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
-    options2.appendChild(makeNumber("setMinsBeforeEndGameToGoCrazy", "Change the number of minutes before going crazy"", "25px", minsBeforeEndGameToGoCrazy, 0, 5, updateEndGameCrazy));
+    options2.appendChild(makeNumber("setMinsBeforeEndGameToGoCrazy", "Change the number of minutes before going crazy"", "25px", minsBeforeEndGameToGoCrazy, 5, 59, updateEndGameCrazy));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
@@ -1197,8 +1197,12 @@ function useMaxElementalDmgIfRelevant() {
 }
 
 function useWormholeIfRelevant() {
-	// Use Wormhole only in the 10 remaining minutes.
-	if (cHours != 15 || cMins < 50) {
+	// Check the time before using wormhole.
+	if (cHours != 15) {
+		return;
+	}
+	var timeLeft = 60 - cMins;
+	if (timeLeft > minsBeforeEndGameToGoCrazy) {
 		return;
 	}
 	// Check if Wormhole is purchased
