@@ -1423,13 +1423,13 @@ function isAbilityEnabled(abilityId) {
 }
 
 function getActiveAbilityLaneCount(ability) {
+	var now = Date.now();
 	var abilities = s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].active_player_abilities;
 	var count = 0;
 	for(var i = 0; i < abilities.length; i++) {
-		if(abilities[i].ability != ability || abilities[i].timestamp_done < Date.now()) {
-			continue;
+		if(abilities[i].ability == ability && abilities[i].timestamp_done > now) {
+			count++;
 		}
-		count++;
 	}
 	return count;
 }
