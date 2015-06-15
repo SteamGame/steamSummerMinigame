@@ -495,15 +495,15 @@ function toggleRenderer(event) {
 		value = disableRenderer = handleCheckBox(event);
 	}
 
+	var ticker = w.PIXI.ticker.shared;
+
 	if (!value) {
-		var ticker = PIXI.ticker.shared;
 		ticker.autoStart = true;
 		ticker.start();
 
 		w.g_Minigame.Render = trt_oldRender;
 		w.g_Minigame.Render();
 	} else {
-		var ticker = PIXI.ticker.shared;
 		ticker.autoStart = false;
 		ticker.stop();
 
