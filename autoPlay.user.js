@@ -18,7 +18,8 @@
 // OPTIONS
 var clickRate = 20;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
-var minsLeft = 30; // Minutes left before daily reset
+
+var nukeBeforeReset = getPreferenceBoolean("nukeBeforeReset", true);
 
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
 
@@ -298,7 +299,7 @@ function firstRun() {
 	}
 
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent,true));
-	options2.appendChild(makeNumber("setMinsLeft", "Spam abilities before this many minutes to end of the game", "45px", minsLeft, 5, 59, updateEndGameCrazy));
+	options2.appendChild(makeCheckBox("nukeBeforeReset", "Spam abilities 1 hour before game end", nukeBeforeReset, handleEvent, true));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
@@ -341,7 +342,7 @@ function isNearEndGame() {
 	var cHours = cTime.getUTCHours();
 	var cMins = cTime.getUTCMinutes();
 	var timeLeft = 60 - cMins;
-	if (cHours == 15 && timeLeft <= minsLeft) {
+	if (cHours == 15 && timeLeft <= 60) {
 		return true;
 	}
 	else {
@@ -729,12 +730,6 @@ function toggleAllText(event) {
 		};
 	} else {
 		s().m_rgClickNumbers.push = trt_oldPush;
-	}
-}
-
-function updateEndGameCrazy(event) {
-	if(event !== undefined) {
-		minsLeft = event.target.value;
 	}
 }
 
@@ -1308,14 +1303,14 @@ function useAbilities(level)
 	}
 
 	// Wormhole
-	if (isNearEndGame()) {
+	if (isNearEndGame() && nukeBeforeReset) {
 
 		// Check if Wormhole is purchased
 		if (tryUsingAbility(ABILITIES.WORMHOLE, true)) {
-			advLog('Less than ' + minsLeft + ' minutes for game to end. Triggering wormholes...', 2);
+			advLog('Less than 60 minutes for game to end. Triggering wormholes...', 2);
 		}
 		else if (tryUsingAbility(ABILITIES.THROW_MONEY_AT_SCREEN)) {
-			advLog('Less than ' + minsLeft + ' minutes for game to end. Throwing money at screen for no particular reason...', 2);
+			advLog('Less than 60 minutes for game to end. Throwing money at screen for no particular reason...', 2);
 		}
 	}
 
