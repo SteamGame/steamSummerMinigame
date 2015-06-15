@@ -954,13 +954,13 @@ function purchaseUpgrades() {
 	var buyUpgrade = function(id) {
 		// If upgrade is element damage
 		if (id >= 3 && 6 >= id) {
-			w.g_Minigame.CurrentScene().TryUpgrade(document.getElementById('upgr_' + id).childElements()[3]);
+			s().TryUpgrade(document.getElementById('upgr_' + id).childElements()[3]);
 		} else {
-			w.g_Minigame.CurrentScene().TryUpgrade(document.getElementById('upgr_' + id).childElements()[0].childElements()[1]);
+			s().TryUpgrade(document.getElementById('upgr_' + id).childElements()[0].childElements()[1]);
 		}
 	};
 
-	var myGold = w.g_Minigame.CurrentScene().m_rgPlayerData.gold;
+	var myGold = s().m_rgPlayerData.gold;
 
 	// Initial values for   armor, dps, click damage 
 	var bestUpgradeForDamage,bestUpgradeForArmor;
@@ -970,7 +970,7 @@ function purchaseUpgrades() {
 	var highestElementLevel = 0;
 	var upgradeCost;
 
-	var upgrades = w.g_Minigame.CurrentScene().m_rgTuningData.upgrades.slice(0);
+	var upgrades = s().m_rgTuningData.upgrades.slice(0);
 
 	for (var i=0; i< upgrades.length; i++) {
 		var upgrade = upgrades[i];
@@ -978,15 +978,15 @@ function purchaseUpgrades() {
 		if (upgrade.required_upgrade !== undefined)
 		{
 			var requiredUpgradeLevel = upgrade.required_upgrade_level !== undefined ? upgrade.required_upgrade_level : 1;
-			var parentUpgradeLevel = w.g_Minigame.CurrentScene().GetUpgradeLevel(upgrade.required_upgrade);
+			var parentUpgradeLevel = s().GetUpgradeLevel(upgrade.required_upgrade);
 			if (requiredUpgradeLevel > parentUpgradeLevel) {
 				// If upgrade is not available, we skip it
 				continue;
 			}
 		}
 
-		var upgradeCurrentLevel = w.g_Minigame.CurrentScene().m_rgPlayerUpgrades[i].level;
-		upgradeCost = w.g_Minigame.CurrentScene().m_rgPlayerUpgrades[i].cost_for_next_level;
+		var upgradeCurrentLevel = s().m_rgPlayerUpgrades[i].level;
+		upgradeCost = s().m_rgPlayerUpgrades[i].cost_for_next_level;
 
 		switch(upgrade.type) {
 			case UPGRADE_TYPES.ARMOR:
@@ -1026,23 +1026,23 @@ function purchaseUpgrades() {
 		}
 	}
 
-	var myMaxHealth = w.g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
+	var myMaxHealth = s().m_rgPlayerTechTree.max_hp;
 	// Check if health is below 30%
-	var hpPercent = w.g_Minigame.CurrentScene().m_rgPlayerData.hp / myMaxHealth;
+	var hpPercent = s().m_rgPlayerData.hp / myMaxHealth;
 	if (hpPercent < 0.3) {
 		// Prioritize armor over damage
 		// - Should we buy any armor we can afford or just wait for the best one possible?
-		upgradeCost = w.g_Minigame.CurrentScene().m_rgPlayerUpgrades[bestUpgradeForArmor].cost_for_next_level;
+		upgradeCost = s().m_rgPlayerUpgrades[bestUpgradeForArmor].cost_for_next_level;
 
 		if (myGold > upgradeCost && bestUpgradeForArmor) {
 			console.log("Buying " + upgrades[bestUpgradeForArmor].name);
 			buyUpgrade(bestUpgradeForArmor);
-			myGold = w.g_Minigame.CurrentScene().m_rgPlayerData.gold;
+			myGold = s().m_rgPlayerData.gold;
 		}
 	}
 
 	// Try to buy some damage
-	upgradeCost = w.g_Minigame.CurrentScene().m_rgPlayerUpgrades[bestUpgradeForDamage].cost_for_next_level;
+	upgradeCost = s().m_rgPlayerUpgrades[bestUpgradeForDamage].cost_for_next_level;
 
 	if (myGold > upgradeCost && bestUpgradeForDamage) {
 		console.log("Buying " + upgrades[bestUpgradeForDamage].name);
