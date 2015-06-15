@@ -1044,9 +1044,9 @@ function purchaseUpgrades() {
 			case UPGRADE_TYPES.ELEMENTAL_EARTH:
 				break;
 			case UPGRADE_TYPES.LUCKY_SHOT:
-				if (upgrade.multiplier * dpc * critChance * avgClicksPerSecond / upgradeCost > highestUpgradeValueForDamage) { // dmg increase per moneys
+				if (upgrade.multiplier * dpc * critChance * currentClickRate / upgradeCost > highestUpgradeValueForDamage) { // dmg increase per moneys
 					bestUpgradeForDamage = i;
-					highestUpgradeValueForDamage = upgrade.multiplier * dpc * critChance * avgClicksPerSecond / upgradeCost;
+					highestUpgradeValueForDamage = upgrade.multiplier * dpc * critChance * currentClickRate / upgradeCost;
 				}
 				break;
 			default:
@@ -1054,7 +1054,7 @@ function purchaseUpgrades() {
 		}
 	}
 
-	var currentHealth = g_Minigame.CurrentScene().m_rgPlayerData.hp;
+	var currentHealth = s().CurrentScene().m_rgPlayerData.hp;
 	var myMaxHealth = s().m_rgPlayerTechTree.max_hp;
 	// Check if health is below 30%
 	var hpPercent = currentHealth / myMaxHealth;
