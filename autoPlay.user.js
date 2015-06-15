@@ -953,7 +953,7 @@ function goToLaneWithBestTarget(level) {
 				// Throw Money at Screen
 				enableAbilityItem(ABILITIES.THROW_MONEY);
 			}
-
+				disableAbilityItem(ABILITIES.WORMHOLE);
 
 		}
 
