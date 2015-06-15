@@ -115,7 +115,7 @@ function firstRun() {
 	if (enableAutoRefresh) {
 		autoRefreshPage(autoRefreshMinutes);
 	}
-	
+
 	toggleRenderer();
 
 	// disable particle effects - this drastically reduces the game's memory leak
@@ -234,7 +234,7 @@ function firstRun() {
 	var lock_elements_checkbox = makeCheckBox("enableElementLock", "Lock element upgrades for more team dps", enableElementLock, toggleElementLock, false);
 	lock_elements_box.appendChild(lock_elements_checkbox);
 	ab_box.appendChild(lock_elements_box);
-	
+
 	enhanceTooltips();
 }
 
@@ -473,11 +473,11 @@ function toggleAutoRefresh(event) {
 
 function toggleRenderer(event) {
 	var value = enableRenderer;
-	
+
 	if (event !== undefined) {
 		value = handleCheckBox(event);
 	}
-	
+
 	if (value) {
 		w.g_Minigame.Renderer.render = trt_oldRender;
 	} else {
@@ -493,7 +493,7 @@ function autoRefreshPage(autoRefreshMinutes){
 }
 
 function autoRefreshHandler() {
-	 var enemyData = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target).m_data; 
+	 var enemyData = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target).m_data;
 	 if(typeof enemyData !== "undefined"){
 		var enemyType = enemyData.type;
 		if(enemyType != ENEMY_TYPE.BOSS) {
@@ -511,11 +511,11 @@ function autoRefreshHandler() {
 
 function toggleElementLock(event) {
 	var value = enableElementLock;
-	
+
 	if(event !== undefined) {
 		value = handleCheckBox(event);
 	}
-	
+
 	if(value) {
 		lockElements();
 	} else {
@@ -540,11 +540,11 @@ function toggleCritText(event) {
 
 function toggleAllText(event) {
 	var value = removeAllText;
-	
+
 	if(event !== undefined) {
 		value = handleCheckBox(event);
 	}
-	
+
 	if (value) {
 		// Replaces the entire text function.
 		s().m_rgClickNumbers.push = function(elem){
@@ -844,7 +844,7 @@ function goToLaneWithBestTarget() {
 			advLog('Switching targets', 3);
 			s().TryChangeTarget(lowTarget);
 		}
-		
+
 		if(getGameLevel() >= 5000) {
 			// Only disable abilities on non-boss and as long as the game level is over 5000
 			if(targetIsTreasureOrBoss) {
@@ -910,17 +910,17 @@ function goToLaneWithBestTarget() {
 				// Throw Money at Screen
 				enableAbilityItem(ITEMS.THROW_MONEY);
 			}
-			
-			
+
+
 		}
 
 		// Prevent attack abilities and items if up against a boss or treasure minion
 		if (targetIsTreasureOrBoss && getGameLevel() < 5000) {
-			
+
 		} else {
-			
-			
-		
+
+
+
 			// Morale
 			enableAbility(ABILITIES.MORALE_BOOSTER);
 			// Luck
@@ -1063,7 +1063,7 @@ function useMoraleBoosterIfRelevant() {
 	if (!canUseAbility(ABILITIES.MORALE_BOOSTER)) {
 		return;
 	}
-	
+
 	var numberOfWorthwhileEnemies = 0;
 	for(var i = 0; i < s().m_rgGameData.lanes[s().m_nExpectedLane].enemies.length; i++) {
 		//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
@@ -1071,7 +1071,7 @@ function useMoraleBoosterIfRelevant() {
 			numberOfWorthwhileEnemies++;
 		}
 	}
-	
+
 	if(numberOfWorthwhileEnemies >= 2) {
 		// Moral Booster is purchased, cooled down, and needed. Trigger it.
 		advLog('Moral Booster is purchased, cooled down, and needed. Trigger it.', 2);
@@ -1141,7 +1141,7 @@ function useGoldRainIfRelevant() {
 	if (!canUseItem(ITEMS.GOLD_RAIN)) {
 		return;
 	}
-	
+
 	var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 	// check if current target is a boss, otherwise its not worth using the gold rain
 	if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
@@ -1177,12 +1177,12 @@ function useMetalDetectorIfRelevant() {
 }
 
 function useTreasureIfRelevant() {
-	// Check if Treasure is purchased 
+	// Check if Treasure is purchased
 	if (hasItem(ITEMS.TREASURE)) {
 		if (isAbilityCoolingDown(ITEMS.TREASURE)) {
 			return;
 		}
-		
+
 		// check if current level is higher than 50
 		if (getGameLevel() > 50)
 		{
@@ -1218,14 +1218,11 @@ function useMaxElementalDmgIfRelevant() {
 
 function useReviveIfRelevant() {
 	var level = getGameLevel();
-	
-	if(level % 10 !== 9 || !canUseItem(ITEMS.REVIVE)) {
-		return;
+
+	if(level % 10 === 9 && tryUsingItem(ITEMS.REVIVE)) {
+		// Resurrect is purchased and we are using it.
+		advLog('Triggered Resurrect.');
 	}
-		
-	// Resurrect is purchased and we are using it.
-	advLog('Triggered Resurrect.');
-	tryUsingItem(ITEMS.REVIVE);
 }
 
 function attemptRespawn() {
@@ -1261,8 +1258,7 @@ function canUseItem(itemId) {
 }
 
 function tryUsingAbility(abilityId) {
-	if(!canUseAbility(abilityId))
-	{
+	if(!canUseAbility(abilityId)) {
 		return false;
 	}
 
@@ -1274,7 +1270,7 @@ function tryUsingItem(itemId) {
 	if (!canUseItem(itemId)) {
 		return false;
 	}
-	
+
 	triggerItem(itemId);
 	return true;
 }
