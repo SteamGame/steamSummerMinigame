@@ -970,7 +970,10 @@ function useMedicsIfRelevant(level) {
 		advLog('Medics is purchased, cooled down. Trigger it.', 2);
 	}
 
-	if(level > 2500 && tryUsingItem(ITEMS.STEAL_HEALTH)) {
+	if(level > 5000 && tryUsingItem(ITEMS.REFLECT_DAMAGE)) {
+		advLog('We have reflect damage, cooled down. Trigger it.', 2);
+	}
+	else if(level > 2500 && tryUsingItem(ITEMS.STEAL_HEALTH)) {
 		advLog('We have steal health, cooled down. Trigger it.', 2);
 	}
 	else if (tryUsingItem(ITEMS.GOD_MODE)) {
