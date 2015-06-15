@@ -37,6 +37,10 @@ var autoRefreshMinutes = 30;
 var autoRefreshMinutesRandomDelay = 10;
 
 // DO NOT MODIFY
+var cTime = new Date;
+var cHours = 0;
+var cMins = 0;
+
 var isAlreadyRunning = false;
 var refreshTimer = null;
 var currentClickRate = clickRate;
@@ -244,6 +248,9 @@ function disableParticles() {
 }
 
 function MainLoop() {
+	cHours = cTime.getUTCHours();
+	cMins = cTime.getUTCMinutes();
+	
 	var level = getGameLevel();
 
 	if( level < 10 ) {
@@ -268,6 +275,7 @@ function MainLoop() {
 		useReviveIfRelevant();
 		useTreasureIfRelevant();
 		useMaxElementalDmgIfRelevant();
+		useWormholeIfRelevant();
 
 		disableCooldownIfRelevant();
 
@@ -1219,6 +1227,19 @@ function useMaxElementalDmgIfRelevant() {
 		advLog('Max Elemental Damage is purchased and cooled down, triggering it.', 2);
 		triggerItem(ITEMS.MAXIMIZE_ELEMENT);
 	}
+}
+
+function useWormholeIfRelevant() {
+	// Use Wormhole only in the 10 remaining minutes.
+	if (cHours != 15 || cMins < 50) {
+		return;
+	}
+	// Check if Wormhole is purchased
+	/*if (canUseItem(ITEMS.WORMHOLE) && getActiveAbilityLaneCount(ITEMS.WORMHOLE) <= 0) {
+		// Wormhole is purchased, cooled down, and needed. Trigger it.
+		advLog('Less than 10 minutes for game to end. Triggering wormholes...', 2);
+		triggerItem(ITEMS.WORMHOLE);
+	}*/
 }
 
 function useReviveIfRelevant() {
