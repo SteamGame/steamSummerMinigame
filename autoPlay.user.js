@@ -1430,7 +1430,7 @@ function isAbilityEnabled(abilityId) {
 }
 
 function getActiveAbilityLaneCount(ability) {
-	var now = Date.now();
+	var now = getCurrentTime();
 	var abilities = s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].active_player_abilities;
 	var count = 0;
 	for(var i = 0; i < abilities.length; i++) {
