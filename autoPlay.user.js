@@ -264,7 +264,7 @@ function MainLoop() {
 		goToLaneWithBestTarget(level);
 
 		useGoodLuckCharmIfRelevant();
-		useMedicsIfRelevant();
+		useMedicsIfRelevant(level);
 		useMoraleBoosterIfRelevant();
 		useClusterBombIfRelevant();
 		useNapalmIfRelevant();
@@ -773,7 +773,7 @@ function goToLaneWithBestTarget(level) {
 						s().m_rgPlayerTechTree.dps,
 						element
 						);
-					
+
 					if(mostHPDone <= dmg) {
 						mostHPDone = dmg;
 					} else {
@@ -958,7 +958,7 @@ function useCrippleMonsterIfRelevant(level) {
 	}
 }
 
-function useMedicsIfRelevant() {
+function useMedicsIfRelevant(level) {
 	if (tryUsingItem(ITEMS.PUMPED_UP)){
 		// Pumped Up is purchased, cooled down, and needed. Trigger it.
 		advLog('Pumped up is always good.', 2);
@@ -967,12 +967,14 @@ function useMedicsIfRelevant() {
 
 	// check if Medics is purchased and cooled down
 	if (tryUsingAbility(ABILITIES.MEDIC)) {
-		advLog('Medics is purchased, cooled down, and needed. Trigger it.', 2);
+		advLog('Medics is purchased, cooled down. Trigger it.', 2);
 	}
 
-	// check if God Mode is purchased and cooled down
-	if (tryUsingItem(ITEMS.GOD_MODE)) {
-		advLog('We have god mode, cooled down, and needed. Trigger it.', 2);
+	if(level > 2500 && tryUsingItem(ITEMS.STEAL_HEALTH)) {
+		advLog('We have steal health, cooled down. Trigger it.', 2);
+	}
+	else if (tryUsingItem(ITEMS.GOD_MODE)) {
+		advLog('We have god mode, cooled down. Trigger it.', 2);
 	}
 }
 
