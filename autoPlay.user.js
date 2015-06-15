@@ -347,25 +347,11 @@ function MainLoop() {
 
 		goToLaneWithBestTarget(level);
 
-		useGoodLuckCharmIfRelevant();
-		useMedicsIfRelevant(level);
-		useMoraleBoosterIfRelevant();
-		useClusterBombIfRelevant();
-		useNapalmIfRelevant();
-		useTacticalNukeIfRelevant();
-		useCrippleSpawnerIfRelevant();
-		useGoldRainIfRelevant();
-		useMetalDetectorIfRelevant();
-		useCrippleMonsterIfRelevant(level);
-		useReviveIfRelevant(level);
-		useTreasureIfRelevant(level);
-		useMaxElementalDmgIfRelevant();
-		useWormholeIfRelevant();
+		attemptRespawn();
 
-		useCooldownIfRelevant();
+		useAbilities(level);
 
 		updatePlayersInGame();
-		attemptRespawn();
 
 		if( level !== lastLevel ) {
 			lastLevel = level;
@@ -1033,18 +1019,6 @@ function goToLaneWithBestTarget(level) {
 	}
 }
 
-function useCooldownIfRelevant() {
-	if(getActiveAbilityLaneCount(ABILITIES.DECREASE_COOLDOWNS) > 0) {
-		disableAbility(ABILITIES.DECREASE_COOLDOWNS);
-		return;
-	}
-
-	if(!s().bIsAbilityActive(ABILITIES.DECREASE_COOLDOWNS)) {
-		enableAbility(ABILITIES.DECREASE_COOLDOWNS);
-	}
-
-	tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
-}
 
 function hasMaxCriticalOnLane() {
 	var goodLuckCharms = getActiveAbilityLaneCount(ABILITIES.GOOD_LUCK_CHARMS);
@@ -1059,285 +1033,268 @@ function hasMaxCriticalOnLane() {
 	}
 }
 
-function useCrippleMonsterIfRelevant(level) {
-	// Check if Cripple Spawner is available
-	if(!canUseAbility(ABILITIES.CRIPPLE_MONSTER)) {
-		return;
+function useAbilities(level)
+{
+
+	var currentLane = s().m_nExpectedLane;
+
+	var i = 0;
+	var enemyCount = 0;
+	var enemySpawnerExists = false;
+	var enemySpawnerHealthPercent = false;
+	var enemy = false;
+	var enemyBossHealthPercent = 0;
+
+	// Cooldown
+	if(getActiveAbilityLaneCount(ABILITIES.DECREASE_COOLDOWNS) > 0) {
+		disableAbility(ABILITIES.DECREASE_COOLDOWNS);
+	}
+	else
+	{
+		if(!s().bIsAbilityActive(ABILITIES.DECREASE_COOLDOWNS)) {
+			enableAbility(ABILITIES.DECREASE_COOLDOWNS);
+		}
+
+		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
 	}
 
-	if (level > CONTROL.speedThreshold && level % CONTROL.rainingRounds !== 0 && level % 10 === 0) {
-		var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
-		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-			if (enemyBossHealthPercent>0.5){
-				advLog("Cripple Monster available and used on boss", 2);
-				triggerAbility(ABILITIES.CRIPPLE_MONSTER);
+	// Cripple Monster
+	if(canUseAbility(ABILITIES.CRIPPLE_MONSTER)) {
+		if (level > CONTROL.speedThreshold && level % CONTROL.rainingRounds !== 0 && level % 10 === 0) {
+			enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
+			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+				if (enemyBossHealthPercent>0.5){
+					advLog("Cripple Monster available and used on boss", 2);
+					triggerAbility(ABILITIES.CRIPPLE_MONSTER);
+				}
 			}
 		}
 	}
-}
 
-function useMedicsIfRelevant(level) {
+	// Medic & Pumped Up
 	if (tryUsingAbility(ABILITIES.PUMPED_UP)){
 		// Pumped Up is purchased, cooled down, and needed. Trigger it.
 		advLog('Pumped up is always good.', 2);
-		return;
+	}
+	else
+	{
+		// check if Medics is purchased and cooled down
+		if (tryUsingAbility(ABILITIES.MEDICS)) {
+			advLog('BadMedic is purchased, cooled down. Trigger it.', 2);
+		}
+
+		if(level > 5000 && tryUsingAbility(ABILITIES.REFLECT_DAMAGE)) {
+			advLog('We have reflect damage, cooled down. Trigger it.', 2);
+		}
+		else if(level > 2500 && tryUsingAbility(ABILITIES.STEAL_HEALTH)) {
+			advLog('We have steal health, cooled down. Trigger it.', 2);
+		}
+		else if (tryUsingAbility(ABILITIES.GOD_MODE)) {
+			advLog('We have god mode, cooled down. Trigger it.', 2);
+		}
+
 	}
 
-	// check if Medics is purchased and cooled down
-	if (tryUsingAbility(ABILITIES.MEDICS)) {
-		advLog('Medics is purchased, cooled down. Trigger it.', 2);
+	// Good Luck Charms / Crit
+	if(!hasMaxCriticalOnLane())
+	{
+		if (tryUsingAbility(ABILITIES.CRIT)){
+			// Crits is purchased, cooled down, and needed. Trigger it.
+			advLog('Crit chance is always good.', 3);
+		}
+	}
+	if(!hasMaxCriticalOnLane())
+	{
+		// check if Good Luck Charms is purchased and cooled down
+		if (tryUsingAbility(ABILITIES.GOOD_LUCK_CHARMS)) {
+			advLog('Good Luck Charms is purchased, cooled down, and needed. Trigger it.', 2);
+		}
 	}
 
-	if(level > 5000 && tryUsingAbility(ABILITIES.REFLECT_DAMAGE)) {
-		advLog('We have reflect damage, cooled down. Trigger it.', 2);
-	}
-	else if(level > 2500 && tryUsingAbility(ABILITIES.STEAL_HEALTH)) {
-		advLog('We have steal health, cooled down. Trigger it.', 2);
-	}
-	else if (tryUsingAbility(ABILITIES.GOD_MODE)) {
-		advLog('We have god mode, cooled down. Trigger it.', 2);
-	}
-}
-
-// Use Good Luck Charm if doable
-function useGoodLuckCharmIfRelevant() {
-	// Check if we have max critical on lane first
-	if (hasMaxCriticalOnLane()) {
-		return;
-	}
-	// check if Crits is purchased and cooled down
-	if (tryUsingAbility(ABILITIES.CRIT)){
-		// Crits is purchased, cooled down, and needed. Trigger it.
-		advLog('Crit chance is always good.', 3);
-	}
-
-	// check if Good Luck Charms is purchased and cooled down
-	if (tryUsingAbility(ABILITIES.GOOD_LUCK_CHARMS)) {
-		advLog('Good Luck Charms is purchased, cooled down, and needed. Trigger it.', 2);
-	}
-}
-
-function useClusterBombIfRelevant() {
-	//Check if Cluster Bomb is purchased and cooled down
-	if (!canUseAbility(ABILITIES.CLUSTER_BOMB)) {
-		return;
-	}
-
+	// Cluster Bomb
+	if (canUseAbility(ABILITIES.CLUSTER_BOMB)) {
 	//Check lane has monsters to explode
-	var currentLane = s().m_nExpectedLane;
-	var enemyCount = 0;
-	var enemySpawnerExists = false;
-	//Count each slot in lane
-	for (var i = 0; i < 4; i++) {
-		var enemy = s().GetEnemy(currentLane, i);
-		if (enemy) {
-			enemyCount++;
-			if (enemy.m_data.type === 0) {
-				enemySpawnerExists = true;
+		enemyCount = 0;
+		enemySpawnerExists = false;
+		//Count each slot in lane
+		for (i = 0; i < 4; i++) {
+			enemy = s().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type === 0) {
+					enemySpawnerExists = true;
+				}
 			}
 		}
-	}
-	//Bombs away if spawner and 2+ other monsters
-	if (enemySpawnerExists && enemyCount >= 3) {
-		triggerAbility(ABILITIES.CLUSTER_BOMB);
-	}
-}
-
-function useNapalmIfRelevant() {
-	//Check if Napalm is purchased and cooled down
-	if (!canUseAbility(ABILITIES.NAPALM)) {
-		return;
+		//Bombs away if spawner and 2+ other monsters
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(ABILITIES.CLUSTER_BOMB);
+		}
 	}
 
-	//Check lane has monsters to burn
-	var currentLane = s().m_nExpectedLane;
-	var enemyCount = 0;
-	var enemySpawnerExists = false;
-	//Count each slot in lane
-	for (var i = 0; i < 4; i++) {
-		var enemy = s().GetEnemy(currentLane, i);
-		if (enemy) {
-			enemyCount++;
-			if (enemy.m_data.type === 0) {
-				enemySpawnerExists = true;
+	// Napalm
+	if (canUseAbility(ABILITIES.NAPALM)) {
+		//Check lane has monsters to burn
+		enemyCount = 0;
+		enemySpawnerExists = false;
+		//Count each slot in lane
+		for (i = 0; i < 4; i++) {
+			enemy = s().GetEnemy(currentLane, i);
+			if (enemy) {
+				enemyCount++;
+				if (enemy.m_data.type === 0) {
+					enemySpawnerExists = true;
+				}
 			}
 		}
-	}
-	//Burn them all if spawner and 2+ other monsters
-	if (enemySpawnerExists && enemyCount >= 3) {
-		triggerAbility(ABILITIES.NAPALM);
-	}
-}
-
-// Use Moral Booster if doable
-function useMoraleBoosterIfRelevant() {
-	// check if Good Luck Charms is purchased and cooled down
-	if (!canUseAbility(ABILITIES.MORALE_BOOSTER)) {
-		return;
-	}
-
-	var numberOfWorthwhileEnemies = 0;
-	for(var i = 0; i < s().m_rgGameData.lanes[s().m_nExpectedLane].enemies.length; i++) {
-		//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
-		if(s().m_rgGameData.lanes[s().m_nExpectedLane].enemies[i].hp > 1000000) {
-			numberOfWorthwhileEnemies++;
+		//Burn them all if spawner and 2+ other monsters
+		if (enemySpawnerExists && enemyCount >= 3) {
+			triggerAbility(ABILITIES.NAPALM);
 		}
 	}
 
-	if(numberOfWorthwhileEnemies >= 2) {
-		// Moral Booster is purchased, cooled down, and needed. Trigger it.
-		advLog('Moral Booster is purchased, cooled down, and needed. Trigger it.', 2);
-		triggerAbility(ABILITIES.MORALE_BOOSTER);
-	}
-}
 
-function useTacticalNukeIfRelevant() {
-	// Check if Tactical Nuke is purchased
-	if(!canUseAbility(ABILITIES.TACTICAL_NUKE)) {
-		return;
+	// Morale Booster
+	if (canUseAbility(ABILITIES.MORALE_BOOSTER)) {
+		var numberOfWorthwhileEnemies = 0;
+		for(i = 0; i < s().m_rgGameData.lanes[s().m_nExpectedLane].enemies.length; i++) {
+			//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
+			if(s().m_rgGameData.lanes[s().m_nExpectedLane].enemies[i].hp > 1000000) {
+				numberOfWorthwhileEnemies++;
+			}
+		}
+
+		if(numberOfWorthwhileEnemies >= 2) {
+			// Moral Booster is purchased, cooled down, and needed. Trigger it.
+			advLog('Moral Booster is purchased, cooled down, and needed. Trigger it.', 2);
+			triggerAbility(ABILITIES.MORALE_BOOSTER);
+		}
 	}
 
+	// Tactical Nuke
+	if(canUseAbility(ABILITIES.TACTICAL_NUKE)) {
 		//Check that the lane has a spawner and record it's health percentage
-	var currentLane = s().m_nExpectedLane;
-	var enemySpawnerExists = false;
-	var enemySpawnerHealthPercent = 0.0;
-	//Count each slot in lane
-	for (var i = 0; i < 4; i++) {
-		var enemy = s().GetEnemy(currentLane, i);
-		if (enemy) {
-			if (enemy.m_data.type === 0) {
-				enemySpawnerExists = true;
-				enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+			enemySpawnerExists = false;
+			enemySpawnerHealthPercent = 0.0;
+		//Count each slot in lane
+		for (i = 0; i < 4; i++) {
+			enemy = s().GetEnemy(currentLane, i);
+			if (enemy) {
+				if (enemy.m_data.type === 0) {
+					enemySpawnerExists = true;
+					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+				}
+			}
+		}
+
+		// If there is a spawner and it's health is between 60% and 30%, nuke it!
+		if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
+			advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
+			triggerAbility(ABILITIES.TACTICAL_NUKE);
+		}
+	}
+
+	// Cripple Spawner
+	if(canUseAbility(ABILITIES.CRIPPLE_SPAWNER)) {
+		//Check that the lane has a spawner and record it's health percentage
+		enemySpawnerExists = false;
+		enemySpawnerHealthPercent = 0.0;
+		//Count each slot in lane
+		for (i = 0; i < 4; i++) {
+			enemy = s().GetEnemy(currentLane, i);
+			if (enemy) {
+				if (enemy.m_data.type === 0) {
+					enemySpawnerExists = true;
+					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+				}
+			}
+		}
+
+		// If there is a spawner and it's health is above 95%, cripple it!
+		if (enemySpawnerExists && enemySpawnerHealthPercent > 0.95) {
+			advLog("Cripple Spawner available, and needed. Cripple 'em.", 2);
+			triggerAbility(ABILITIES.CRIPPLE_SPAWNER);
+		}
+	}
+
+	// Gold Rain
+	if (canUseAbility(ABILITIES.RAINING_GOLD)) {
+	
+		enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
+		// check if current target is a boss, otherwise its not worth using the gold rain
+		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+			enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+
+			if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
+				// Gold Rain is purchased, cooled down, and needed. Trigger it.
+				advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
+				triggerAbility(ABILITIES.RAINING_GOLD);
 			}
 		}
 	}
 
-	// If there is a spawner and it's health is between 60% and 30%, nuke it!
-	if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
-		advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
-		triggerAbility(ABILITIES.TACTICAL_NUKE);
-	}
-}
+	// Metal Detector
+	if(canUseAbility(ABILITIES.METAL_DETECTOR)) {
 
-function useCrippleSpawnerIfRelevant() {
-	// Check if Cripple Spawner is available
-	if(!canUseAbility(ABILITIES.CRIPPLE_SPAWNER)) {
-		return;
-	}
-
-	//Check that the lane has a spawner and record it's health percentage
-	var currentLane = s().m_nExpectedLane;
-	var enemySpawnerExists = false;
-	var enemySpawnerHealthPercent = 0.0;
-	//Count each slot in lane
-	for (var i = 0; i < 4; i++) {
-		var enemy = s().GetEnemy(currentLane, i);
-		if (enemy) {
-			if (enemy.m_data.type === 0) {
-				enemySpawnerExists = true;
-				enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-			}
-		}
-	}
-
-	// If there is a spawner and it's health is above 95%, cripple it!
-	if (enemySpawnerExists && enemySpawnerHealthPercent > 0.95) {
-		advLog("Cripple Spawner available, and needed. Cripple 'em.", 2);
-		triggerAbility(ABILITIES.CRIPPLE_SPAWNER);
-	}
-}
-
-function useGoldRainIfRelevant() {
-	// Check if gold rain is purchased
-	if (!canUseAbility(ABILITIES.RAINING_GOLD)) {
-		return;
-	}
-
-	var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
-	// check if current target is a boss, otherwise its not worth using the gold rain
-	if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-		var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-
-		if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
-			// Gold Rain is purchased, cooled down, and needed. Trigger it.
-			advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
-			triggerAbility(ABILITIES.RAINING_GOLD);
-		}
-	}
-}
-
-function useMetalDetectorIfRelevant() {
-	// Check if metal detector is purchased
-	if(!canUseAbility(ABILITIES.METAL_DETECTOR)) {
-		return;
-	}
-
-	var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
-	// check if current target is a boss, otherwise we won't use metal detector
-	if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-		var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-
-		// we want to use metal detector at 25% hp, or even less
-		if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
-			// Metal Detector is purchased, cooled down, and needed. Trigger it.
-			advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
-			triggerAbility(ABILITIES.METAL_DETECTOR);
-		}
-	}
-}
-
-function useTreasureIfRelevant(level) {
-	// Check if Treasure is purchased
-	if (!canUseAbility(ABILITIES.TREASURE)) {
-		return;
-	}
-
-	// check if current level is higher than 50
-	if (level > 50) {
-		var enemy = s().GetTargetedEnemy();
+		enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 		// check if current target is a boss, otherwise we won't use metal detector
-		if (enemy && enemy.type == ENEMY_TYPE.BOSS) {
-			var enemyBossHealthPercent = enemy.hp / enemy.max_hp;
+		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+			enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 
-			// we want to use Treasure at 25% hp, or even less
+			// we want to use metal detector at 25% hp, or even less
 			if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
-				// Treasure is purchased, cooled down, and needed. Trigger it.
-				advLog('Treasure is purchased and cooled down, triggering it.', 2);
-				triggerAbility(ABILITIES.TREASURE);
+				// Metal Detector is purchased, cooled down, and needed. Trigger it.
+				advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
+				triggerAbility(ABILITIES.METAL_DETECTOR);
 			}
 		}
 	}
-	else {
-		// Treasure is purchased, cooled down, and needed. Trigger it.
-		advLog('Treasure is purchased and cooled down, triggering it.', 2);
-		triggerAbility(ABILITIES.TREASURE);
-	}
-}
 
-function useMaxElementalDmgIfRelevant() {
-	// Check if Max Elemental Damage is purchased
+	// Treasure
+	if (canUseAbility(ABILITIES.TREASURE)) {
+
+		// check if current level is higher than 50
+		if (level > 50) {
+			enemy = s().GetTargetedEnemy();
+			// check if current target is a boss, otherwise we won't use metal detector
+			if (enemy && enemy.type == ENEMY_TYPE.BOSS) {
+				enemyBossHealthPercent = enemy.hp / enemy.max_hp;
+
+				// we want to use Treasure at 25% hp, or even less
+				if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
+					// Treasure is purchased, cooled down, and needed. Trigger it.
+					advLog('Treasure is purchased and cooled down, triggering it.', 2);
+					triggerAbility(ABILITIES.TREASURE);
+				}
+			}
+		}
+		else {
+			// Treasure is purchased, cooled down, and needed. Trigger it.
+			advLog('Treasure is purchased and cooled down, triggering it.', 2);
+			triggerAbility(ABILITIES.TREASURE);
+		}
+	}
+
+	// Max Elemental
 	if (tryUsingAbility(ABILITIES.MAX_ELEMENTAL_DAMAGE, true)) {
 		// Max Elemental Damage is purchased, cooled down, and needed. Trigger it.
 		advLog('Max Elemental Damage is purchased and cooled down, triggering it.', 2);
 	}
-}
 
-function useWormholeIfRelevant() {
-	// Check the time before using wormhole.
-	if (!isNearEndGame()) {
-		return;
-	}
-	// Check if Wormhole is purchased
-	if (tryUsingAbility(ABILITIES.WORMHOLE, true)) {
-		advLog('Less than ' + minsLeft + ' minutes for game to end. Triggering wormholes...', 2);
-	}
-	else if (tryUsingAbility(ABILITIES.THROW_MONEY_AT_SCREEN)) {
-		advLog('Less than ' + minsLeft + ' minutes for game to end. Throwing money at screen for no particular reason...', 2);
-	}
-}
+	// Wormhole
+	if (isNearEndGame()) {
 
-function useReviveIfRelevant(level) {
+		// Check if Wormhole is purchased
+		if (tryUsingAbility(ABILITIES.WORMHOLE, true)) {
+			advLog('Less than ' + minsLeft + ' minutes for game to end. Triggering wormholes...', 2);
+		}
+		else if (tryUsingAbility(ABILITIES.THROW_MONEY_AT_SCREEN)) {
+			advLog('Less than ' + minsLeft + ' minutes for game to end. Throwing money at screen for no particular reason...', 2);
+		}
+	}
+
+	// Resurrect
 	if(level % 10 === 9 && tryUsingAbility(ABILITIES.RESURRECTION)) {
 		// Resurrect is purchased and we are using it.
 		advLog('Triggered Resurrect.');
@@ -1482,23 +1439,23 @@ if(w.SteamDB_Minigame_Timer) {
 
 w.SteamDB_Minigame_Timer = w.setInterval(function(){
 	if (w.g_Minigame
-	&& s().m_bRunning
-	&& s().m_rgPlayerTechTree
-	&& s().m_rgGameData) {
+		&& s().m_bRunning
+		&& s().m_rgPlayerTechTree
+		&& s().m_rgGameData) {
 		w.clearInterval(w.SteamDB_Minigame_Timer);
-		firstRun();
-		w.SteamDB_Minigame_Timer = w.setInterval(MainLoop, 1000);
-	}
+	firstRun();
+	w.SteamDB_Minigame_Timer = w.setInterval(MainLoop, 1000);
+}
 }, 1000);
 
 // reload page if game isn't fully loaded, regardless of autoRefresh setting
 w.setTimeout(function() {
 	// m_rgGameData is 'undefined' if stuck at 97/97 or below
 	if (!w.g_Minigame
-	||  !w.g_Minigame.m_CurrentScene
-	||  !w.g_Minigame.m_CurrentScene.m_rgGameData) {
+		||  !w.g_Minigame.m_CurrentScene
+		||  !w.g_Minigame.m_CurrentScene.m_rgGameData) {
 		w.location.reload(true);
-	}
+}
 }, autoRefreshSecondsCheckLoadedDelay * 1000);
 
 appendBreadcrumbsTitleInfo();
@@ -1525,41 +1482,41 @@ function enhanceTooltips() {
 		var multiplier = parseFloat( $context.data('multiplier') );
 		switch( $context.data('upgrade_type') ) {
 			case 2: // Type for click damage. All tiers.
-				strOut = trt_oldTooltip(context);
-				var currentCritMultiplier = s().m_rgPlayerTechTree.damage_multiplier_crit;
-				var currentCrit = s().m_rgPlayerTechTree.damage_per_click * currentCritMultiplier;
-				var newCrit = s().m_rgTuningData.player.damage_per_click * (s().m_rgPlayerTechTree.damage_per_click_multiplier + multiplier) * currentCritMultiplier;
-				strOut += '<br><br>Crit Click: ' + w.FormatNumberForDisplay( currentCrit ) + ' => ' + w.FormatNumberForDisplay( newCrit );
-				break;
+			strOut = trt_oldTooltip(context);
+			var currentCritMultiplier = s().m_rgPlayerTechTree.damage_multiplier_crit;
+			var currentCrit = s().m_rgPlayerTechTree.damage_per_click * currentCritMultiplier;
+			var newCrit = s().m_rgTuningData.player.damage_per_click * (s().m_rgPlayerTechTree.damage_per_click_multiplier + multiplier) * currentCritMultiplier;
+			strOut += '<br><br>Crit Click: ' + w.FormatNumberForDisplay( currentCrit ) + ' => ' + w.FormatNumberForDisplay( newCrit );
+			break;
 			case 7: // Lucky Shot's type.
-				var currentMultiplier = s().m_rgPlayerTechTree.damage_multiplier_crit;
-				var newMultiplier = currentMultiplier + multiplier;
-				var dps = s().m_rgPlayerTechTree.dps;
-				var clickDamage = s().m_rgPlayerTechTree.damage_per_click;
+			var currentMultiplier = s().m_rgPlayerTechTree.damage_multiplier_crit;
+			var newMultiplier = currentMultiplier + multiplier;
+			var dps = s().m_rgPlayerTechTree.dps;
+			var clickDamage = s().m_rgPlayerTechTree.damage_per_click;
 
-				strOut += '<br><br>You can have multiple crits in a second. The server combines them into one.';
+			strOut += '<br><br>You can have multiple crits in a second. The server combines them into one.';
 
-				strOut += '<br><br>Crit Percentage: ' + (s().m_rgPlayerTechTree.crit_percentage * 100).toFixed(1) + '%';
+			strOut += '<br><br>Crit Percentage: ' + (s().m_rgPlayerTechTree.crit_percentage * 100).toFixed(1) + '%';
 
-				strOut += '<br><br>Critical Damage Multiplier:';
-				strOut += '<br>Current: ' + ( currentMultiplier ) + 'x';
-				strOut += '<br>Next Level: ' + ( newMultiplier ) + 'x';
+			strOut += '<br><br>Critical Damage Multiplier:';
+			strOut += '<br>Current: ' + ( currentMultiplier ) + 'x';
+			strOut += '<br>Next Level: ' + ( newMultiplier ) + 'x';
 
-				strOut += '<br><br>Damage with one crit:';
-				strOut += '<br>DPS: ' + w.FormatNumberForDisplay( currentMultiplier * dps ) + ' => ' + w.FormatNumberForDisplay( newMultiplier * dps );
-				strOut += '<br>Click: ' + w.FormatNumberForDisplay( currentMultiplier * clickDamage ) + ' => ' + w.FormatNumberForDisplay( newMultiplier * clickDamage );
-				strOut += '<br><br>Base Increased By: ' + w.FormatNumberForDisplay(multiplier) + 'x';
-				break;
+			strOut += '<br><br>Damage with one crit:';
+			strOut += '<br>DPS: ' + w.FormatNumberForDisplay( currentMultiplier * dps ) + ' => ' + w.FormatNumberForDisplay( newMultiplier * dps );
+			strOut += '<br>Click: ' + w.FormatNumberForDisplay( currentMultiplier * clickDamage ) + ' => ' + w.FormatNumberForDisplay( newMultiplier * clickDamage );
+			strOut += '<br><br>Base Increased By: ' + w.FormatNumberForDisplay(multiplier) + 'x';
+			break;
 			case 9: // Boss Loot Drop's type
-				var bossLootChance = s().m_rgPlayerTechTree.boss_loot_drop_percentage * 100;
+			var bossLootChance = s().m_rgPlayerTechTree.boss_loot_drop_percentage * 100;
 
-				strOut += '<br><br>Boss Loot Drop Rate:';
-				strOut += '<br>Current: ' + bossLootChance.toFixed(0) + '%';
-				strOut += '<br>Next Level: ' + (bossLootChance + multiplier * 100).toFixed(0) + '%';
-				strOut += '<br><br>Base Increased By: ' + w.FormatNumberForDisplay(multiplier * 100) + '%';
-				break;
+			strOut += '<br><br>Boss Loot Drop Rate:';
+			strOut += '<br>Current: ' + bossLootChance.toFixed(0) + '%';
+			strOut += '<br>Next Level: ' + (bossLootChance + multiplier * 100).toFixed(0) + '%';
+			strOut += '<br><br>Base Increased By: ' + w.FormatNumberForDisplay(multiplier * 100) + '%';
+			break;
 			default:
-				return trt_oldTooltip(context);
+			return trt_oldTooltip(context);
 		}
 
 		return strOut;
