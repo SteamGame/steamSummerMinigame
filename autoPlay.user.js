@@ -1227,10 +1227,9 @@ function useTreasureIfRelevant(level) {
 
 function useMaxElementalDmgIfRelevant() {
 	// Check if Max Elemental Damage is purchased
-	if (canUseItem(ITEMS.MAXIMIZE_ELEMENT) && getActiveAbilityLaneCount(ITEMS.MAXIMIZE_ELEMENT) <= 0) {
+	if (tryUsingItem(ITEMS.MAXIMIZE_ELEMENT, true)) {
 		// Max Elemental Damage is purchased, cooled down, and needed. Trigger it.
 		advLog('Max Elemental Damage is purchased and cooled down, triggering it.', 2);
-		triggerItem(ITEMS.MAXIMIZE_ELEMENT);
 	}
 }
 
