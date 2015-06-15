@@ -200,17 +200,22 @@ function firstRun() {
 	activity.style.marginTop = "25px";
 
 	var info_box = document.querySelector(".leave_game_helper");
+	var pagecontent = document.querySelector(".pagecontent");
+	pagecontent.style.padding = "0";
+	pagecontent.appendChild(info_box);
+	document.querySelector(".game_options").style.overflow = "hidden";
+
 	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !==  "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span style="color:#FF5252;font-size:22px;line-height:4px;vertical-align:bottom;">*</span> requires a refresh to take effect.<hr>';
 
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
 	info_box.style.backgroundColor = "#000000";
 	info_box.style.width = "800px";
-	info_box.style.top = "73px";
 	info_box.style.padding = "12px";
-	info_box.style.position = "absolute";
 	info_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
 	info_box.style.color = "#ededed";
+	info_box.style.margin = "2px auto";
+	info_box.style.overflow = "auto";
 
 	var options1 = document.createElement("div");
 	options1.style["-moz-column-count"] = 2;
@@ -233,7 +238,8 @@ function firstRun() {
 	options2.style["-moz-column-count"] = 2;
 	options2.style["-webkit-column-count"] = 2;
 	options2.style["column-count"] = 2;
-	options1.style.width = "50%";
+	options2.style.width = "50%";
+	options2.style.float = "left";
 
 	if (typeof GM_info !==  "undefined") {
 		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh, false));
