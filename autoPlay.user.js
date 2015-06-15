@@ -252,7 +252,7 @@ function disableParticles() {
 }
 
 function MainLoop() {
-	var level = getGameLevel();
+	var level = s().m_rgGameData.level + 1;
 
 	if( level < 10 ) {
 		return;
@@ -261,7 +261,7 @@ function MainLoop() {
 	if (!isAlreadyRunning) {
 		isAlreadyRunning = true;
 
-		goToLaneWithBestTarget();
+		goToLaneWithBestTarget(level);
 
 		useGoodLuckCharmIfRelevant();
 		useMedicsIfRelevant();
@@ -272,9 +272,9 @@ function MainLoop() {
 		useCrippleSpawnerIfRelevant();
 		useGoldRainIfRelevant();
 		useMetalDetectorIfRelevant();
-		useCrippleMonsterIfRelevant();
-		useReviveIfRelevant();
-		useTreasureIfRelevant();
+		useCrippleMonsterIfRelevant(level);
+		useReviveIfRelevant(level);
+		useTreasureIfRelevant(level);
 		useMaxElementalDmgIfRelevant();
 
 		disableCooldownIfRelevant();
@@ -282,8 +282,7 @@ function MainLoop() {
 		updatePlayersInGame();
 		attemptRespawn();
 
-		if( level !== lastLevel )
-		{
+		if( level !== lastLevel ) {
 			lastLevel = level;
 
 			refreshPlayerData();
@@ -314,8 +313,7 @@ function MainLoop() {
 					"#aaf"
 				);
 
-				if( s().m_rgStoredCrits.length > 0 )
-				{
+				if( s().m_rgStoredCrits.length > 0 ) {
 					var rgDamage = s().m_rgStoredCrits.reduce(function(a,b) {
 						return a + b;
 					});
@@ -325,8 +323,7 @@ function MainLoop() {
 				}
 
 				var goldPerClickPercentage = s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
-				if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0)
-				{
+				if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0) {
 					var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * currentClickRate;
 
 					s().ClientOverride('player_data', 'gold', s().m_rgPlayerData.gold + goldPerSecond);
@@ -349,23 +346,20 @@ function MainLoop() {
 	}
 }
 
-function refreshPlayerData()
-{
+function refreshPlayerData() {
 	advLog("Refreshing player data", 2);
 
 	w.g_Server.GetPlayerData(
 		function(rgResult) {
 			var instance = s();
 
-			if( rgResult.response.player_data )
-			{
+			if( rgResult.response.player_data ) {
 				instance.m_rgPlayerData = rgResult.response.player_data;
 				instance.ApplyClientOverrides('player_data');
 				instance.ApplyClientOverrides('ability');
 			}
 
-			if( rgResult.response.tech_tree )
-			{
+			if( rgResult.response.tech_tree ) {
 				instance.m_rgPlayerTechTree = rgResult.response.tech_tree;
 				if( rgResult.response.tech_tree.upgrades ) {
 					instance.m_rgPlayerUpgrades = w.V_ToArray( rgResult.response.tech_tree.upgrades );
@@ -376,9 +370,7 @@ function refreshPlayerData()
 
 			instance.OnReceiveUpdate();
 		},
-		function()
-		{
-		},
+		function() {},
 		true
 	);
 }
@@ -600,11 +592,6 @@ function unlockElements() {
 	}
 }
 
-function getGameLevel()
-{
-	return s().m_rgGameData.level + 1;
-}
-
 function lockElements() {
 	var elementMultipliers = [
 	s().m_rgPlayerTechTree.damage_multiplier_fire,
@@ -699,7 +686,7 @@ function updatePlayersInGame() {
 	document.getElementById("players_in_game").innerHTML = totalPlayers + "/1500";
 }
 
-function goToLaneWithBestTarget() {
+function goToLaneWithBestTarget(level) {
 	// We can overlook spawners if all spawners are 40% hp or higher and a creep is under 10% hp
 	var spawnerOKThreshold = 0.4;
 	var creepSnagThreshold = 0.1;
@@ -786,8 +773,8 @@ function goToLaneWithBestTarget() {
 						s().m_rgPlayerTechTree.dps,
 						element
 						);
-					if(mostHPDone <= dmg)
-					{
+					
+					if(mostHPDone <= dmg) {
 						mostHPDone = dmg;
 					} else {
 						continue;
@@ -845,7 +832,7 @@ function goToLaneWithBestTarget() {
 			s().TryChangeTarget(lowTarget);
 		}
 
-		if(getGameLevel() >= 5000) {
+		if(level >= 5000) {
 			// Only disable abilities on non-boss and as long as the game level is over 5000
 			if(targetIsTreasureOrBoss) {
 				// Nuke
@@ -915,7 +902,7 @@ function goToLaneWithBestTarget() {
 		}
 
 		// Prevent attack abilities and items if up against a boss or treasure minion
-		if (targetIsTreasureOrBoss && getGameLevel() < 5000) {
+		if (targetIsTreasureOrBoss && level < 5000) {
 
 		} else {
 
@@ -947,19 +934,17 @@ function disableCooldownIfRelevant() {
 		return;
 	}
 
-	if(!isAbilityActive(ABILITIES.COOLDOWN))
-	{
+	if(!isAbilityActive(ABILITIES.COOLDOWN)) {
 		enableAbility(ABILITIES.COOLDOWN);
 	}
 }
 
-function useCrippleMonsterIfRelevant() {
+function useCrippleMonsterIfRelevant(level) {
 	// Check if Cripple Spawner is available
 	if(!canUseItem(ITEMS.CRIPPLE_MONSTER)) {
 		return;
 	}
 
-	var level = getGameLevel();
 	// Use nukes on boss when level >3000 for faster kills
 	if (level > 1000 && level % 200 !== 0 && level % 10 === 0) {
 		var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
@@ -1081,8 +1066,7 @@ function useMoraleBoosterIfRelevant() {
 
 function useTacticalNukeIfRelevant() {
 	// Check if Tactical Nuke is purchased
-	if(!canUseAbility(ABILITIES.NUKE))
-	{
+	if(!canUseAbility(ABILITIES.NUKE)) {
 		return;
 	}
 
@@ -1157,8 +1141,7 @@ function useGoldRainIfRelevant() {
 
 function useMetalDetectorIfRelevant() {
 	// Check if metal detector is purchased
-	if(!canUseAbility(ABILITIES.METAL_DETECTOR))
-	{
+	if(!canUseAbility(ABILITIES.METAL_DETECTOR)) {
 		return;
 	}
 
@@ -1176,34 +1159,31 @@ function useMetalDetectorIfRelevant() {
 	}
 }
 
-function useTreasureIfRelevant() {
+function useTreasureIfRelevant(level) {
 	// Check if Treasure is purchased
-	if (hasItem(ITEMS.TREASURE)) {
-		if (isAbilityCoolingDown(ITEMS.TREASURE)) {
-			return;
-		}
+	if (!canUseItem(ITEMS.TREASURE)) {
+		return;
+	}
 
-		// check if current level is higher than 50
-		if (getGameLevel() > 50)
-		{
-			var enemy = s().GetTargetedEnemy();
-			// check if current target is a boss, otherwise we won't use metal detector
-			if (enemy && enemy.type == ENEMY_TYPE.BOSS) {
-				var enemyBossHealthPercent = enemy.hp / enemy.max_hp;
+	// check if current level is higher than 50
+	if (level > 50) {
+		var enemy = s().GetTargetedEnemy();
+		// check if current target is a boss, otherwise we won't use metal detector
+		if (enemy && enemy.type == ENEMY_TYPE.BOSS) {
+			var enemyBossHealthPercent = enemy.hp / enemy.max_hp;
 
-				// we want to use Treasure at 25% hp, or even less
-				if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
-					// Treasure is purchased, cooled down, and needed. Trigger it.
-					advLog('Treasure is purchased and cooled down, triggering it.', 2);
-					triggerItem(ITEMS.TREASURE);
-				}
+			// we want to use Treasure at 25% hp, or even less
+			if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
+				// Treasure is purchased, cooled down, and needed. Trigger it.
+				advLog('Treasure is purchased and cooled down, triggering it.', 2);
+				triggerItem(ITEMS.TREASURE);
 			}
 		}
-		else {
-			// Treasure is purchased, cooled down, and needed. Trigger it.
-			advLog('Treasure is purchased and cooled down, triggering it.', 2);
-			triggerItem(ITEMS.TREASURE);
-		}
+	}
+	else {
+		// Treasure is purchased, cooled down, and needed. Trigger it.
+		advLog('Treasure is purchased and cooled down, triggering it.', 2);
+		triggerItem(ITEMS.TREASURE);
 	}
 }
 
@@ -1216,9 +1196,7 @@ function useMaxElementalDmgIfRelevant() {
 	}
 }
 
-function useReviveIfRelevant() {
-	var level = getGameLevel();
-
+function useReviveIfRelevant(level) {
 	if(level % 10 === 9 && tryUsingItem(ITEMS.REVIVE)) {
 		// Resurrect is purchased and we are using it.
 		advLog('Triggered Resurrect.');
@@ -1345,14 +1323,8 @@ function enableAbilityItem(abilityId) {
 function getActiveAbilityLaneCount(ability) {
 	var abilities = s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].active_player_abilities;
 	var count = 0;
-	for(var i = 0; i < abilities.length; i++)
-	{
-		if(abilities[i].ability != ability)
-		{
-			continue;
-		}
-		if(abilities[i].timestamp_done < Date.now())
-		{
+	for(var i = 0; i < abilities.length; i++) {
+		if(abilities[i].ability != ability || abilities[i].timestamp_done < Date.now()) {
 			continue;
 		}
 		count++;
@@ -1445,8 +1417,7 @@ function getClickDamage(){
 function startFingering() {
 	w.CSceneGame.prototype.ClearNewPlayer = function(){};
 
-	if(!s().m_spriteFinger)
-	{
+	if(!s().m_spriteFinger) {
 		w.WebStorage.SetLocal('mg_how2click', 0);
 		s().CheckNewPlayer();
 		w.WebStorage.SetLocal('mg_how2click', 1);
@@ -1467,8 +1438,7 @@ function enhanceTooltips() {
 		var desc = $context.data('desc');
 		var strOut = desc;
 		var multiplier = parseFloat( $context.data('multiplier') );
-		switch( $context.data('upgrade_type') )
-		{
+		switch( $context.data('upgrade_type') ) {
 			case 2: // Type for click damage. All tiers.
 				strOut = trt_oldTooltip(context);
 				var currentCrit = getClickDamage() * getCritMultiplier();
