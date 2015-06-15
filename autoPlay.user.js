@@ -18,6 +18,7 @@
 // OPTIONS
 var clickRate = 10;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
+var minsLeft = 30; // Minutes left before daily reset
 
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
 
@@ -37,6 +38,10 @@ var autoRefreshMinutes = 30;
 var autoRefreshMinutesRandomDelay = 10;
 
 // DO NOT MODIFY
+var cTime = new Date;
+var cHours = 0;
+var cMins = 0;
+
 var isAlreadyRunning = false;
 var refreshTimer = null;
 var currentClickRate = clickRate;
@@ -215,6 +220,7 @@ function firstRun() {
 	}
 
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent,true));
+    options2.appendChild(makeNumber("setMinsLeft", "Change the number of minutes before going crazy", "25px", minsLeft, 5, 59, updateEndGameCrazy));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
@@ -253,6 +259,9 @@ function disableParticles() {
 }
 
 function MainLoop() {
+	cHours = cTime.getUTCHours();
+	cMins = cTime.getUTCMinutes();
+	
 	var level = getGameLevel();
 
 	if( level < 10 ) {
@@ -277,6 +286,7 @@ function MainLoop() {
 		useReviveIfRelevant();
 		useTreasureIfRelevant();
 		useMaxElementalDmgIfRelevant();
+		useWormholeIfRelevant();
 
 		disableCooldownIfRelevant();
 
@@ -553,6 +563,12 @@ function toggleAllText(event) {
 		};
 	} else {
 		s().m_rgClickNumbers.push = trt_oldPush;
+	}
+}
+
+function updateEndGameCrazy(event) {
+	if(event !== undefined) {
+		minsLeft = event.target.value;
 	}
 }
 
@@ -1227,6 +1243,23 @@ function useMaxElementalDmgIfRelevant() {
 		// Max Elemental Damage is purchased, cooled down, and needed. Trigger it.
 		advLog('Max Elemental Damage is purchased and cooled down, triggering it.', 2);
 		triggerItem(ITEMS.MAXIMIZE_ELEMENT);
+	}
+}
+
+function useWormholeIfRelevant() {
+	// Check the time before using wormhole.
+	if (cHours != 15) {
+		return;
+	}
+	var timeLeft = 60 - cMins;
+	if (timeLeft > minsLeft) {
+		return;
+	}
+	// Check if Wormhole is purchased
+	if (canUseItem(ITEMS.WORMHOLE) && getActiveAbilityLaneCount(ITEMS.WORMHOLE) <= 0) {
+		// Wormhole is purchased, cooled down, and needed. Trigger it.
+		advLog('Less than 10 minutes for game to end. Triggering wormholes...', 2);
+		triggerItem(ITEMS.WORMHOLE);
 	}
 }
 
