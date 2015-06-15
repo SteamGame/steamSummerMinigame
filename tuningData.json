@@ -276,7 +276,7 @@
             "instant": 1,
             "duration": 10,
             "cooldown": 1800,
-            "desc": "Grant every alive player in your lane one random special item.<br><br>This item can only be purchased with badge points."
+            "desc": "Grant every alive player in your lane one random special item.<br><br>This item can only be acquired by spending badge points and cannot be activated within the first 10 minutes of the game."
         },
         "26": {
             "name": "Wormhole",
@@ -286,7 +286,7 @@
             "instant": 1,
             "duration": 10,
             "cooldown": 60,
-            "desc": "Skips a level with each use (stackable) and grants 50k of gold to every player. However, enemies will not drop gold or loot for any skipped levels.<br><br>This item can only be purchased with badge points."
+            "desc": "Skips a level with each use (stackable) and grants 50k of gold to every player. However, enemies will not drop gold or loot for any skipped levels.<br><br>You must defeat a boss level after using Wormhole in order to level up your Monster Summer Badge.<br><br>This item can only be acquired by spending badge points and cannot be activated within the first 10 minutes of the game."
         },
         "27": {
             "name": "Like New",
@@ -294,7 +294,7 @@
             "badge_points_cost": 100,
             "duration": 5,
             "cooldown": 1,
-            "desc": "While active, clears the cooldown on every ability for all players in your lane.<br><br>This item can only be purchased with badge points."
+            "desc": "While active, clears the cooldown on every ability for all players in your lane.<br><br>This item can only be acquired by spending badge points and cannot be activated within the first 10 minutes of the game."
         }
     },
     "upgrades": {
