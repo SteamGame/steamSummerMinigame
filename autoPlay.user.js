@@ -978,8 +978,7 @@ function purchaseUpgrades() {
 		{
 			var requiredUpgradeLevel = upgrade.required_upgrade_level != undefined ? upgrade.required_upgrade_level : 1;
 			var parentUpgradeLevel = g_Minigame.CurrentScene().GetUpgradeLevel(upgrade.required_upgrade);
-			if (requiredUpgradeLevel > parentUpgradeLevel)
-			{
+			if (requiredUpgradeLevel > parentUpgradeLevel) {
 				// If upgrade is not available, we skip it
 				continue;
 			}
@@ -1014,7 +1013,7 @@ function purchaseUpgrades() {
 			case UPGRADE_TYPES.ELEMENTAL_WATER:
 			case UPGRADE_TYPES.ELEMENTAL_AIR:
 			case UPGRADE_TYPES.ELEMENTAL_EARTH:
-				if (upgradeCurrentLevel > highestElementLevel){
+				if (upgradeCurrentLevel > highestElementLevel) {
 					highestElementLevel = upgradeCurrentLevel;
 					bestElement = i;
 				}
