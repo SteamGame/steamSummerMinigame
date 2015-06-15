@@ -231,7 +231,7 @@ function firstRun() {
 	// Fix alignment of acvititylog and expand list of active abilities on hover
 	var abilities_extra_styles = document.createElement('style');
 	abilities_extra_styles.type = 'text/css';
-	abilities_extra_styles.textContent = '#activeinlanecontainer:hover {height:auto;background:rgba(50,50,50,0.9);padding-bottom:10px;position:absolute;z-index:1} #activeinlanecontainer:hover + #activitylog {margin-top:93px} #activitylog {margin-top: 25px}';
+	abilities_extra_styles.textContent = '#activeinlanecontainer:hover {height:auto;background:rgba(50,50,50,0.9);padding-bottom:10px;position:absolute;z-index:1} #activeinlanecontainer:hover + #activitylog {margin-top:88px} #activitylog {margin-top: 20px}';
 	document.getElementsByTagName('head')[0].appendChild(abilities_extra_styles);
 
 	var info_box = document.querySelector(".leave_game_helper");
