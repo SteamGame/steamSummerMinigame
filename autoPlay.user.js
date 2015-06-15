@@ -952,8 +952,7 @@ function useCrippleMonsterIfRelevant(level) {
 		return;
 	}
 
-	// Use nukes on boss when level >3000 for faster kills
-	if (level > 1000 && level % 200 !== 0 && level % 10 === 0) {
+	if (level > CONTROL.speedThreshold && level % 200 !== 0 && level % 10 === 0) {
 		var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
