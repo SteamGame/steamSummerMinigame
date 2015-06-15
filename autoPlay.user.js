@@ -130,9 +130,8 @@ var BOSS_DISABLED_ABILITIES = [
 ];
 
 var CONTROL = {
-    speedThreshold: 5000,
-    rainingRounds: 250,
-    timePerUpdate: 60000
+	speedThreshold: 5000,
+	rainingRounds: 250
 };
 
 // Try to disable particles straight away,
@@ -798,7 +797,7 @@ function goToLaneWithBestTarget(level) {
 	var skippedSpawnerLane = 0;
 	var skippedSpawnerTarget = 0;
 	var targetIsTreasure = false;
-    var targetIsBoss = false;
+	var targetIsBoss = false;
 
 	for (var k = 0; !targetFound && k < enemyTypePriority.length; k++) {
 		targetIsTreasure = (enemyTypePriority[k] == ENEMY_TYPE.TREASURE);
@@ -915,11 +914,11 @@ function goToLaneWithBestTarget(level) {
 		}
 
 		// Prevent attack abilities and items if up against a boss or treasure minion
-        if (targetIsTreasure || (targetIsBoss && (level < CONTROL.speedThreshold || level % CONTROL.rainingRounds == 0))) {
-            BOSS_DISABLED_ABILITIES.forEach(disableAbility);
-        } else {
-            BOSS_DISABLED_ABILITIES.forEach(enableAbility);
-        }
+		if (targetIsTreasure || (targetIsBoss && (level < CONTROL.speedThreshold || level % CONTROL.rainingRounds == 0))) {
+			BOSS_DISABLED_ABILITIES.forEach(disableAbility);
+		} else {
+			BOSS_DISABLED_ABILITIES.forEach(enableAbility);
+		}
 
 		// Always disable wormhole on lower levels
 		if(level < CONTROL.speedThreshold) {
