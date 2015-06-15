@@ -992,7 +992,7 @@ function useCooldownIfRelevant() {
 		return;
 	}
 
-	if(!isAbilityActive(ABILITIES.DECREASE_COOLDOWNS)) {
+	if(!s().bIsAbilityActive(ABILITIES.DECREASE_COOLDOWNS)) {
 		enableAbility(ABILITIES.DECREASE_COOLDOWNS);
 	}
 
@@ -1287,10 +1287,6 @@ function attemptRespawn() {
 	}
 }
 
-function isAbilityActive(abilityId) {
-	return s().bIsAbilityActive(abilityId);
-}
-
 function hasItem(itemId) {
 	for ( var i = 0; i < s().m_rgPlayerTechTree.ability_items.length; ++i ) {
 		var abilityItem = s().m_rgPlayerTechTree.ability_items[i];
@@ -1301,16 +1297,12 @@ function hasItem(itemId) {
 	return false;
 }
 
-function isAbilityCoolingDown(abilityId) {
-	return s().GetCooldownForAbility(abilityId) > 0;
-}
-
 function canUseAbility(abilityId) {
-	return s().bHaveAbility(abilityId) && !isAbilityCoolingDown(abilityId) && isAbilityEnabled(abilityId);
+	return s().bHaveAbility(abilityId) && s().GetCooldownForAbility(abilityId) <= 0 && isAbilityEnabled(abilityId);
 }
 
 function canUseItem(itemId) {
-	return hasItem(itemId) && !isAbilityCoolingDown(itemId) && isAbilityItemEnabled(itemId);
+	return hasItem(itemId) && s().GetCooldownForAbility(itemId) <= 0 && isAbilityItemEnabled(itemId);
 }
 
 function tryUsingAbility(abilityId) {
@@ -1476,27 +1468,6 @@ if(breadcrumbs) {
 	breadcrumbs.appendChild(element);
 }
 
-// Helpers to access player stats.
-function getBossLootChance(){
-	return s().m_rgPlayerTechTree.boss_loot_drop_percentage * 100;
-}
-
-function getCritChance(){
-	return s().m_rgPlayerTechTree.crit_percentage * 100;
-}
-
-function getCritMultiplier(){
-	return s().m_rgPlayerTechTree.damage_multiplier_crit;
-}
-
-function getDPS(){
-	return s().m_rgPlayerTechTree.dps;
-}
-
-function getClickDamage(){
-	return s().m_rgPlayerTechTree.damage_per_click;
-}
-
 function startFingering() {
 	w.CSceneGame.prototype.ClearNewPlayer = function(){};
 
@@ -1507,10 +1478,6 @@ function startFingering() {
 	}
 
 	document.getElementById('newplayer').style.display = 'none';
-}
-
-function getClickDamageMultiplier(){
-	return s().m_rgPlayerTechTree.damage_per_click_multiplier;
 }
 
 function enhanceTooltips() {
@@ -1524,19 +1491,20 @@ function enhanceTooltips() {
 		switch( $context.data('upgrade_type') ) {
 			case 2: // Type for click damage. All tiers.
 				strOut = trt_oldTooltip(context);
-				var currentCrit = getClickDamage() * getCritMultiplier();
-				var newCrit = s().m_rgTuningData.player.damage_per_click *(getClickDamageMultiplier() + multiplier) * getCritMultiplier();
+				var currentMultiplier = s().m_rgPlayerTechTree.damage_multiplier_crit;
+				var currentCrit = s().m_rgPlayerTechTree.damage_per_click * currentMultiplier;
+				var newCrit = s().m_rgTuningData.player.damage_per_click * (s().m_rgPlayerTechTree.damage_per_click_multiplier + multiplier) * currentMultiplier;
 				strOut += '<br><br>Crit Click: ' + w.FormatNumberForDisplay( currentCrit ) + ' => ' + w.FormatNumberForDisplay( newCrit );
 				break;
 			case 7: // Lucky Shot's type.
-				var currentMultiplier = getCritMultiplier();
+				var currentMultiplier = s().m_rgPlayerTechTree.damage_multiplier_crit;
 				var newMultiplier = currentMultiplier + multiplier;
-				var dps = getDPS();
-				var clickDamage = getClickDamage();
+				var dps = s().m_rgPlayerTechTree.dps;
+				var clickDamage = s().m_rgPlayerTechTree.damage_per_click;
 
 				strOut += '<br><br>You can have multiple crits in a second. The server combines them into one.';
 
-				strOut += '<br><br>Crit Percentage: ' + getCritChance().toFixed(1) + '%';
+				strOut += '<br><br>Crit Percentage: ' + (s().m_rgPlayerTechTree.crit_percentage * 100).toFixed(1) + '%';
 
 				strOut += '<br><br>Critical Damage Multiplier:';
 				strOut += '<br>Current: ' + ( currentMultiplier ) + 'x';
@@ -1546,11 +1514,13 @@ function enhanceTooltips() {
 				strOut += '<br>DPS: ' + w.FormatNumberForDisplay( currentMultiplier * dps ) + ' => ' + w.FormatNumberForDisplay( newMultiplier * dps );
 				strOut += '<br>Click: ' + w.FormatNumberForDisplay( currentMultiplier * clickDamage ) + ' => ' + w.FormatNumberForDisplay( newMultiplier * clickDamage );
 				strOut += '<br><br>Base Increased By: ' + w.FormatNumberForDisplay(multiplier) + 'x';
-			break;
-				case 9: // Boss Loot Drop's type
+				break;
+			case 9: // Boss Loot Drop's type
+				var bossLootChance = s().m_rgPlayerTechTree.boss_loot_drop_percentage * 100;
+				
 				strOut += '<br><br>Boss Loot Drop Rate:';
-				strOut += '<br>Current: ' + getBossLootChance().toFixed(0) + '%';
-				strOut += '<br>Next Level: ' + (getBossLootChance() + multiplier * 100).toFixed(0) + '%';
+				strOut += '<br>Current: ' + bossLootChance.toFixed(0) + '%';
+				strOut += '<br>Next Level: ' + (bossLootChance + multiplier * 100).toFixed(0) + '%';
 				strOut += '<br><br>Base Increased By: ' + w.FormatNumberForDisplay(multiplier * 100) + '%';
 				break;
 			default:
