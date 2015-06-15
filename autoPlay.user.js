@@ -294,7 +294,7 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText, false));
 	options1.appendChild(makeCheckBox("removeAllText", "Remove all text", removeAllText, toggleAllText, false));
-	options1.appendChild(makeCheckBox("disableRenderer", "Throttle game renderer (uses less CPU)", disableRenderer, toggleRenderer, false));
+	options1.appendChild(makeCheckBox("disableRenderer", "Limit frames per second to increase performance", disableRenderer, toggleRenderer, false));
 
 	info_box.appendChild(options1);
 
