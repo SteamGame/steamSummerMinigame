@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name [SteamDB] Monster Minigame Script (Fugitoid fork) 
-// @namespace https://github.com/SteamDatabase/steamSummerMinigame
+// @namespace https://github.com/Fugitoid/steamSummerMinigame/tree/testing
 // @description A script that runs the Steam Monster Minigame for you.
 // @version 1.0.0
 // @match *://steamcommunity.com/minigame/towerattack*
