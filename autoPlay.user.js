@@ -30,6 +30,7 @@ var removeParticles = getPreferenceBoolean("removeParticles", true);
 var removeFlinching = getPreferenceBoolean("removeFlinching", true);
 var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
+var showAllActiveAbilities = getPreferenceBoolean("showAllActiveAbilities", false);
 var enableFingering = getPreferenceBoolean("enableFingering", true);
 var disableRenderer = getPreferenceBoolean("disableRenderer", true);
 
@@ -195,6 +196,10 @@ function firstRun() {
 		toggleAllText();
 	}
 
+	if(showAllActiveAbilities) {
+		toggleAllActiveAbilities();
+	}
+
 	var node = document.getElementById("abilities");
 
 	if( node ) {
@@ -265,6 +270,7 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText, false));
 	options1.appendChild(makeCheckBox("removeAllText", "Remove all text", removeAllText, toggleAllText, false));
+	options1.appendChild(makeCheckBox("showAllActiveAbilities", "Show all active abilities", showAllActiveAbilities, toggleAllActiveAbilities, false));
 	options1.appendChild(makeCheckBox("disableRenderer", "Throttle game renderer", disableRenderer, toggleRenderer, false));
 
 	info_box.appendChild(options1);
@@ -712,6 +718,20 @@ function toggleAllText(event) {
 		};
 	} else {
 		s().m_rgClickNumbers.push = trt_oldPush;
+	}
+}
+
+function toggleAllActiveAbilities(event) {
+	var value = showAllActiveAbilities;
+
+	if(event !== undefined) {
+		value = handleCheckBox(event);
+	}
+
+	if (value) {
+		document.getElementById("activeinlanecontainer").style.height = "auto";
+	} else {
+		document.getElementById("activeinlanecontainer").style.height = "68px";
 	}
 }
 
