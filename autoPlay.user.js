@@ -433,13 +433,20 @@ function useAutoUpgrade() {
 	if(!enableAutoUpgradeDPS && !enableAutoUpgradeClick) { return; }
 
 	// upg_map will contain the most cost effctive upgrades for each type
-	var upg_map = {};
-	Object.keys(UPGRADES).forEach(function(key) {
-		upg_map[UPGRADES[key]] = {
+	var upg_map = {
+		0: {
 			idx: -1,
 			gold_per_mult: 0
-		};
-	});
+		},
+		1: {
+			idx: -1,
+			gold_per_mult: 0
+		},
+		2: {
+			idx: -1,
+			gold_per_mult: 0
+		},
+	};
 
 	var p_upg = s().m_rgPlayerUpgrades;
 
