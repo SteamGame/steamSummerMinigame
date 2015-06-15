@@ -1032,7 +1032,7 @@ function hasMaxCriticalOnLane() {
 	}
 }
 
-function UseAbilities(level)
+function useAbilities(level)
 {
 
 	var currentLane = s().m_nExpectedLane;
@@ -1042,6 +1042,7 @@ function UseAbilities(level)
 	var enemySpawnerExists = false;
 	var enemySpawnerHealthPercent = false;
 	var enemy = false;
+	var enemyBossHealthPercent = 0;
 
 	// Cooldown
 	if(getActiveAbilityLaneCount(ABILITIES.DECREASE_COOLDOWNS) > 0) {
@@ -1059,9 +1060,9 @@ function UseAbilities(level)
 	// Cripple Monster
 	if(canUseAbility(ABILITIES.CRIPPLE_MONSTER)) {
 		if (level > CONTROL.speedThreshold && level % CONTROL.rainingRounds !== 0 && level % 10 === 0) {
-			var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
+			enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-				var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 				if (enemyBossHealthPercent>0.5){
 					advLog("Cripple Monster available and used on boss", 2);
 					triggerAbility(ABILITIES.CRIPPLE_MONSTER);
@@ -1199,8 +1200,8 @@ function UseAbilities(level)
 		enemySpawnerExists = false;
 		enemySpawnerHealthPercent = 0.0;
 		//Count each slot in lane
-		for (var i = 0; i < 4; i++) {
-			var enemy = s().GetEnemy(currentLane, i);
+		for (i = 0; i < 4; i++) {
+			enemy = s().GetEnemy(currentLane, i);
 			if (enemy) {
 				if (enemy.m_data.type === 0) {
 					enemySpawnerExists = true;
@@ -1222,7 +1223,7 @@ function UseAbilities(level)
 		enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 		// check if current target is a boss, otherwise its not worth using the gold rain
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-			enemyBossHealthPercent = RainingGoldEnemy.m_flDisplayedHP / enemy.m_data.max_hp;
+			enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 
 			if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
 				// Gold Rain is purchased, cooled down, and needed. Trigger it.
