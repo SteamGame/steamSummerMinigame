@@ -18,6 +18,7 @@
 // OPTIONS
 var clickRate = 20;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
+var minsLeft = 30; // Minutes left before daily reset
 
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
 
@@ -37,6 +38,11 @@ var autoRefreshMinutes = 30;
 var autoRefreshMinutesRandomDelay = 10;
 
 // DO NOT MODIFY
+var cTime = new Date();
+var cHours = 0;
+var cMins = 0;
+var timeLeft = 0;
+
 var isAlreadyRunning = false;
 var refreshTimer = null;
 var currentClickRate = clickRate;
@@ -214,6 +220,7 @@ function firstRun() {
 	}
 
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent,true));
+    options2.appendChild(makeNumber("setMinsLeft", "Change the number of minutes before going crazy", "25px", minsLeft, 5, 59, updateEndGameCrazy));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
@@ -251,7 +258,23 @@ function disableParticles() {
 	}
 }
 
+function updateCurrentTime() {
+    cHours = cTime.getUTCHours();
+    cMins = cTime.getUTCMinutes();
+    timeLeft = 60 - cMins;
+}
+function isNearEndGame() {
+    if (cHours == 15 && timeLeft <= minsLeft) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 function MainLoop() {
+    updateCurrentTime();
+
 	var level = s().m_rgGameData.level + 1;
 
 	if( level < 10 ) {
@@ -276,6 +299,7 @@ function MainLoop() {
 		useReviveIfRelevant(level);
 		useTreasureIfRelevant(level);
 		useMaxElementalDmgIfRelevant();
+        useWormholeIfRelevant();
 
 		disableCooldownIfRelevant();
 
@@ -545,6 +569,12 @@ function toggleAllText(event) {
 	} else {
 		s().m_rgClickNumbers.push = trt_oldPush;
 	}
+}
+
+function updateEndGameCrazy(event) {
+    if(event !== undefined) {
+        minsLeft = event.target.value;
+    }
 }
 
 function updateLogLevel(event) {
@@ -1203,6 +1233,17 @@ function useMaxElementalDmgIfRelevant() {
 	}
 }
 
+function useWormholeIfRelevant() {
+    // Check the time before using wormhole.
+    if (!isNearEndGame()) {
+        return;
+    }
+    // Check if Wormhole is purchased
+    if (tryUsingItem(ITEMS.WORMHOLE, true)) {
+        advLog('Less than ' + minsLeft + ' minutes for game to end. Triggering wormholes...', 2);
+    }
+}
+
 function useReviveIfRelevant(level) {
 	if(level % 10 === 9 && tryUsingItem(ITEMS.REVIVE)) {
 		// Resurrect is purchased and we are using it.
@@ -1251,13 +1292,18 @@ function tryUsingAbility(abilityId) {
 	return true;
 }
 
-function tryUsingItem(itemId) {
-	if (!canUseItem(itemId)) {
-		return false;
-	}
-
-	triggerItem(itemId);
-	return true;
+function tryUsingItem(itemId, checkInLane) {
+    if (!canUseItem(itemId)) {
+        return false;
+    }
+    if (typeof checkInLane === "undefined") {
+        checkInLane = false;
+    }
+    if (checkInLane && getActiveAbilityLaneCount(itemId) > 0) {
+        return false;
+    }
+    triggerItem(itemId);
+    return true;
 }
 
 function hasPurchasedAbility(abilityId) {
