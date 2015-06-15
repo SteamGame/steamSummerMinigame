@@ -175,7 +175,7 @@ function firstRun() {
 	activity.style.marginTop = "25px";
 
 	var info_box = document.querySelector(".leave_game_helper");
-	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !==  "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span style="color:#FF5252;font-size:22px;line-height:4px;vertical-align:bottom;">*</span> requires a refresh to take effect.<hr>';
+	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !==  "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span style="color:#FF5252;font-size:22px;line-height:4px;vertical-align:bottom;">*</span> requires a refresh to take effect. Most cost effective upgrades are marked in <span style="font-weight:bold;color:#e1b21e">GOLD</span> color.<hr>';
 
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
