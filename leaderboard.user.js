@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         Monster Minigame Leaderboard
-// @namespace    https://github.com/hansskogvold/steamSummerMinigame
+// @namespace    https://github.com/SteamDatabase/steamSummerMinigame
 // @version      1.0
 // @description  Display leaderboards from http://steamga.me
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
 // @grant        GM_xmlhttpRequest
 // @grant        none
-// @updateURL    https://raw.githubusercontent.com/hansskogvold/steamSummerMinigame/master/leaderboard.user.js
-// @downloadURL  https://raw.githubusercontent.com/hansskogvold/steamSummerMinigame/master/leaderboard.user.js
+// @updateURL    https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/leaderboard.user.js
+// @downloadURL  https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/leaderboard.user.js
 // ==/UserScript==
 
 (function(w) {
