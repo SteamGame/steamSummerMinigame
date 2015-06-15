@@ -1028,6 +1028,7 @@ function purchaseUpgrades() {
 	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
 	// Check if health is below 30%
 	var hpPercent = g_Minigame.CurrentScene().m_rgPlayerData.hp / myMaxHealth;
+	var upgradeCost;
 	if (hpPercent < 0.3) {
 		// Prioritize armor over damage
 		// - Should we buy any armor we can afford or just wait for the best one possible?
