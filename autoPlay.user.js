@@ -958,7 +958,7 @@ function purchaseUpgrades() {
 		} else {
 			g_Minigame.CurrentScene().TryUpgrade(document.getElementById('upgr_' + id).childElements()[0].childElements()[1]);
 		}
-	}
+	};
 
 	var myGold = g_Minigame.CurrentScene().m_rgPlayerData.gold;
 
@@ -974,9 +974,9 @@ function purchaseUpgrades() {
 	for (var i=0; i< upgrades.length; i++) {
 		var upgrade = upgrades[i];
 
-		if (upgrade.required_upgrade != undefined)
+		if (upgrade.required_upgrade !== undefined)
 		{
-			var requiredUpgradeLevel = upgrade.required_upgrade_level != undefined ? upgrade.required_upgrade_level : 1;
+			var requiredUpgradeLevel = upgrade.required_upgrade_level !== undefined ? upgrade.required_upgrade_level : 1;
 			var parentUpgradeLevel = g_Minigame.CurrentScene().GetUpgradeLevel(upgrade.required_upgrade);
 			if (requiredUpgradeLevel > parentUpgradeLevel) {
 				// If upgrade is not available, we skip it
