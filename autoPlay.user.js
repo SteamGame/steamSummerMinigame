@@ -976,12 +976,13 @@ function purchaseUpgrades() {
 
 	var myGold = s().m_rgPlayerData.gold;
 
-	// Initial values for armor, dps, click damage 
+	// Initial values for armor and click damage 
 	var bestUpgradeForDamage, bestUpgradeForArmor;
 	var highestUpgradeValueForDamage = 0;
 	var highestUpgradeValueForArmor = 0;
 	var bestElement = -1;
 	var highestElementLevel = 0;
+	var purchasedShieldsWhileRespawning = false;
 
 	var critMultiplier = g_Minigame.CurrentScene().m_rgPlayerTechTree.damage_multiplier_crit;
 	var critChance = g_Minigame.CurrentScene().m_rgPlayerTechTree.crit_percentage;
@@ -1049,20 +1050,31 @@ function purchaseUpgrades() {
 		}
 	}
 
+	var currentHealth = g_Minigame.CurrentScene().m_rgPlayerData.hp;
 	var myMaxHealth = s().m_rgPlayerTechTree.max_hp;
 	// Check if health is below 30%
-	var hpPercent = s().m_rgPlayerData.hp / myMaxHealth;
+	var hpPercent = currentHealth / myMaxHealth;
 	if (hpPercent < 0.3) {
 		// Prioritize armor over damage
 		// - Should we buy any armor we can afford or just wait for the best one possible?
 		upgradeCost = s().m_rgPlayerUpgrades[bestUpgradeForArmor].cost_for_next_level;
 
+		// Prevent purchasing multiple shields while waiting to respawn.
+		if (purchasedShieldsWhileRespawning && currentHealth < 1) {
+			return;
+		}
+
 		if (myGold > upgradeCost && bestUpgradeForArmor) {
 			console.log("Buying " + upgrades[bestUpgradeForArmor].name);
 			buyUpgrade(bestUpgradeForArmor);
 			myGold = s().m_rgPlayerData.gold;
+			
+			purchasedShieldsWhileRespawning = currentHealth < 1;
 		}
 	}
+	else if (purchasedShieldsWhileRespawning) {
++		purchasedShieldsWhileRespawning = false;
++	}
 
 	// Try to buy some damage
 	upgradeCost = s().m_rgPlayerUpgrades[bestUpgradeForDamage].cost_for_next_level;
