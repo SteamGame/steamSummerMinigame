@@ -356,7 +356,7 @@ function MainLoop() {
 
 		if( level !== lastLevel ) {
 			lastLevel = level;
-
+			updateLevelInfoTitle();
 			refreshPlayerData();
 		}
 
@@ -1481,15 +1481,6 @@ w.setTimeout(function() {
 var breadcrumbs = document.querySelector('.breadcrumbs');
 
 if(breadcrumbs) {
-	var element = document.createElement('span');
-	element.textContent = ' > ';
-	breadcrumbs.appendChild(element);
-
-	element = document.createElement('span');
-	element.style.color = '#D4E157';
-	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
-	element.textContent = 'Room ' + w.g_GameID;
-	breadcrumbs.appendChild(element);
 	appendBreadcrumbsTitleInfo();
 }
 
@@ -1616,6 +1607,7 @@ function expectedLevel() {
 }
 
 function appendBreadcrumbsTitleInfo() {
+	var breadcrumbs = document.querySelector('.breadcrumbs');
     var element = document.createElement('span');
     element.textContent = ' > ';
     breadcrumbs.appendChild(element);
@@ -1639,19 +1631,22 @@ function appendBreadcrumbsTitleInfo() {
     var rem_time = countdown(exp_lvl.remaining_time);
     element.textContent = 'Remaining Time: ' + rem_time.hours + ' hours, ' + rem_time.minutes + ' minutes.';
     breadcrumbs.appendChild(element);
+}
 
-    window.setInterval(function() {
-        var exp_lvl = expectedLevel();
-        var rem_time = countdown(exp_lvl.remaining_time);
-        for (i = 0; i < breadcrumbs.childElementCount; i++) {
-            if (breadcrumbs.childElements()[i].id == "lv_explv") {
-                breadcrumbs.childElements()[i].innerHTML = 'Level: ' + (g_Minigame.CurrentScene().m_rgGameData.level + 1) + ', Expected Level: ' + exp_lvl.expected_level + ', Likely Level: ' + exp_lvl.likely_level;
-            }
-            if (breadcrumbs.childElements()[i].id == "rem_tim") {
-                breadcrumbs.childElements()[i].innerHTML = 'Remaining Time: ' + rem_time.hours + ' hours, ' + rem_time.minutes + ' minutes.';
-            }
+function updateLevelInfoTitle()
+{
+	var breadcrumbs = document.querySelector('.breadcrumbs');
+
+    var exp_lvl = expectedLevel();
+    var rem_time = countdown(exp_lvl.remaining_time);
+    for (i = 0; i < breadcrumbs.childElementCount; i++) {
+        if (breadcrumbs.childElements()[i].id == "lv_explv") {
+            breadcrumbs.childElements()[i].innerHTML = 'Level: ' + (g_Minigame.CurrentScene().m_rgGameData.level + 1) + ', Expected Level: ' + exp_lvl.expected_level + ', Likely Level: ' + exp_lvl.likely_level;
         }
-    },1000*60);
+        if (breadcrumbs.childElements()[i].id == "rem_tim") {
+            breadcrumbs.childElements()[i].innerHTML = 'Remaining Time: ' + rem_time.hours + ' hours, ' + rem_time.minutes + ' minutes.';
+        }
+    }
 }
 
 }(window));
