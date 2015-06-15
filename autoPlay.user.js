@@ -45,6 +45,7 @@ var lastLevel = 0;
 var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
 var trt_oldRender = function() {};
+var hilighted_upgrades = [];
 
 var ABILITIES = {
 	"MORALE_BOOSTER": 5,
@@ -288,6 +289,8 @@ function MainLoop() {
 			refreshPlayerData();
 		}
 
+		updateUpgradeCostEffectiveIndicator();
+
 		s().m_nClicks += currentClickRate;
 		w.g_msTickRate = 1000;
 
@@ -344,6 +347,59 @@ function MainLoop() {
 			}
 		}
 	}
+}
+
+function updateUpgradeCostEffectiveIndicator() {
+
+    // upg_map will contain the most cost effctive upgrades for each type
+	var upg_map = {};
+	Object.keys(UPGRADES).forEach(function(key) {
+		upg_map[UPGRADES[key]] = {
+			idx: -1,
+			gold_per_mult: 0
+		};
+	});
+
+	var p_upg = s().m_rgPlayerUpgrades;
+
+    // loop over all upgrades and find the most cost effective ones
+	s().m_rgTuningData.upgrades.forEach(function(upg, idx) {
+		if(upg.type in upg_map) {
+
+			var cost = s().GetUpgradeCost(idx) / parseFloat(upg.multiplier);
+
+			if(upg_map[upg.type].idx == -1 || upg_map[upg.type].cost_per_mult > cost) {
+				if(upg.hasOwnProperty('required_upgrade') && s().GetUpgradeLevel(upg.required_upgrade) < upg.required_upgrade_level) { return; }
+
+				upg_map[upg.type].idx = idx;
+				upg_map[upg.type].cost_per_mult = cost;
+			}
+		}
+	});
+
+    var hilight = Object.keys(upg_map).map(function(k) { return upg_map[k].idx; });
+
+    var match = true;
+    for(var i = 0; i < hilight.length; i++ ) {
+        if(hilight[i] !== hilighted_upgrades[i]) {
+            match = false;
+            break;
+        }
+    }
+
+    if(!match) {
+        hilighted_upgrades = hilight;
+
+        // clear all currently hilighted
+        [].forEach.call(document.querySelectorAll('[id^="upgr_"] .info'),
+                function(elm) { elm.style = {} ;});
+
+        [].map.call(document.querySelectorAll(hilight.map(function(i) {
+                return "#upgr_" + i + " .info";
+            })
+            .join(",")),
+        function(elm) { elm.style.setProperty('color', '#E1B21E', 'important'); });
+    }
 }
 
 function refreshPlayerData() {
