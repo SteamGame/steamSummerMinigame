@@ -1569,36 +1569,36 @@ function enhanceTooltips() {
 }
 
 function countdown(time) {
-    var hours = 0;
-    var minutes = 0;
-    for (i = 0; i < 24; i++) {
-        if (time >= 3600) {
-            time = time - 3600;
-            hours = hours + 1;
-        }
-    }
-    for (j = 0; j < 60; j++) {
-        if (time >= 60) {
-            time = time - 60;
-            minutes = minutes + 1;
-        }
-    }
-    return {hours : hours, minutes : minutes};
+	var hours = 0;
+	var minutes = 0;
+	for (i = 0; i < 24; i++) {
+		if (time >= 3600) {
+			time = time - 3600;
+			hours = hours + 1;
+		}
+	}
+	for (j = 0; j < 60; j++) {
+		if (time >= 60) {
+			time = time - 60;
+			minutes = minutes + 1;
+		}
+	}
+	return {hours : hours, minutes : minutes};
 }
 
 function expectedLevel(level) {
-    var time = Math.floor(g_Minigame.CurrentScene().m_nTime) % 86400;
-    time = time - 16*3600;
-    if (time < 0) {
-        time = time + 86400;
-    }
+	var time = Math.floor(g_Minigame.CurrentScene().m_nTime) % 86400;
+	time = time - 16*3600;
+	if (time < 0) {
+		time = time + 86400;
+	}
 
-    var remaining_time = 86400 - time;
-    var gametime = game_time.innerHTML.split(":");
-    var passed_time = (3600*Number(gametime[0]) + 60*Number(gametime[1]) + Number(gametime[2]));
-    var expected_level = Math.floor(((level/passed_time)*remaining_time)+level);
-    var likely_level = Math.floor((expected_level - level)/Math.log(3))+ level;
-    return {expected_level : expected_level, likely_level : likely_level, remaining_time : remaining_time};
+	var remaining_time = 86400 - time;
+	var gametime = game_time.innerHTML.split(":");
+	var passed_time = (3600*Number(gametime[0]) + 60*Number(gametime[1]) + Number(gametime[2]));
+	var expected_level = Math.floor(((level/passed_time)*remaining_time)+level);
+	var likely_level = Math.floor((expected_level - level)/Math.log(3))+ level;
+	return {expected_level : expected_level, likely_level : likely_level, remaining_time : remaining_time};
 }
 
 function appendBreadcrumbsTitleInfo() {
@@ -1608,9 +1608,9 @@ function appendBreadcrumbsTitleInfo() {
 		return;
 	}
 
-    var element = document.createElement('span');
-    element.textContent = ' > ';
-    breadcrumbs.appendChild(element);
+	var element = document.createElement('span');
+	element.textContent = ' > ';
+	breadcrumbs.appendChild(element);
 
 	element = document.createElement('span');
 	element.style.color = '#D4E157';
@@ -1619,25 +1619,25 @@ function appendBreadcrumbsTitleInfo() {
 	breadcrumbs.appendChild(element);
 
 	element = document.createElement('span');
-    element.textContent = ' > ';
-    breadcrumbs.appendChild(element);
+	element.textContent = ' > ';
+	breadcrumbs.appendChild(element);
 
-    element = document.createElement('span');
-    element.style.color = '#FFA07A';
-    element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
-    element.textContent = 'Level: 0, Expected Level: 0, Likely Level: 0';
-    breadcrumbs.appendChild(element);
+	element = document.createElement('span');
+	element.style.color = '#FFA07A';
+	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
+	element.textContent = 'Level: 0, Expected Level: 0, Likely Level: 0';
+	breadcrumbs.appendChild(element);
 	ELEMENTS.ExpectedLevel = element;
 
-    var element = document.createElement('span');
-    element.textContent = ' > ';
-    breadcrumbs.appendChild(element);
+	var element = document.createElement('span');
+	element.textContent = ' > ';
+	breadcrumbs.appendChild(element);
 
-    element = document.createElement('span');
-    element.style.color = '#7AA0FF';
-    element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
-    element.textContent = 'Remaining Time: 0 hours, 0 minutes.';
-    breadcrumbs.appendChild(element);
+	element = document.createElement('span');
+	element.style.color = '#7AA0FF';
+	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
+	element.textContent = 'Remaining Time: 0 hours, 0 minutes.';
+	breadcrumbs.appendChild(element);
 	ELEMENTS.RemainingTime = element;
 }
 
@@ -1645,9 +1645,9 @@ function updateLevelInfoTitle(level)
 {
 	var breadcrumbs = document.querySelector('.breadcrumbs');
 
-    var exp_lvl = expectedLevel(level);
-    var rem_time = countdown(exp_lvl.remaining_time);
-	
+	var exp_lvl = expectedLevel(level);
+	var rem_time = countdown(exp_lvl.remaining_time);
+
 	ELEMENTS.ExpectedLevel.textContent = 'Level: ' + level + ', Expected Level: ' + exp_lvl.expected_level + ', Likely Level: ' + exp_lvl.likely_level;
 	ELEMENTS.RemainingTime.textContent = 'Remaining Time: ' + rem_time.hours + ' hours, ' + rem_time.minutes + ' minutes.';
 }
