@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.4.5
+// @version 4.4.6
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -225,8 +225,8 @@ function firstRun() {
 	var titleActivity = document.querySelector( '.title_activity' );
 	var playersInGame = document.createElement( 'span' );
 	playersInGame.innerHTML = '<span id=\"players_in_game\">0/1500</span>&nbsp;Players in room<br>';
-
 	titleActivity.insertBefore(playersInGame, titleActivity.firstChild);
+	ELEMENTS.PlayersInGame = document.getElementById("players_in_game");
 
 	// Fix alignment of acvititylog and expand list of active abilities on hover
 	var abilities_extra_styles = document.createElement('style');
@@ -871,10 +871,12 @@ function displayText(x, y, strText, color) {
 }
 
 function updatePlayersInGame() {
-	var totalPlayers =  s().m_rgLaneData[ 0 ].players +
-	s().m_rgLaneData[ 1 ].players +
-	s().m_rgLaneData[ 2 ].players;
-	document.getElementById("players_in_game").innerHTML = totalPlayers + "/1500";
+	var laneData = s().m_rgLaneData;
+	var totalPlayers =
+		laneData[ 0 ].players +
+		laneData[ 1 ].players +
+		laneData[ 2 ].players;
+	ELEMENTS.PlayersInGame.textContent = totalPlayers + "/1500";
 }
 
 function goToLaneWithBestTarget(level) {
