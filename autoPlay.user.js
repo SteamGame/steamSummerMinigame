@@ -1266,6 +1266,9 @@ function useWormholeIfRelevant() {
 	if (tryUsingItem(ABILITIES.WORMHOLE, true)) {
 		advLog('Less than ' + minsLeft + ' minutes for game to end. Triggering wormholes...', 2);
 	}
+	else if (tryUsingItem(ABILITIES.THROW_MONEY_AT_SCREEN)) {
+		advLog('Less than ' + minsLeft + ' minutes for game to end. Throwing money at screen for no particular reason...', 2);
+	}
 }
 
 function useReviveIfRelevant(level) {
