@@ -140,7 +140,6 @@ function firstRun() {
 
 	if( node ) {
 		node.style.textAlign = 'left';
-		node.style.marginLeft = '300px';
 	}
 
 	if( removeInterface ) {
@@ -224,10 +223,13 @@ function firstRun() {
 	var lock_elements_box = document.createElement("div");
 	lock_elements_box.className = "lock_elements_box";
 	lock_elements_box.style.backgroundColor = "#000000";
-	lock_elements_box.style.width = "160px";
-	lock_elements_box.style.top = "0px";
-	lock_elements_box.style.left = "4px";
-	lock_elements_box.style.padding = "2px";
+	lock_elements_box.style.width = "165px";
+	lock_elements_box.style.top = "-76px";
+	lock_elements_box.style.left = "303px";
+	lock_elements_box.style.borderRadius = "0 0 0 14px";
+	lock_elements_box.style.boxSizing = "border-box";
+	lock_elements_box.style.lineHeight = "1.005rem";
+	lock_elements_box.style.padding = "7px 10px";
 	lock_elements_box.style.position = "absolute";
 	lock_elements_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
 	lock_elements_box.style.color = "#ededed";
