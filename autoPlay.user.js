@@ -50,6 +50,7 @@ var lastLevel = 0;
 var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
 var trt_oldRender = function() {};
+var ELEMENTS = {};
 
 var UPGRADES = {
 	LIGHT_ARMOR: 0,
@@ -368,7 +369,7 @@ function MainLoop() {
 
 		if( level !== lastLevel ) {
 			lastLevel = level;
-
+			updateLevelInfoTitle(level);
 			refreshPlayerData();
 		}
 
@@ -1465,6 +1466,10 @@ function sortLanesByElementals() {
 	return lanePointers;
 }
 
+function getCurrentTime() {
+	return s().m_rgGameData.timestamp;
+}
+
 function advLog(msg, lvl) {
 	if (lvl <= logLevel) {
 		console.log(msg);
@@ -1496,20 +1501,7 @@ w.setTimeout(function() {
 	}
 }, autoRefreshSecondsCheckLoadedDelay * 1000);
 
-// Append gameid to breadcrumbs
-var breadcrumbs = document.querySelector('.breadcrumbs');
-
-if(breadcrumbs) {
-	var element = document.createElement('span');
-	element.textContent = ' > ';
-	breadcrumbs.appendChild(element);
-
-	element = document.createElement('span');
-	element.style.color = '#D4E157';
-	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
-	element.textContent = 'Room ' + w.g_GameID;
-	breadcrumbs.appendChild(element);
-}
+appendBreadcrumbsTitleInfo();
 
 function startFingering() {
 	w.CSceneGame.prototype.ClearNewPlayer = function(){};
@@ -1597,6 +1589,88 @@ function enhanceTooltips() {
 
 		return strOut;
 	};
+}
+
+function countdown(time) {
+	var hours = 0;
+	var minutes = 0;
+	for (var i = 0; i < 24; i++) {
+		if (time >= 3600) {
+			time = time - 3600;
+			hours = hours + 1;
+		}
+	}
+	for (var j = 0; j < 60; j++) {
+		if (time >= 60) {
+			time = time - 60;
+			minutes = minutes + 1;
+		}
+	}
+	return {hours : hours, minutes : minutes};
+}
+
+function expectedLevel(level) {
+	var time = Math.floor(s().m_nTime) % 86400;
+	time = time - 16*3600;
+	if (time < 0) {
+		time = time + 86400;
+	}
+
+	var remaining_time = 86400 - time;
+	var passed_time = getCurrentTime() - s().m_rgGameData.timestamp_game_start;
+	var expected_level = Math.floor(((level/passed_time)*remaining_time)+level);
+	var likely_level = Math.floor((expected_level - level)/Math.log(3))+ level;
+	
+	return {expected_level : expected_level, likely_level : likely_level, remaining_time : remaining_time};
+}
+
+function appendBreadcrumbsTitleInfo() {
+	var breadcrumbs = document.querySelector('.breadcrumbs');
+
+	if(!breadcrumbs) {
+		return;
+	}
+
+	var element = document.createElement('span');
+	element.textContent = ' > ';
+	breadcrumbs.appendChild(element);
+
+	element = document.createElement('span');
+	element.style.color = '#D4E157';
+	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
+	element.textContent = 'Room ' + w.g_GameID;
+	breadcrumbs.appendChild(element);
+
+	element = document.createElement('span');
+	element.textContent = ' > ';
+	breadcrumbs.appendChild(element);
+
+	element = document.createElement('span');
+	element.style.color = '#FFA07A';
+	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
+	element.textContent = 'Level: 0, Expected Level: 0, Likely Level: 0';
+	breadcrumbs.appendChild(element);
+	ELEMENTS.ExpectedLevel = element;
+
+	element = document.createElement('span');
+	element.textContent = ' > ';
+	breadcrumbs.appendChild(element);
+
+	element = document.createElement('span');
+	element.style.color = '#7AA0FF';
+	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
+	element.textContent = 'Remaining Time: 0 hours, 0 minutes.';
+	breadcrumbs.appendChild(element);
+	ELEMENTS.RemainingTime = element;
+}
+
+function updateLevelInfoTitle(level)
+{
+	var exp_lvl = expectedLevel(level);
+	var rem_time = countdown(exp_lvl.remaining_time);
+
+	ELEMENTS.ExpectedLevel.textContent = 'Level: ' + level + ', Expected Level: ' + exp_lvl.expected_level + ', Likely Level: ' + exp_lvl.likely_level;
+	ELEMENTS.RemainingTime.textContent = 'Remaining Time: ' + rem_time.hours + ' hours, ' + rem_time.minutes + ' minutes.';
 }
 
 }(window));
