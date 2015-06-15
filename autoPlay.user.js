@@ -47,47 +47,71 @@ var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
 var trt_oldRender = function() {};
 
-var ABILITIES = {
-	"MORALE_BOOSTER": 5,
-	"GOOD_LUCK": 6,
-	"MEDIC": 7,
-	"METAL_DETECTOR": 8,
-	"COOLDOWN": 9,
-	"NUKE": 10,
-	"CLUSTER_BOMB": 11,
-	"NAPALM": 12
+var UPGRADES = {
+	LIGHT_ARMOR: 0,
+	AUTO_FIRE_CANNON: 1,
+	ARMOR_PIERCING_ROUND: 2,
+	DAMAGE_TO_FIRE_MONSTERS: 3,
+	DAMAGE_TO_WATER_MONSTERS: 4,
+	DAMAGE_TO_AIR_MONSTERS: 5,
+	DAMAGE_TO_EARTH_MONSTERS: 6,
+	LUCKY_SHOT: 7,
+	HEAVY_ARMOR: 8,
+	ADVANCED_TARGETING: 9,
+	EXPLOSIVE_ROUNDS: 10,
+	MEDICS: 11,
+	MORALE_BOOSTER: 12,
+	GOOD_LUCK_CHARMS: 13,
+	METAL_DETECTOR: 14,
+	DECREASE_COOLDOWNS: 15,
+	TACTICAL_NUKE: 16,
+	CLUSTER_BOMB: 17,
+	NAPALM: 18,
+	BOSS_LOOT: 19,
+	ENERGY_SHIELDS: 20,
+	FARMING_EQUIPMENT: 21,
+	RAILGUN: 22,
+	PERSONAL_TRAINING: 23,
+	AFK_EQUIPMENT: 24,
+	NEW_MOUSE_BUTTON: 25
 };
 
-var ITEMS = {
-	"REVIVE": 13,
-	"CRIPPLE_SPAWNER": 14,
-	"CRIPPLE_MONSTER": 15,
-	"MAXIMIZE_ELEMENT": 16,
-	"GOLD_RAIN": 17,
-	"CRIT": 18,
-	"PUMPED_UP": 19,
-	"THROW_MONEY": 20,
-	"GOD_MODE": 21,
-	"TREASURE": 22,
-	"STEAL_HEALTH": 23,
-	"REFLECT_DAMAGE": 24,
-	"FEELING_LUCKY": 25,
-	"WORMHOLE": 26,
-	"LIKE_NEW": 27,
+var ABILITIES = {
+	FIRE_WEAPON: 1,
+	CHANGE_LANE: 2,
+	RESPAWN: 3,
+	CHANGE_TARGET: 4,
+	MORALE_BOOSTER: 5,
+	GOOD_LUCK_CHARMS: 6,
+	MEDICS: 7,
+	METAL_DETECTOR: 8,
+	DECREASE_COOLDOWNS: 9,
+	TACTICAL_NUKE: 10,
+	CLUSTER_BOMB: 11,
+	NAPALM: 12,
+	RESURRECTION: 13,
+	CRIPPLE_SPAWNER: 14,
+	CRIPPLE_MONSTER: 15,
+	MAX_ELEMENTAL_DAMAGE: 16,
+	RAINING_GOLD: 17,
+	CRIT: 18,
+	PUMPED_UP: 19,
+	THROW_MONEY_AT_SCREEN: 20,
+	GOD_MODE: 21,
+	TREASURE: 22,
+	STEAL_HEALTH: 23,
+	REFLECT_DAMAGE: 24,
+	FEELING_LUCKY: 25,
+	WORMHOLE: 26,
+	LIKE_NEW: 27
 };
 
 var ENEMY_TYPE = {
-	"SPAWNER":0,
-	"CREEP":1,
-	"BOSS":2,
-	"MINIBOSS":3,
-	"TREASURE":4
-};
-
-var UPGRADES = {
-	"LIGHT_ARMOR":0,
-	"AUTO_CANNON": 1,
-	"CLICK_UPGRADE": 2,
+	SPAWNER: 0,
+	CREEP: 1,
+	BOSS: 2,
+	MINIBOSS: 3,
+	TREASURE: 4
 };
 
 // Try to disable particles straight away,
@@ -875,7 +899,7 @@ function goToLaneWithBestTarget(level) {
 		if(level >= 5000) {
 			// Only disable abilities on non-boss and as long as the game level is over 5000
 				// Nuke
-				enableAbility(ABILITIES.NUKE);
+				enableAbility(ABILITIES.TACTICAL_NUKE);
 				// Clusterbomb
 				enableAbility(ABILITIES.CLUSTER_BOMB);
 				// Napalm
@@ -885,48 +909,48 @@ function goToLaneWithBestTarget(level) {
 				// Morale
 				disableAbility(ABILITIES.MORALE_BOOSTER);
 				// Luck
-				disableAbility(ABILITIES.GOOD_LUCK);
+				disableAbility(ABILITIES.GOOD_LUCK_CHARMS);
 				// Nuke
-				disableAbility(ABILITIES.NUKE);
+				disableAbility(ABILITIES.TACTICAL_NUKE);
 				// Clusterbomb
 				disableAbility(ABILITIES.CLUSTER_BOMB);
 				// Napalm
 				disableAbility(ABILITIES.NAPALM);
 				// Crit
-				disableAbilityItem(ITEMS.CRIT);
+				disableAbilityItem(ABILITIES.CRIT);
 				// Cripple Spawner
-				disableAbilityItem(ITEMS.CRIPPLE_SPAWNER);
+				disableAbilityItem(ABILITIES.CRIPPLE_SPAWNER);
 				// Cripple Monster
-				disableAbilityItem(ITEMS.CRIPPLE_MONSTER);
+				disableAbilityItem(ABILITIES.CRIPPLE_MONSTER);
 				// Max Elemental Damage
-				disableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
+				disableAbilityItem(ABILITIES.MAX_ELEMENTAL_DAMAGE);
 				// Reflect Damage
-				disableAbilityItem(ITEMS.REFLECT_DAMAGE);
+				disableAbilityItem(ABILITIES.REFLECT_DAMAGE);
 				// Throw Money at Screen
-				disableAbilityItem(ITEMS.THROW_MONEY);
+				disableAbilityItem(ABILITIES.THROW_MONEY);
 			} else {
 				// Morale
 				enableAbility(ABILITIES.MORALE_BOOSTER);
 				// Luck
-				enableAbility(ABILITIES.GOOD_LUCK);
+				enableAbility(ABILITIES.GOOD_LUCK_CHARMS);
 				// Nuke
-				enableAbility(ABILITIES.NUKE);
+				enableAbility(ABILITIES.TACTICAL_NUKE);
 				// Clusterbomb
 				enableAbility(ABILITIES.CLUSTER_BOMB);
 				// Napalm
 				enableAbility(ABILITIES.NAPALM);
 				// Crit
-				enableAbilityItem(ITEMS.CRIT);
+				enableAbilityItem(ABILITIES.CRIT);
 				// Cripple Spawner
-				enableAbilityItem(ITEMS.CRIPPLE_SPAWNER);
+				enableAbilityItem(ABILITIES.CRIPPLE_SPAWNER);
 				// Cripple Monster
-				enableAbilityItem(ITEMS.CRIPPLE_MONSTER);
+				enableAbilityItem(ABILITIES.CRIPPLE_MONSTER);
 				// Max Elemental Damage
-				enableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
+				enableAbilityItem(ABILITIES.MAX_ELEMENTAL_DAMAGE);
 				// Reflect Damage
-				enableAbilityItem(ITEMS.REFLECT_DAMAGE);
+				enableAbilityItem(ABILITIES.REFLECT_DAMAGE);
 				// Throw Money at Screen
-				enableAbilityItem(ITEMS.THROW_MONEY);
+				enableAbilityItem(ABILITIES.THROW_MONEY);
 			}
 
 
@@ -942,19 +966,19 @@ function goToLaneWithBestTarget(level) {
 			// Morale
 			enableAbility(ABILITIES.MORALE_BOOSTER);
 			// Luck
-			enableAbility(ABILITIES.GOOD_LUCK);
+			enableAbility(ABILITIES.GOOD_LUCK_CHARMS);
 			// Crit
-			enableAbilityItem(ITEMS.CRIT);
+			enableAbilityItem(ABILITIES.CRIT);
 			// Cripple Spawner
-			enableAbilityItem(ITEMS.CRIPPLE_SPAWNER);
+			enableAbilityItem(ABILITIES.CRIPPLE_SPAWNER);
 			// Cripple Monster
-			enableAbilityItem(ITEMS.CRIPPLE_MONSTER);
+			enableAbilityItem(ABILITIES.CRIPPLE_MONSTER);
 			// Max Elemental Damage
-			enableAbilityItem(ITEMS.MAXIMIZE_ELEMENT);
+			enableAbilityItem(ABILITIES.MAX_ELEMENTAL_DAMAGE);
 			// Reflect Damage
-			enableAbilityItem(ITEMS.REFLECT_DAMAGE);
+			enableAbilityItem(ABILITIES.REFLECT_DAMAGE);
 			// Throw Money at Screen
-			enableAbilityItem(ITEMS.THROW_MONEY);
+			enableAbilityItem(ABILITIES.THROW_MONEY);
 		}
 	}
 }
@@ -974,7 +998,7 @@ function useCooldownIfRelevant() {
 
 function useCrippleMonsterIfRelevant(level) {
 	// Check if Cripple Spawner is available
-	if(!canUseItem(ITEMS.CRIPPLE_MONSTER)) {
+	if(!canUseItem(ABILITIES.CRIPPLE_MONSTER)) {
 		return;
 	}
 
@@ -985,14 +1009,14 @@ function useCrippleMonsterIfRelevant(level) {
 			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 			if (enemyBossHealthPercent>0.5){
 				advLog("Cripple Monster available and used on boss", 2);
-				triggerItem(ITEMS.CRIPPLE_MONSTER);
+				triggerItem(ABILITIES.CRIPPLE_MONSTER);
 			}
 		}
 	}
 }
 
 function useMedicsIfRelevant(level) {
-	if (tryUsingItem(ITEMS.PUMPED_UP)){
+	if (tryUsingItem(ABILITIES.PUMPED_UP)){
 		// Pumped Up is purchased, cooled down, and needed. Trigger it.
 		advLog('Pumped up is always good.', 2);
 		return;
@@ -1003,13 +1027,13 @@ function useMedicsIfRelevant(level) {
 		advLog('Medics is purchased, cooled down. Trigger it.', 2);
 	}
 
-	if(level > 5000 && tryUsingItem(ITEMS.REFLECT_DAMAGE)) {
+	if(level > 5000 && tryUsingItem(ABILITIES.REFLECT_DAMAGE)) {
 		advLog('We have reflect damage, cooled down. Trigger it.', 2);
 	}
-	else if(level > 2500 && tryUsingItem(ITEMS.STEAL_HEALTH)) {
+	else if(level > 2500 && tryUsingItem(ABILITIES.STEAL_HEALTH)) {
 		advLog('We have steal health, cooled down. Trigger it.', 2);
 	}
-	else if (tryUsingItem(ITEMS.GOD_MODE)) {
+	else if (tryUsingItem(ABILITIES.GOD_MODE)) {
 		advLog('We have god mode, cooled down. Trigger it.', 2);
 	}
 }
@@ -1017,13 +1041,13 @@ function useMedicsIfRelevant(level) {
 // Use Good Luck Charm if doable
 function useGoodLuckCharmIfRelevant() {
 	// check if Crits is purchased and cooled down
-	if (tryUsingItem(ITEMS.CRIT)){
+	if (tryUsingItem(ABILITIES.CRIT)){
 		// Crits is purchased, cooled down, and needed. Trigger it.
 		advLog('Crit chance is always good.', 3);
 	}
 
 	// check if Good Luck Charms is purchased and cooled down
-	if (tryUsingAbility(ABILITIES.GOOD_LUCK)) {
+	if (tryUsingAbility(ABILITIES.GOOD_LUCK_CHARMS)) {
 		advLog('Good Luck Charms is purchased, cooled down, and needed. Trigger it.', 2);
 	}
 }
@@ -1104,7 +1128,7 @@ function useMoraleBoosterIfRelevant() {
 
 function useTacticalNukeIfRelevant() {
 	// Check if Tactical Nuke is purchased
-	if(!canUseAbility(ABILITIES.NUKE)) {
+	if(!canUseAbility(ABILITIES.TACTICAL_NUKE)) {
 		return;
 	}
 
@@ -1126,13 +1150,13 @@ function useTacticalNukeIfRelevant() {
 	// If there is a spawner and it's health is between 60% and 30%, nuke it!
 	if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
 		advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
-		triggerAbility(ABILITIES.NUKE);
+		triggerAbility(ABILITIES.TACTICAL_NUKE);
 	}
 }
 
 function useCrippleSpawnerIfRelevant() {
 	// Check if Cripple Spawner is available
-	if(!canUseItem(ITEMS.CRIPPLE_SPAWNER)) {
+	if(!canUseItem(ABILITIES.CRIPPLE_SPAWNER)) {
 		return;
 	}
 
@@ -1154,13 +1178,13 @@ function useCrippleSpawnerIfRelevant() {
 	// If there is a spawner and it's health is above 95%, cripple it!
 	if (enemySpawnerExists && enemySpawnerHealthPercent > 0.95) {
 		advLog("Cripple Spawner available, and needed. Cripple 'em.", 2);
-		triggerItem(ITEMS.CRIPPLE_SPAWNER);
+		triggerItem(ABILITIES.CRIPPLE_SPAWNER);
 	}
 }
 
 function useGoldRainIfRelevant() {
 	// Check if gold rain is purchased
-	if (!canUseItem(ITEMS.GOLD_RAIN)) {
+	if (!canUseItem(ABILITIES.RAINING_GOLD)) {
 		return;
 	}
 
@@ -1172,7 +1196,7 @@ function useGoldRainIfRelevant() {
 		if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
 			// Gold Rain is purchased, cooled down, and needed. Trigger it.
 			advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
-			triggerItem(ITEMS.GOLD_RAIN);
+			triggerItem(ABILITIES.RAINING_GOLD);
 		}
 	}
 }
@@ -1199,7 +1223,7 @@ function useMetalDetectorIfRelevant() {
 
 function useTreasureIfRelevant(level) {
 	// Check if Treasure is purchased
-	if (!canUseItem(ITEMS.TREASURE)) {
+	if (!canUseItem(ABILITIES.TREASURE)) {
 		return;
 	}
 
@@ -1214,20 +1238,20 @@ function useTreasureIfRelevant(level) {
 			if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
 				// Treasure is purchased, cooled down, and needed. Trigger it.
 				advLog('Treasure is purchased and cooled down, triggering it.', 2);
-				triggerItem(ITEMS.TREASURE);
+				triggerItem(ABILITIES.TREASURE);
 			}
 		}
 	}
 	else {
 		// Treasure is purchased, cooled down, and needed. Trigger it.
 		advLog('Treasure is purchased and cooled down, triggering it.', 2);
-		triggerItem(ITEMS.TREASURE);
+		triggerItem(ABILITIES.TREASURE);
 	}
 }
 
 function useMaxElementalDmgIfRelevant() {
 	// Check if Max Elemental Damage is purchased
-	if (tryUsingItem(ITEMS.MAXIMIZE_ELEMENT, true)) {
+	if (tryUsingItem(ABILITIES.MAX_ELEMENTAL_DAMAGE, true)) {
 		// Max Elemental Damage is purchased, cooled down, and needed. Trigger it.
 		advLog('Max Elemental Damage is purchased and cooled down, triggering it.', 2);
 	}
@@ -1239,13 +1263,13 @@ function useWormholeIfRelevant() {
 		return;
 	}
 	// Check if Wormhole is purchased
-	if (tryUsingItem(ITEMS.WORMHOLE, true)) {
+	if (tryUsingItem(ABILITIES.WORMHOLE, true)) {
 		advLog('Less than ' + minsLeft + ' minutes for game to end. Triggering wormholes...', 2);
 	}
 }
 
 function useReviveIfRelevant(level) {
-	if(level % 10 === 9 && tryUsingItem(ITEMS.REVIVE)) {
+	if(level % 10 === 9 && tryUsingItem(ABILITIES.RESURRECTION)) {
 		// Resurrect is purchased and we are using it.
 		advLog('Triggered Resurrect.');
 	}
