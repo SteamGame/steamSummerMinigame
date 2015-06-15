@@ -38,9 +38,10 @@ var autoRefreshMinutes = 30;
 var autoRefreshMinutesRandomDelay = 10;
 
 // DO NOT MODIFY
-var cTime = new Date;
+var cTime = new Date();
 var cHours = 0;
 var cMins = 0;
+var timeLeft = 0;
 
 var isAlreadyRunning = false;
 var refreshTimer = null;
@@ -261,6 +262,7 @@ function disableParticles() {
 function MainLoop() {
 	cHours = cTime.getUTCHours();
 	cMins = cTime.getUTCMinutes();
+	timeLeft = 60 - cMins;
 	
 	var level = getGameLevel();
 
@@ -287,6 +289,7 @@ function MainLoop() {
 		useTreasureIfRelevant();
 		useMaxElementalDmgIfRelevant();
 		useWormholeIfRelevant();
+		disableThrowMoneyIfRelevant();
 
 		disableCooldownIfRelevant();
 
@@ -1251,14 +1254,13 @@ function useWormholeIfRelevant() {
 	if (cHours != 15) {
 		return;
 	}
-	var timeLeft = 60 - cMins;
 	if (timeLeft > minsLeft) {
 		return;
 	}
 	// Check if Wormhole is purchased
 	if (canUseItem(ITEMS.WORMHOLE) && getActiveAbilityLaneCount(ITEMS.WORMHOLE) <= 0) {
 		// Wormhole is purchased, cooled down, and needed. Trigger it.
-		advLog('Less than 10 minutes for game to end. Triggering wormholes...', 2);
+		advLog('Less than 30 minutes for game to end. Triggering wormholes...', 2);
 		triggerItem(ITEMS.WORMHOLE);
 	}
 }
@@ -1273,6 +1275,18 @@ function useReviveIfRelevant() {
 	// Resurrect is purchased and we are using it.
 	advLog('Triggered Resurrect.');
 	tryUsingItem(ITEMS.REVIVE);
+}
+
+function disableThrowMoneyIfRelevant() {
+	if (cHours != 15) {
+		return;
+	}
+	if (timeLeft > minsLeft) {
+		return;
+	}
+	if (canUseItem(ITEMS.THROW_MONEY)) {
+		disableAbilityItem(ITEMS.THROW_MONEY);
+	}
 }
 
 function attemptRespawn() {
