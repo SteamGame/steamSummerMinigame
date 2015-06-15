@@ -943,8 +943,7 @@ function goToLaneWithBestTarget() {
 }
 
 function disableCooldownIfRelevant() {
-	if(getActiveAbilityLaneCount(ABILITIES.COOLDOWN) > 0)
-	{
+	if(getActiveAbilityLaneCount(ABILITIES.COOLDOWN) > 0) {
 		disableAbility(ABILITIES.COOLDOWN);
 		return;
 	}
@@ -953,18 +952,15 @@ function disableCooldownIfRelevant() {
 	{
 		enableAbility(ABILITIES.COOLDOWN);
 	}
-
 }
 
 function useCrippleMonsterIfRelevant() {
-   // Check if Cripple Spawner is available
-   if(hasItem(ITEMS.CRIPPLE_MONSTER)) {
-   	if (isAbilityCoolingDown(ITEMS.CRIPPLE_MONSTER)) {
-   		return;
-   	}
-   }
+	// Check if Cripple Spawner is available
+	if(!canUseItem(ITEMS.CRIPPLE_MONSTER)) {
+		return;
+	}
 
-   var level = getGameLevel();
+	var level = getGameLevel();
 	// Use nukes on boss when level >3000 for faster kills
 	if (level > 1000 && level % 200 !== 0 && level % 10 === 0) {
 		var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
@@ -979,10 +975,9 @@ function useCrippleMonsterIfRelevant() {
 }
 
 function useMedicsIfRelevant() {
-	if (hasItem(ITEMS.PUMPED_UP) && !isAbilityCoolingDown(ITEMS.PUMPED_UP)){
+	if (tryUsingItem(ITEMS.PUMPED_UP)){
 		// Pumped Up is purchased, cooled down, and needed. Trigger it.
 		advLog('Pumped up is always good.', 2);
-		triggerItem(ITEMS.PUMPED_UP);
 		return;
 	}
 
@@ -992,21 +987,17 @@ function useMedicsIfRelevant() {
 	}
 
 	// check if God Mode is purchased and cooled down
-	if (hasItem(ITEMS.GOD_MODE) && !isAbilityCoolingDown(ITEMS.GOD_MODE)) {
-
+	if (tryUsingItem(ITEMS.GOD_MODE)) {
 		advLog('We have god mode, cooled down, and needed. Trigger it.', 2);
-		triggerItem(ITEMS.GOD_MODE);
 	}
 }
 
 // Use Good Luck Charm if doable
 function useGoodLuckCharmIfRelevant() {
-
 	// check if Crits is purchased and cooled down
-	if (hasItem(ITEMS.CRIT) && !isAbilityCoolingDown(ITEMS.CRIT)){
+	if (tryUsingItem(ITEMS.CRIT)){
 		// Crits is purchased, cooled down, and needed. Trigger it.
 		advLog('Crit chance is always good.', 3);
-		triggerItem(ITEMS.CRIT);
 	}
 
 	// check if Good Luck Charms is purchased and cooled down
@@ -1017,8 +1008,7 @@ function useGoodLuckCharmIfRelevant() {
 
 function useClusterBombIfRelevant() {
 	//Check if Cluster Bomb is purchased and cooled down
-	if (!canUseAbility(ABILITIES.CLUSTER_BOMB))
-	{
+	if (!canUseAbility(ABILITIES.CLUSTER_BOMB)) {
 		return;
 	}
 
@@ -1044,8 +1034,7 @@ function useClusterBombIfRelevant() {
 
 function useNapalmIfRelevant() {
 	//Check if Napalm is purchased and cooled down
-	if (!canUseAbility(ABILITIES.NAPALM))
-	{
+	if (!canUseAbility(ABILITIES.NAPALM)) {
 		return;
 	}
 
@@ -1075,14 +1064,16 @@ function useMoraleBoosterIfRelevant() {
 	if (!canUseAbility(ABILITIES.MORALE_BOOSTER)) {
 		return;
 	}
+	
 	var numberOfWorthwhileEnemies = 0;
-	for(var i = 0; i < s().m_rgGameData.lanes[s().m_nExpectedLane].enemies.length; i++){
+	for(var i = 0; i < s().m_rgGameData.lanes[s().m_nExpectedLane].enemies.length; i++) {
 		//Worthwhile enemy is when an enamy has a current hp value of at least 1,000,000
 		if(s().m_rgGameData.lanes[s().m_nExpectedLane].enemies[i].hp > 1000000) {
 			numberOfWorthwhileEnemies++;
 		}
 	}
-	if(numberOfWorthwhileEnemies >= 2){
+	
+	if(numberOfWorthwhileEnemies >= 2) {
 		// Moral Booster is purchased, cooled down, and needed. Trigger it.
 		advLog('Moral Booster is purchased, cooled down, and needed. Trigger it.', 2);
 		triggerAbility(ABILITIES.MORALE_BOOSTER);
@@ -1120,51 +1111,47 @@ function useTacticalNukeIfRelevant() {
 
 function useCrippleSpawnerIfRelevant() {
 	// Check if Cripple Spawner is available
-	if(hasItem(ITEMS.CRIPPLE_SPAWNER)) {
-		if (isAbilityCoolingDown(ITEMS.CRIPPLE_SPAWNER)) {
-			return;
-		}
+	if(!canUseItem(ITEMS.CRIPPLE_SPAWNER)) {
+		return;
+	}
 
-		//Check that the lane has a spawner and record it's health percentage
-		var currentLane = s().m_nExpectedLane;
-		var enemySpawnerExists = false;
-		var enemySpawnerHealthPercent = 0.0;
-		//Count each slot in lane
-		for (var i = 0; i < 4; i++) {
-			var enemy = s().GetEnemy(currentLane, i);
-			if (enemy) {
-				if (enemy.m_data.type === 0) {
-					enemySpawnerExists = true;
-					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-				}
+	//Check that the lane has a spawner and record it's health percentage
+	var currentLane = s().m_nExpectedLane;
+	var enemySpawnerExists = false;
+	var enemySpawnerHealthPercent = 0.0;
+	//Count each slot in lane
+	for (var i = 0; i < 4; i++) {
+		var enemy = s().GetEnemy(currentLane, i);
+		if (enemy) {
+			if (enemy.m_data.type === 0) {
+				enemySpawnerExists = true;
+				enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 			}
 		}
+	}
 
-		// If there is a spawner and it's health is above 95%, cripple it!
-		if (enemySpawnerExists && enemySpawnerHealthPercent > 0.95) {
-			advLog("Cripple Spawner available, and needed. Cripple 'em.", 2);
-			triggerItem(ITEMS.CRIPPLE_SPAWNER);
-		}
+	// If there is a spawner and it's health is above 95%, cripple it!
+	if (enemySpawnerExists && enemySpawnerHealthPercent > 0.95) {
+		advLog("Cripple Spawner available, and needed. Cripple 'em.", 2);
+		triggerItem(ITEMS.CRIPPLE_SPAWNER);
 	}
 }
 
 function useGoldRainIfRelevant() {
 	// Check if gold rain is purchased
-	if (hasItem(ITEMS.GOLD_RAIN)) {
-		if (isAbilityCoolingDown(ITEMS.GOLD_RAIN)) {
-			return;
-		}
+	if (!canUseItem(ITEMS.GOLD_RAIN)) {
+		return;
+	}
+	
+	var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
+	// check if current target is a boss, otherwise its not worth using the gold rain
+	if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+		var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 
-		var enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
-		// check if current target is a boss, otherwise its not worth using the gold rain
-		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-			var enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-
-			if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
-				// Gold Rain is purchased, cooled down, and needed. Trigger it.
-				advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
-				triggerItem(ITEMS.GOLD_RAIN);
-			}
+		if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
+			// Gold Rain is purchased, cooled down, and needed. Trigger it.
+			advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
+			triggerItem(ITEMS.GOLD_RAIN);
 		}
 	}
 }
@@ -1266,8 +1253,7 @@ function isAbilityCoolingDown(abilityId) {
 	return s().GetCooldownForAbility(abilityId) > 0;
 }
 
-function canUseAbility(abilityId)
-{
+function canUseAbility(abilityId) {
 	return hasPurchasedAbility(abilityId) && !isAbilityCoolingDown(abilityId) && isAbilityEnabled(abilityId);
 }
 
