@@ -38,6 +38,8 @@ var autoRefreshMinutesRandomDelay = 10;
 
 // DO NOT MODIFY
 var cTime = new Date;
+var cHours = 0;
+var cMins = 0;
 
 var isAlreadyRunning = false;
 var refreshTimer = null;
@@ -250,8 +252,8 @@ function disableParticles() {
 }
 
 function MainLoop() {
-	var cHours = cTime.getUTCHours();
-	var cMins = cTime.getUTCMinutes();
+	cHours = cTime.getUTCHours();
+	cMins = cTime.getUTCMinutes();
 	
 	var level = getGameLevel();
 
