@@ -1206,11 +1206,11 @@ function useWormholeIfRelevant() {
 		return;
 	}
 	// Check if Wormhole is purchased
-	/*if (canUseItem(ITEMS.WORMHOLE) && getActiveAbilityLaneCount(ITEMS.WORMHOLE) <= 0) {
+	if (canUseItem(ITEMS.WORMHOLE) && getActiveAbilityLaneCount(ITEMS.WORMHOLE) <= 0) {
 		// Wormhole is purchased, cooled down, and needed. Trigger it.
 		advLog('Less than 10 minutes for game to end. Triggering wormholes...', 2);
 		triggerItem(ITEMS.WORMHOLE);
-	}*/
+	}
 }
 
 function useReviveIfRelevant() {
