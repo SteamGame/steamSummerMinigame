@@ -1023,7 +1023,7 @@ function useMedicsIfRelevant(level) {
 	}
 
 	// check if Medics is purchased and cooled down
-	if (tryUsingAbility(ABILITIES.MEDIC)) {
+	if (tryUsingAbility(ABILITIES.MEDICS)) {
 		advLog('Medics is purchased, cooled down. Trigger it.', 2);
 	}
 
