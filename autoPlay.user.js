@@ -18,6 +18,7 @@
 // OPTIONS
 var clickRate = 10;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
+var minsBeforeEndGameToGoCrazy = 20; // Yeah... I don't have a better name for it.
 
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
 
@@ -214,6 +215,7 @@ function firstRun() {
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent,true));
 	options2.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText));
 	options2.appendChild(makeCheckBox("removeAllText", "Remove all text (overrides above)", removeAllText, toggleAllText));
+    options2.appendChild(makeNumber("setMinsBeforeEndGameToGoCrazy", "Change the number of minutes before going crazy"", "25px", minsBeforeEndGameToGoCrazy, 0, 5, updateEndGameCrazy));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
@@ -555,6 +557,12 @@ function toggleAllText(event) {
 		};
 	} else {
 		s().m_rgClickNumbers.push = trt_oldPush;
+	}
+}
+
+function updateEndGameCrazy(event) {
+	if(event !== undefined) {
+		minsBeforeEndGameToGoCrazy = event.target.value;
 	}
 }
 
