@@ -293,7 +293,7 @@ function MainLoop() {
 		useMaxElementalDmgIfRelevant();
 		useWormholeIfRelevant();
 
-		disableCooldownIfRelevant();
+		useCooldownIfRelevant();
 
 		updatePlayersInGame();
 		attemptRespawn();
@@ -959,7 +959,7 @@ function goToLaneWithBestTarget(level) {
 	}
 }
 
-function disableCooldownIfRelevant() {
+function useCooldownIfRelevant() {
 	if(getActiveAbilityLaneCount(ABILITIES.COOLDOWN) > 0) {
 		disableAbility(ABILITIES.COOLDOWN);
 		return;
