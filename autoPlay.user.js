@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.2.2
+// @version 4.3
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -294,9 +294,6 @@ function isNearEndGame() {
 function MainLoop() {
 	var level = s().m_rgGameData.level + 1;
 
-	if( level < 10 ) {
-		return;
-	}
 
 	if (!isAlreadyRunning) {
 		isAlreadyRunning = true;
