@@ -943,6 +943,19 @@ function useCooldownIfRelevant() {
 	tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
 }
 
+function hasMaxCriticalOnLane() {
+	var goodLuckCharms = getActiveAbilityLaneCount(ABILITIES.GOOD_LUCK_CHARMS);
+	var crit = getActiveAbilityLaneCount(ABILITIES.CRIT);
+	var totalCritical = goodLuckCharms + crit;
+
+	if (totalCritical >= 99) { // Lane has 1% by default
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 function useCrippleMonsterIfRelevant(level) {
 	// Check if Cripple Spawner is available
 	if(!canUseAbility(ABILITIES.CRIPPLE_MONSTER)) {
@@ -986,6 +999,10 @@ function useMedicsIfRelevant(level) {
 
 // Use Good Luck Charm if doable
 function useGoodLuckCharmIfRelevant() {
+	// Check if we have max critical on lane first
+	if (hasMaxCriticalOnLane()) {
+		return;
+	}
 	// check if Crits is purchased and cooled down
 	if (tryUsingAbility(ABILITIES.CRIT)){
 		// Crits is purchased, cooled down, and needed. Trigger it.
