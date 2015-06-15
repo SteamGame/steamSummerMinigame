@@ -35,6 +35,7 @@ var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", typeof GM_info
 
 var autoRefreshMinutes = 30;
 var autoRefreshMinutesRandomDelay = 10;
+var autoRefreshCheckLoadedDelay = 30; // seconds
 
 // DO NOT MODIFY
 var isAlreadyRunning = false;
@@ -1382,6 +1383,12 @@ w.SteamDB_Minigame_Timer = w.setInterval(function(){
 		w.clearInterval(w.SteamDB_Minigame_Timer);
 		firstRun();
 		w.SteamDB_Minigame_Timer = w.setInterval(MainLoop, 1000);
+	} else { // reload page if game isn't fully loaded
+		w.setTimeout(function(){
+			if (!s().m_rgGameData) { // m_rgGameData is 'undefined' if stuck at 97/97
+				w.location.reload(true);
+			}
+		},autoRefreshCheckLoadedDelay*1000);
 	}
 }, 1000);
 
