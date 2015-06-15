@@ -28,6 +28,7 @@ var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
 var enableFingering = getPreferenceBoolean("enableFingering", true);
 var enableRenderer = getPreferenceBoolean("enableRenderer", true);
+var removeLowTier = getPreferenceBoolean("removeLowTier", false);
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
@@ -201,6 +202,7 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("removeCritText", "Remove crit text", removeCritText, toggleCritText, false));
 	options1.appendChild(makeCheckBox("removeAllText", "Remove all text", removeAllText, toggleAllText, false));
 	options1.appendChild(makeCheckBox("enableRenderer", "Enable game renderer", enableRenderer, toggleRenderer, true));
+	options1.appendChild(makeCheckBox("removeLowTier", "Remove Low Tier Items", removeLowTier, toggleTier, true));
 
 	info_box.appendChild(options1);
 
@@ -252,6 +254,29 @@ function disableParticles() {
 	}
 }
 
+function doRemoveLowTier() {
+  var map = {
+    // armor
+    "8" : "0",
+    "20": "8",
+    "23": "20",
+    // auto-cannon
+    "9" : "1",
+    "21": "9",
+    "24": "21",
+    // click-dps
+    "10": "2",
+    "22": "10",
+    "25": "22"
+  };
+
+  for(var k in map) {
+    if(document.getElementById('upgr_' + k)) {
+      document.getElementById('upgr_' + map[k] ).style.display = 'none';
+    }
+  }
+}
+
 function MainLoop() {
 	var level = getGameLevel();
 
@@ -282,6 +307,9 @@ function MainLoop() {
 
 		updatePlayersInGame();
 		attemptRespawn();
+		if (removeLowTier) {
+			doRemoveLowTier();
+		}
 
 		if( level !== lastLevel )
 		{
@@ -521,6 +549,14 @@ function toggleElementLock(event) {
 		lockElements();
 	} else {
 		unlockElements();
+	}
+}
+
+function toggleTier(event) {
+	var value = removeLowTier;
+	
+	if(event !== undefined) {
+		value = handleCheckBox(event);
 	}
 }
 
