@@ -937,6 +937,8 @@ function disableCooldownIfRelevant() {
 	if(!isAbilityActive(ABILITIES.COOLDOWN)) {
 		enableAbility(ABILITIES.COOLDOWN);
 	}
+
+	tryUsingAbility(ABILITIES.COOLDOWN);
 }
 
 function useCrippleMonsterIfRelevant(level) {
