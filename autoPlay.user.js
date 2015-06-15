@@ -80,6 +80,19 @@ var ENEMY_TYPE = {
 	"TREASURE":4
 };
 
+var UPGRADE_TYPES = {
+	"ARMOR": 0,
+	"DPS": 1,
+	"CLICK_DAMAGE": 2,
+	"ELEMENTAL_FIRE": 3,
+	"ELEMENTAL_WATER": 4,
+	"ELEMENTAL_AIR": 5,
+	"ELEMENTAL_EARTH": 6,
+	"LUCKY_SHOT": 7,
+	"ABILITY": 8,
+	"LOOT": 9
+};
+
 // Try to disable particles straight away,
 // if not yet available, they will be disabled in firstRun
 disableParticles();
@@ -255,6 +268,7 @@ function MainLoop() {
 
 		goToLaneWithBestTarget();
 
+		purchaseUpgrades();
 		useGoodLuckCharmIfRelevant();
 		useMedicsIfRelevant();
 		useMoraleBoosterIfRelevant();
@@ -930,6 +944,109 @@ function goToLaneWithBestTarget() {
 			// Throw Money at Screen
 			enableAbilityItem(ITEMS.THROW_MONEY);
 		}
+	}
+}
+
+function purchaseUpgrades() {
+	// This values elemental too much because best element lanes are not focused(0.578)
+	var oddsOfElement = 1 - (0.75 * 0.75 * 0.75);
+
+	var buyUpgrade = function(id) {
+		// If upgrade is element damage
+		if (id >= 3 && 6 >= id) {
+			g_Minigame.CurrentScene().TryUpgrade(document.getElementById('upgr_' + id).childElements()[3]);
+		} else {
+			g_Minigame.CurrentScene().TryUpgrade(document.getElementById('upgr_' + id).childElements()[0].childElements()[1]);
+		}
+	}
+
+	var myGold = g_Minigame.CurrentScene().m_rgPlayerData.gold;
+
+	// Initial values for   armor, dps, click damage 
+	var bestUpgradeForDamage,bestUpgradeForArmor;
+	var highestUpgradeValueForDamage = 0;
+	var highestUpgradeValueForArmor = 0;
+	var bestElement = -1;
+	var highestElementLevel = 0;
+
+	var upgrades = g_Minigame.CurrentScene().m_rgTuningData.upgrades.slice(0);
+
+	for (var i=0; i< upgrades.length; i++) {
+		var upgrade = upgrades[i];
+
+		if (upgrade.required_upgrade != undefined)
+		{
+			var requiredUpgradeLevel = upgrade.required_upgrade_level != undefined ? upgrade.required_upgrade_level : 1;
+			var parentUpgradeLevel = g_Minigame.CurrentScene().GetUpgradeLevel(upgrade.required_upgrade);
+			if (requiredUpgradeLevel > parentUpgradeLevel)
+			{
+				// If upgrade is not available, we skip it
+				continue;
+			}
+		}
+
+		var upgradeCurrentLevel = g_Minigame.CurrentScene().m_rgPlayerUpgrades[i].level;
+		var upgradeCost = g_Minigame.CurrentScene().m_rgPlayerUpgrades[i].cost_for_next_level;
+
+		switch(upgrade.type) {
+			case UPGRADE_TYPES.ARMOR:
+				// HP increase per cost
+				if (upgrade.multiplier / upgradeCost > highestUpgradeValueForArmor) {
+					bestUpgradeForArmor = i;
+					highestUpgradeValueForArmor = upgrade.multiplier / upgradeCost;
+				}
+				break;
+			case UPGRADE_TYPES.CLICK_DAMAGE:
+				// Damage increase per cost
+				if (currentClickRate * upgrade.multiplier / upgradeCost > highestUpgradeValueForDamage) {
+					bestUpgradeForDamage = i;
+					highestUpgradeValueForDamage = currentClickRate * upgrade.multiplier / upgradeCost;
+				}
+				break;
+			case UPGRADE_TYPES.DPS:
+				// Damage increase per cost
+				if (upgrade.multiplier / upgradeCost > highestUpgradeValueForDamage) {
+					bestUpgradeForDamage = i;
+					highestUpgradeValueForDamage = upgrade.multiplier / upgradeCost;
+				}
+				break;
+			case UPGRADE_TYPES.ELEMENTAL_FIRE:
+			case UPGRADE_TYPES.ELEMENTAL_WATER:
+			case UPGRADE_TYPES.ELEMENTAL_AIR:
+			case UPGRADE_TYPES.ELEMENTAL_EARTH:
+				if (upgradeCurrentLevel > highestElementLevel){
+					highestElementLevel = upgradeCurrentLevel;
+					bestElement = i;
+				}
+				break;
+			case UPGRADE_TYPES.LUCKY_SHOT:
+				break;
+			default:
+				break;
+		}
+	}
+
+	var myMaxHealth = g_Minigame.CurrentScene().m_rgPlayerTechTree.max_hp;
+	// Check if health is below 30%
+	var hpPercent = g_Minigame.CurrentScene().m_rgPlayerData.hp / myMaxHealth;
+	if (hpPercent < 0.3) {
+		// Prioritize armor over damage
+		// - Should we buy any armor we can afford or just wait for the best one possible?
+		upgradeCost = g_Minigame.CurrentScene().m_rgPlayerUpgrades[bestUpgradeForArmor].cost_for_next_level;
+
+		if (myGold > upgradeCost && bestUpgradeForArmor) {
+			console.log("Buying " + upgrades[bestUpgradeForArmor].name);
+			buyUpgrade(bestUpgradeForArmor);
+			myGold = g_Minigame.CurrentScene().m_rgPlayerData.gold;
+		}
+	}
+
+	// Try to buy some damage
+	upgradeCost = g_Minigame.CurrentScene().m_rgPlayerUpgrades[bestUpgradeForDamage].cost_for_next_level;
+
+	if (myGold > upgradeCost && bestUpgradeForDamage) {
+		console.log("Buying " + upgrades[bestUpgradeForDamage].name);
+		buyUpgrade(bestUpgradeForDamage);
 	}
 }
 
