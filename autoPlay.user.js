@@ -326,6 +326,12 @@ function isNearEndGame() {
 }
 
 function MainLoop() {
+	var status = s().m_rgGameData.status;
+	if(status != 2)
+	{
+		return;
+	}
+	
 	var level = s().m_rgGameData.level + 1;
 
 
