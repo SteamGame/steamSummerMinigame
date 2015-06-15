@@ -205,7 +205,7 @@ function firstRun() {
 	// reset the CSS for the info box for aesthetics
 	info_box.className = "options_box";
 	info_box.style.backgroundColor = "#000000";
-	info_box.style.width = "800px";
+	info_box.style.width = "1257px";
 	info_box.style.top = "73px";
 	info_box.style.padding = "12px";
 	info_box.style.position = "absolute";
@@ -230,9 +230,9 @@ function firstRun() {
 	info_box.appendChild(options1);
 
 	var options2 = document.createElement("div");
-	options2.style["-moz-column-count"] = 2;
-	options2.style["-webkit-column-count"] = 2;
-	options2.style["column-count"] = 2;
+	options2.style["-moz-column-count"] = 4;
+	options2.style["-webkit-column-count"] = 4;
+	options2.style["column-count"] = 4;
 	options1.style.width = "50%";
 
 	if (typeof GM_info !==  "undefined") {
