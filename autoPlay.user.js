@@ -261,6 +261,18 @@ function firstRun() {
 	var lock_elements_checkbox = makeCheckBox("enableElementLock", "Lock element upgrades for more team dps", enableElementLock, toggleElementLock, false);
 	lock_elements_box.appendChild(lock_elements_checkbox);
 	ab_box.appendChild(lock_elements_box);
+	
+	//Bigger active skills box
+	document.querySelector('.tv_ui').style.background = 'url("http://i.imgur.com/7cjxAZm.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0)';
+	document.getElementById('activeinlanecontainer').style.height = '178px';
+	
+	var activityContainer = document.getElementById('activitycontainer');
+	activityContainer.style.height = '250px';
+  	activityContainer.style.marginBottom = '110px';
+	
+	var activityScroll = document.getElementById('activityscroll');
+	activityScroll.style.height = '250px';
+  	activityScroll.style.marginBottom = '110px';
 
 	enhanceTooltips();
 }
