@@ -1197,24 +1197,36 @@ function useAbilities(level)
 
 	// Tactical Nuke
 	if(canUseAbility(ABILITIES.TACTICAL_NUKE)) {
-		//Check that the lane has a spawner and record it's health percentage
-			enemySpawnerExists = false;
-			enemySpawnerHealthPercent = 0.0;
-		//Count each slot in lane
-		for (i = 0; i < 4; i++) {
-			enemy = s().GetEnemy(currentLane, i);
-			if (enemy) {
-				if (enemy.m_data.type === 0) {
-					enemySpawnerExists = true;
-					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+	
+		enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
+		// check whether current target is a boss
+		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+			if (level >= CONTROL.speedThreshold) { // Start nuking bosses at level CONTROL.speedThreshold
+				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+
+				// Use Nuke on boss with >= 50% HP but only if Raining Gold is not active in the lane
+				if (enemyBossHealthPercent >= 0.5 && getActiveAbilityLaneCount(ABILITIES.RAINING_GOLD) <= 0) {
+					advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
+					triggerAbility(ABILITIES.TACTICAL_NUKE);
 				}
 			}
 		}
-
-		// If there is a spawner and it's health is between 60% and 30%, nuke it!
-		if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
-			advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
-			triggerAbility(ABILITIES.TACTICAL_NUKE);
+		else {
+			//Check that the lane has a spawner and record it's health percentage
+			//Count each slot in lane
+			for (i = 0; i < 4; i++) {
+				enemy = s().GetEnemy(currentLane, i);
+				if (enemy && enemy.m_data.type == ENEMY_TYPE.SPAWNER) {
+					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+					// If there is a spawner and it's health is between 60% and 30%, nuke it!
+					if (enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3)
+					{
+						advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
+						triggerAbility(ABILITIES.TACTICAL_NUKE);
+					}
+					break; // No reason to continue the loop after finding a spawner
+				}
+			}
 		}
 	}
 
