@@ -317,7 +317,10 @@ function MainLoop() {
 
 		if(disableRenderer) {
 			s().Tick();
-			w.g_Minigame.Renderer.render(s().m_Container);
+			
+			requestAnimationFrame(function() {
+				w.g_Minigame.Renderer.render(s().m_Container);
+			});
 		}
 
 		isAlreadyRunning = false;
