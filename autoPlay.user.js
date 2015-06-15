@@ -1254,7 +1254,7 @@ function canUseAbility(abilityId) {
 }
 
 function canUseItem(itemId) {
-	return hasItem(itemId) && !isAbilityCoolingDown(itemId) && isAbilityEnabled(itemId);
+	return hasItem(itemId) && !isAbilityCoolingDown(itemId) && isAbilityItemEnabled(itemId);
 }
 
 function tryUsingAbility(abilityId) {
@@ -1314,7 +1314,15 @@ function enableAbility(abilityId) {
 function isAbilityEnabled(abilityId) {
 	var elem = document.getElementById('ability_' + abilityId);
 	if (elem && elem.childElements() && elem.childElements().length >= 1) {
-		return elem.childElements()[0].style.visibility == "visible";
+		return elem.childElements()[0].style.visibility !== "hidden";
+	}
+	return false;
+}
+
+function isAbilityItemEnabled(abilityId) {
+	var elem = document.getElementById('abilityitem_' + abilityId);
+	if (elem && elem.childElements() && elem.childElements().length >= 1) {
+		return elem.childElements()[0].style.visibility !== "hidden";
 	}
 	return false;
 }
