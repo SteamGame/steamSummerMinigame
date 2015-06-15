@@ -1306,7 +1306,7 @@ function isAbilityCoolingDown(abilityId) {
 }
 
 function canUseAbility(abilityId) {
-	return hasPurchasedAbility(abilityId) && !isAbilityCoolingDown(abilityId) && isAbilityEnabled(abilityId);
+	return s().bHaveAbility(abilityId) && !isAbilityCoolingDown(abilityId) && isAbilityEnabled(abilityId);
 }
 
 function canUseItem(itemId) {
@@ -1331,13 +1331,6 @@ function tryUsingItem(itemId, checkInLane) {
 	}
 	triggerItem(itemId);
 	return true;
-}
-
-function hasPurchasedAbility(abilityId) {
-	// each bit in unlocked_abilities_bitfield corresponds to an ability.
-	// the above condition checks if the ability's bit is set or cleared. I.e. it checks if
-	// the player has purchased the specified ability.
-	return (1 << abilityId) & s().m_rgPlayerTechTree.unlocked_abilities_bitfield;
 }
 
 function triggerItem(itemId) {
