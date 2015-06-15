@@ -22,6 +22,9 @@ var minsLeft = 30; // Minutes left before daily reset
 
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
 
+var enableAutoUpgradeDPS = getPreferenceBoolean("enableAutoUpgradeDPS", false);
+var enableAutoUpgradeClick = getPreferenceBoolean("enableAutoUpgradeClick", false);
+
 var removeInterface = getPreferenceBoolean("removeInterface", true); // get rid of a bunch of pointless DOM
 var removeParticles = getPreferenceBoolean("removeParticles", true);
 var removeFlinching = getPreferenceBoolean("removeFlinching", true);
@@ -248,6 +251,8 @@ function firstRun() {
 	options1.style.float = "left";
 
 	options1.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker, false));
+	options1.appendChild(makeCheckBox("enableAutoUpgradeDPS", "Enable AutoUpgrade DPS", enableAutoUpgradeDPS, toggleAutoUpgradeDPS, false));
+	options1.appendChild(makeCheckBox("enableAutoUpgradeClick", "Enable AutoUpgrade Clicks", enableAutoUpgradeClick, toggleAutoUpgradeClick, false));
 	options1.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeParticles", "Remove particle effects", removeParticles, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent, true));
@@ -355,6 +360,8 @@ function MainLoop() {
 			refreshPlayerData();
 		}
 
+		useAutoUpgrade();
+
 		s().m_nClicks += currentClickRate;
 		s().m_nLastTick = false;
 		w.g_msTickRate = 1000;
@@ -420,6 +427,69 @@ function MainLoop() {
 			}
 		}
 	}
+}
+
+function useAutoUpgrade() {
+	if(!enableAutoUpgradeDPS && !enableAutoUpgradeClick) { return; }
+
+	// upg_map will contain the most cost effctive upgrades for each type
+	var upg_map = {};
+	Object.keys(UPGRADES).forEach(function(key) {
+		upg_map[UPGRADES[key]] = {
+			idx: -1,
+			gold_per_mult: 0
+		};
+	});
+
+	var p_upg = s().m_rgPlayerUpgrades;
+
+	// loop over all upgrades and find the most cost effective ones
+	s().m_rgTuningData.upgrades.forEach(function(upg, idx) {
+		if(upg.type in upg_map) {
+
+			var cost = s().GetUpgradeCost(idx) / parseFloat(upg.multiplier);
+
+			if(upg_map[upg.type].idx == -1 || upg_map[upg.type].cost_per_mult > cost) {
+				if(upg.hasOwnProperty('required_upgrade') && s().GetUpgradeLevel(upg.required_upgrade) < upg.required_upgrade_level) { return; }
+
+				upg_map[upg.type].idx = idx;
+				upg_map[upg.type].cost_per_mult = cost;
+			}
+		}
+	});
+
+	var key = '';
+	var cache = s().m_UI.m_rgElementCache;
+
+	if(enableAutoUpgradeDPS) {
+		key = 'upgr_' + upg_map[UPGRADES.AUTO_CANNON].idx;
+		if(cache.hasOwnProperty(key)) { s().TryUpgrade(cache[key].find('.link')[0]); }
+	}
+
+	if(enableAutoUpgradeClick) {
+		key = 'upgr_' + upg_map[UPGRADES.CLICK_UPGRADE].idx;
+		if(cache.hasOwnProperty(key)) { s().TryUpgrade(cache[key].find('.link')[0]); }
+	}
+}
+
+function toggleAutoUpgradeDPS(event) {
+	var value = enableAutoUpgradeDPS;
+
+	if(event !== undefined) {
+		value = handleCheckBox(event);
+	}
+
+	enableAutoUpgradeDPS = value;
+}
+
+function toggleAutoUpgradeClick(event) {
+	var value = enableAutoUpgradeClick;
+
+	if(event !== undefined) {
+		value = handleCheckBox(event);
+	}
+
+	enableAutoUpgradeClick = value;
 }
 
 function refreshPlayerData() {
