@@ -394,7 +394,7 @@ function updateUpgradeCostEffectiveIndicator() {
         [].forEach.call(document.querySelectorAll('[id^="upgr_"] .info'),
                 function(elm) { elm.style = {} ;});
 
-        [].map.call(document.querySelectorAll(hilight.map(function(i) {
+        [].forEach.call(document.querySelectorAll(hilight.map(function(i) {
                 return "#upgr_" + i + " .info";
             })
             .join(",")),
