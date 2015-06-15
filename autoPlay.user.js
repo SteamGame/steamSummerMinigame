@@ -874,21 +874,12 @@ function goToLaneWithBestTarget(level) {
 
 		if(level >= 5000) {
 			// Only disable abilities on non-boss and as long as the game level is over 5000
-			if(targetIsTreasureOrBoss) {
 				// Nuke
 				enableAbility(ABILITIES.NUKE);
 				// Clusterbomb
 				enableAbility(ABILITIES.CLUSTER_BOMB);
 				// Napalm
 				enableAbility(ABILITIES.NAPALM);
-			} else {
-				// Nuke
-				disableAbility(ABILITIES.NUKE);
-				// Clusterbomb
-				disableAbility(ABILITIES.CLUSTER_BOMB);
-				// Napalm
-				disableAbility(ABILITIES.NAPALM);
-			}
 		} else {
 			if(targetIsTreasureOrBoss) {
 				// Morale
