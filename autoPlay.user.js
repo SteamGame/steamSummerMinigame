@@ -487,7 +487,7 @@ function autoRefreshPage(autoRefreshMinutes){
 	setTimeout(function() {
 		// m_rgGameData is 'undefined' if stuck at 97/97; only run this check if autoRefresh is enabled
 		if (!g_Minigame.CurrentScene().m_rgGameData)
-			window.location.reload();
+			w.location.reload(true);
 	},autoRefreshCheckLoadedDelay*1000);
 }
 
