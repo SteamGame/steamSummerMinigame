@@ -1,5 +1,5 @@
 {
-    "version": 1434297503,
+    "version": 1434388755,
     "player": {
         "respawn_time": 60,
         "min_dead_time": 5,
@@ -276,6 +276,7 @@
             "instant": 1,
             "duration": 10,
             "cooldown": 1800,
+            "start_of_game_cooldown": 600,
             "desc": "Grant every alive player in your lane one random special item.<br><br>This item can only be acquired by spending badge points and cannot be activated within the first 10 minutes of the game."
         },
         "26": {
@@ -286,6 +287,7 @@
             "instant": 1,
             "duration": 10,
             "cooldown": 60,
+            "start_of_game_cooldown": 600,
             "desc": "Skips a level with each use (stackable) and grants 50k of gold to every player. However, enemies will not drop gold or loot for any skipped levels.<br><br>You must defeat a boss level after using Wormhole in order to level up your Monster Summer Badge.<br><br>This item can only be acquired by spending badge points and cannot be activated within the first 10 minutes of the game."
         },
         "27": {
@@ -294,6 +296,7 @@
             "badge_points_cost": 100,
             "duration": 5,
             "cooldown": 1,
+            "start_of_game_cooldown": 600,
             "desc": "While active, clears the cooldown on every ability for all players in your lane.<br><br>This item can only be acquired by spending badge points and cannot be activated within the first 10 minutes of the game."
         }
     },
@@ -537,6 +540,36 @@
             "cost": 1000000,
             "cost_exponential_base": "2.2",
             "required_upgrade": 22,
+            "required_upgrade_level": 10,
+            "desc": "Increases your click damage"
+        },
+        "26": {
+            "name": "Cybernetic Enhancements",
+            "multiplier": 10000,
+            "type": 0,
+            "cost": 10000000,
+            "cost_exponential_base": "2.2",
+            "required_upgrade": 23,
+            "required_upgrade_level": 10,
+            "desc": "Increases your health (HP)"
+        },
+        "27": {
+            "name": "Level 1 Sentry Gun",
+            "multiplier": 10000,
+            "type": 1,
+            "cost": 10000000,
+            "cost_exponential_base": "2.2",
+            "required_upgrade": 24,
+            "required_upgrade_level": 10,
+            "desc": "Increases the damage inflicted by your Auto-fire Cannon"
+        },
+        "28": {
+            "name": "Titanium Mouse Button",
+            "multiplier": 10000,
+            "type": 2,
+            "cost": 10000000,
+            "cost_exponential_base": "2.2",
+            "required_upgrade": 25,
             "required_upgrade_level": 10,
             "desc": "Increases your click damage"
         }
