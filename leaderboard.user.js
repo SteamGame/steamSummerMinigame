@@ -96,7 +96,9 @@ function drawLeaderboardRoom(room) {
     level.appendChild(document.createTextNode(room.level));
     
     if(room.id == w.g_GameID)
+    {
         item.style.color = '#d4e157';
+    }
  
     item.appendChild(num);
     item.appendChild(name);
@@ -116,7 +118,9 @@ function getLeaderboard() {
                 elements[0].parentNode.removeChild(elements[0]);
             }
             var resp = JSON.parse(response.responseText);
-            var leaderboard = Object.keys(resp).map(function (key) {return resp[key]});
+            var leaderboard = Object.keys(resp).map(function (key) {
+            	return resp[key];
+            });
             leaderboard.sort(function(a, b) { 
                 return b.level - a.level;
             });
