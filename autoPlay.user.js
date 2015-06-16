@@ -48,12 +48,13 @@ var isPastFirstRun = false;
 var isAlreadyRunning = false;
 var refreshTimer = null;
 var currentClickRate = clickRate;
-var lockedElement = -1;
 var lastLevel = 0;
 var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
 var trt_oldRender = function() {};
-var ELEMENTS = {};
+var ELEMENTS = {
+	LockedElement: -1
+};
 
 var UPGRADES = {
 	LIGHT_ARMOR: 0,
@@ -873,28 +874,13 @@ function unlockElements() {
 
 function lockElements() {
 	var elementMultipliers = [
-	s().m_rgPlayerTechTree.damage_multiplier_fire,
-	s().m_rgPlayerTechTree.damage_multiplier_water,
-	s().m_rgPlayerTechTree.damage_multiplier_air,
-	s().m_rgPlayerTechTree.damage_multiplier_earth
+		s().m_rgPlayerTechTree.damage_multiplier_fire,
+		s().m_rgPlayerTechTree.damage_multiplier_water,
+		s().m_rgPlayerTechTree.damage_multiplier_air,
+		s().m_rgPlayerTechTree.damage_multiplier_earth
 	];
 
-	var hashCode=function(str) {
-		var t=0, i, ch;
-		if (0 === str.length) {
-			return t;
-		}
-
-		for (i=0; i<str.length; i++) {
-			ch=str.charCodeAt(i);
-			t=(t<<5)-t+ch;
-			t&=t;
-		}
-
-		return t;
-	};
-
-	var elem = Math.abs(hashCode(w.g_steamID) % 4);
+	var elem = (parseInt(w.g_steamID.slice(-3), 10) + parseInt(w.g_GameID, 10)) % 4;
 
 	// If more than two elements are leveled to 3 or higher, do not enable lock
 	var leveled = 0;
@@ -935,7 +921,7 @@ function lockToElement(element) {
 		}
 		elems[i].style.visibility = "hidden";
 	}
-	lockedElement = element; // Save locked element.
+	ELEMENTS.LockedElement = element;
 }
 
 function displayText(x, y, strText, color) {
@@ -1239,7 +1225,7 @@ function useAbilities(level)
 		if (enemySpawnerExists && enemyCount >= 3) {
 			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
 			triggerAbility(ABILITIES.CLUSTER_BOMB);
-			}                
+			}
 		}
 	}
 
@@ -1262,7 +1248,7 @@ function useAbilities(level)
 		if (enemySpawnerExists && enemyCount >= 3) {
 			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
 			triggerAbility(ABILITIES.NAPALM);
-			}                
+			}
 		}
 	}
 
@@ -1304,7 +1290,7 @@ function useAbilities(level)
 			advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
 			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
 			triggerAbility(ABILITIES.TACTICAL_NUKE);
-			}                
+			}
 		}
 	}
 
@@ -1635,7 +1621,7 @@ function enhanceTooltips() {
 		// Element Upgrade index 3 to 6
 		var idx = $context.data('type');
 		// Is the current tooltip for the recommended element?
-		var isRecommendedElement = (lockedElement == idx - 3);
+		var isRecommendedElement = (ELEMENTS.LockedElement == idx - 3);
 
 		if (isRecommendedElement){
 			strOut += "<br><br>This is your recommended element. Please upgrade this.";
@@ -1644,7 +1630,7 @@ function enhanceTooltips() {
 				strOut += "<br><br>Other elements are LOCKED to prevent accidentally upgrading.";
 			}
 
-		} else if (-1 != lockedElement){
+		} else if (-1 != ELEMENTS.LockedElement) {
 			strOut += "<br><br>This is NOT your recommended element. DO NOT upgrade this.";
 		}
 
