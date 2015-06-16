@@ -506,19 +506,19 @@ function MainLoop() {
 					s().ClientOverride('player_data', 'gold', s().m_rgPlayerData.gold + goldPerSecond);
 					s().ApplyClientOverrides('player_data', true);
 
+					advLog(
+						"Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
+						+ "%. Approximately gold per second: " + goldPerSecond,
+						4
+					);
+                    
 					var gpcText = (goldPerClickPercentage * 100).toFixed(0) + "%";
 					var gpsText = "" + goldPerSecond.toFixed(0);
 					if (goldPerSecond > 1000000000000) { gpsText = (goldPerSecond / 1000000000000).toFixed(2) + "T"; }
                     else if (goldPerSecond > 1000000000) { gpsText = (goldPerSecond / 1000000000).toFixed(2) + "B"; }
 					else if (goldPerSecond > 1000000) { gpsText = (goldPerSecond / 1000000).toFixed(2) + "M"; }
 					else if (goldPerSecond > 1000) { gpsText = (goldPerSecond / 1000).toFixed(2) + "K"; }
-
-					advLog(
-						"Raining gold ability is active in current lane. Percentage per click: " + goldPerClickPercentage
-						+ "%. Approximately gold per second: " + goldPerSecond,
-						4
-					);
-
+                    
 					document.getElementById('gps').innerHTML = "Current gold per second:<br/>" + gpsText + "(" + gpcText + ")";
 
 					displayText(
