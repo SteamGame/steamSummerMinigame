@@ -18,6 +18,7 @@
 // OPTIONS
 var clickRate = 20;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
+var activeHoursPerDay = 12; // how many hours per day do you expect to leave the script running?
 
 var nukeBeforeReset = getPreferenceBoolean("nukeBeforeReset", true);
 
@@ -45,12 +46,15 @@ var autoRefreshMinutes = 30;
 var autoRefreshMinutesRandomDelay = 10;
 var autoRefreshSecondsCheckLoadedDelay = 30;
 
+var autoUpgradeHPThreshold = 0.5;
+
 // DO NOT MODIFY
 var isPastFirstRun = false;
 var isAlreadyRunning = false;
 var refreshTimer = null;
 var currentClickRate = clickRate;
 var lastLevel = 0;
+var healthDroppedBelowThreshold = false;
 var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
 var trt_oldRender = function() {};
@@ -323,6 +327,7 @@ function firstRun() {
 
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, toggleFingering, false));
 	options2.appendChild(makeCheckBox("nukeBeforeReset", "Spam abilities 1 hour before game end", nukeBeforeReset, handleEvent, true));
+	options2.appendChild(makeNumber("setActiveHoursPerDay", "How many hours per day you will have the script running", activeHoursPerDay, 0, 24, updateActiveHoursPerDay));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
@@ -432,6 +437,7 @@ function MainLoop() {
 			refreshPlayerData();
 		}
 
+		checkAutoUpgradeHPThreshold();
 		useAutoUpgrade();
 		useAutoPurchaseAbilities();
 
@@ -502,6 +508,14 @@ function MainLoop() {
 	}
 }
 
+function checkAutoUpgradeHPThreshold() {
+	var maxHP = s().m_rgPlayerTechTree.max_hp;
+	var hp = s().m_rgPlayerData.hp;
+	if (hp / maxHP < autoUpgradeHPThreshold) {
+		healthDroppedBelowThreshold = true;
+	}
+}
+
 function useAllAbilities() {
 	for(var key in ABILITIES) {
 		if(ABILITIES[key] == ABILITIES.WORMHOLE) { continue; }
@@ -541,41 +555,17 @@ function useAutoUpgrade() {
 		return;
 	}
 
-	var upg_order = [
-		UPGRADES.ARMOR_PIERCING_ROUND,
-		UPGRADES.LIGHT_ARMOR,
-		UPGRADES.AUTO_FIRE_CANNON,
-		UPGRADES.LUCKY_SHOT,
-	];
-	if(enableAutoUpgradeElemental && ELEMENTS.LockedElement !== -1) { upg_order.push(ELEMENTS.LockedElement+3); }
-	var upg_map = {};
+	var upg_map = getMostCostEffectiveUpgrades();
 
-	upg_order.forEach(function(i) { upg_map[i] = {}; });
 	var pData = s().m_rgPlayerData;
 	var pTree = s().m_rgPlayerTechTree;
+	var pUpgr = s().m_rgPlayerUpgrades;
 	var cache = s().m_UI.m_rgElementCache;
 	var upg_enabled = [
 		enableAutoUpgradeClick,
 		enableAutoUpgradeHP && pTree.max_hp < 300000,
 		enableAutoUpgradeDPS,
 	];
-
-	// loop over all upgrades and find the most cost effective ones
-	s().m_rgTuningData.upgrades.forEach(function(upg, idx) {
-		if(upg_map.hasOwnProperty(upg.type)) {
-
-			var cost = s().GetUpgradeCost(idx) / parseFloat(upg.multiplier);
-
-			if(!upg_map[upg.type].hasOwnProperty('idx') || upg_map[upg.type].cost_per_mult > cost) {
-				if(upg.hasOwnProperty('required_upgrade') && s().GetUpgradeLevel(upg.required_upgrade) < upg.required_upgrade_level) { return; }
-
-				upg_map[upg.type] = {
-					'idx': idx,
-					'cost_per_mult': cost,
-				};
-			}
-		}
-	});
 
 	// do hilighting if needed
 	if(autoupgrade_update_hilight) {
@@ -597,39 +587,153 @@ function useAutoUpgrade() {
 		function(elm) { elm.style.setProperty('color', '#E1B21E', 'important'); });
 	}
 
-	// do upgrading
-	for(var i = 0; i < upg_order.length; i++ ) {
-		if(!upg_enabled[i] || upg_order[i] > UPGRADES.ARMOR_PIERCING_ROUND) { continue; }
+	// always buy Boss Loot if we can afford it
+	if (canAffordUpgrade(UPGRADES.BOSS_LOOT)) {
+		buyUpgrade(UPGRADES.BOSS_LOOT);
+	}
 
-		// prioritize click upgrades over DPS ones, unless they are more cost effective
-		if(upg_order[i] === UPGRADES.AUTO_FIRE_CANNON && enableAutoUpgradeClick) {
-			if(upg_map[UPGRADES.AUTO_FIRE_CANNON].cost_per_mult >= upg_map[UPGRADES.ARMOR_PIERCING_ROUND].cost_per_mult / 10) { continue; }
+	// upgrade health if we dropped below the threshold since the last health upgrade
+	if (healthDroppedBelowThreshold && canAffordUpgrade(upg_map[UPGRADES.LIGHT_ARMOR])) {
+		buyUpgrade(upg_map[UPGRADES.LIGHT_ARMOR]);
+		healthDroppedBelowThreshold = false;
+	}
+
+	// find upgrade that yields most DPS per gold
+	var bestDPSPerGold = 0;
+	var bestDPSUpgrade = null;
+	var currentDPS = computeDPSWithUpgrades( getCurrentUpgradeLevels() );
+	for(var type in upg_map) {
+		var upg_idx = upg_map[type].idx;
+		var upgradeLevels = getCurrentUpgradeLevels();
+		upgradeLevels[upg_idx]++;
+
+		var upgDPS = computeDPSWithUpgrades(upgradeLevels) - currentDPS;
+		var dpsPerGold = upgDPS / s().GetUpgradeCost(upg_map[type]);
+
+		if (bestDPSPerGold < dpsPerGold) {
+			bestDPSPerGold = dpsPerGold;
+			bestDPSUpgrade = upg_idx;
+		};
+	}
+
+	if(canAffordUpgrade(bestDPSUpgrade)) {
+		buyUpgrade(bestDPSUpgrade);
+	}
+}
+
+function canAffordUpgrade(upg_idx) {
+	var key = 'upgr_' + upg_idx;
+	return s().GetUpgradeCost(upg_idx) < s().m_rgPlayerData.gold;
+}
+
+function buyUpgrade(upg_idx) {
+	var key = 'upgr_' + upg_idx;
+	var cache = s().m_UI.m_rgElementCache;
+
+	if(cache.hasOwnProperty(key)) {
+		var elm = cache[key];
+		// valve pls...
+		s().TryUpgrade(!!elm.find ? elm.find('.link')[0] : elm.querySelector('.link'));
+		autoupgrade_update_hilight = true;
+	}
+}
+
+function getMostCostEffectiveUpgrades() {
+	var upg_map = {};
+
+	s().m_rgTuningData.upgrades.forEach(function(upg, idx) {
+		var isBetter = false;
+		var cost = s().GetUpgradeCost(idx) / parseFloat(upg.multiplier);
+
+		if(!upg_map.hasOwnProperty(upg.type)) {
+			isBetter = true;
+		}
+		else {
+			if(upg_map[upg.type].cost_per_mult > cost) {
+				if(upg.hasOwnProperty('required_upgrade') && s().GetUpgradeLevel(upg.required_upgrade) < upg.required_upgrade_level) { return; }
+				isBetter = true;
+			}
 		}
 
-		var tree = upg_map[upg_order[i]];
-
-		// upgrade crit/elemental when necessary
-		if(upg_order[i] === UPGRADES.ARMOR_PIERCING_ROUND) {
-			if(upg_map[UPGRADES.LUCKY_SHOT].cost_per_mult < upg_map[UPGRADES.ARMOR_PIERCING_ROUND].cost_per_mult) {
-				tree = upg_map[UPGRADES.LUCKY_SHOT];
-			}
-			else if(enableAutoUpgradeElemental
-					&& upg_map.hasOwnProperty(ELEMENTS.LockedElement+3)
-					&& upg_map[ELEMENTS.LockedElement+3].cost_per_mult < upg_map[UPGRADES.ARMOR_PIERCING_ROUND].cost_per_mult) {
-				tree = upg_map[ELEMENTS.LockedElement+3];
-			}
+		if (isBetter) {
+			upg_map[upg.type] = {
+				'idx': idx,
+				'cost_per_mult': cost,
+			};
 		}
+	});
 
-		var key = 'upgr_' + tree.idx;
+	return upg_map;
+}
 
-		if(s().GetUpgradeCost(tree.idx) < pData.gold && cache.hasOwnProperty(key)) {
-			var elm = cache[key];
-			// valve pls...
-			s().TryUpgrade(!!elm.find ? elm.find('.link')[0] : elm.querySelector('.link'));
-			autoupgrade_update_hilight = true;
+function getCurrentUpgradeLevels() {
+	var result = {};
+	var upgrades = s().m_rgPlayerUpgrades;
+	for(var i=0; i < upgrades.length; i++) {
+		var upg = upgrades[i];
+		result[upg.upgrade] = upg.level;
+	}
+	return result;
+}
+
+function computeDPSWithUpgrades(upgradeLevels) {
+	var pData = s().m_rgTuningData.player;
+	var upgData = s().m_rgTuningData.upgrades;
+
+	var autoDPSBase = upgData[UPGRADES.AUTO_FIRE_CANNON].initial_value;
+	var autoDPS = 0;
+	for(var idx in upgData) {
+		if (upgData[idx].type == UPGRADES.AUTO_FIRE_CANNON) {
+			autoDPS += autoDPSBase * upgradeLevels[idx] * parseFloat(upgData[idx].multiplier);
 		}
 	}
 
+	var clickDPSBase = pData.damage_per_click * currentClickRate;
+	var clickDPS = clickDPSBase;
+	for (var idx in upgData) {
+		if (upgData[idx].type == UPGRADES.ARMOR_PIERCING_ROUND) {
+			clickDPS += clickDPSBase * upgradeLevels[idx] * parseFloat(upgData[idx].multiplier);
+		}
+	}
+
+	var critMultiBase = parseFloat(pData.damage_multiplier_crit);
+	var critMultiPerLevel = parseFloat(upgData[UPGRADES.LUCKY_SHOT].multiplier);
+	var critMulti = critMultiBase + critMultiPerLevel * upgradeLevels[UPGRADES.LUCKY_SHOT];
+	var critChance = parseFloat(s().m_rgPlayerTechTree.crit_percentage);
+
+	// Probabilities that the best, second best, third best or only the worst
+	// element is available on any lane:
+	var elemChances = [];
+	// will always use best unless all three lanes have something else
+	elemChances.push(1 - 0.75 * 0.75 * 0.75);
+	// will use second best unless all three lanes have neither best nor second best
+	elemChances.push(1 - elemChances[0] - 0.5 * 0.5 * 0.5);
+	// will use third best unless all three lanes have the worst
+	elemChances.push(1 - elemChances[0] - elemChances[1] - 0.25 * 0.25 * 0.25 );
+	// if that happens, we'll be stuck with the worst
+	elemChances.push(1 - elemChances[0] - elemChances[1] - elemChances[2]);
+
+	var elemUpgrades = [
+		UPGRADES.DAMAGE_TO_FIRE_MONSTERS,
+		UPGRADES.DAMAGE_TO_WATER_MONSTERS,
+		UPGRADES.DAMAGE_TO_EARTH_MONSTERS,
+		UPGRADES.DAMAGE_TO_AIR_MONSTERS
+	];
+	elemUpgrades.sort( function(a,b) {
+		var aLevel = a in upgradeLevels ? upgradeLevels[a] : 0;
+		var bLevel = b in upgradeLevels ? upgradeLevels[b] : 0;
+		return bLevel - aLevel;
+	} );
+
+	var elemMulti = 1;
+	for (var i=0; i < elemUpgrades.length; i++) {
+		var idx = elemUpgrades[i];
+		elemMulti += parseFloat(upgData[idx].multiplier) * elemChances[i] * upgradeLevels[idx];
+	}
+
+	var totalClickDPS = clickDPS * elemMulti * (1 + critMulti * critChance);
+
+	return autoDPS + (24 / activeHoursPerDay) * totalClickDPS;
 }
 
 function toggleAutoUpgradeDPS(event) {
@@ -910,6 +1014,12 @@ function toggleAllText(event) {
 		};
 	} else {
 		s().m_rgClickNumbers.push = trt_oldPush;
+	}
+}
+
+function updateActiveHoursPerDay(event) {
+	if(event !== undefined) {
+		activeHoursPerDay = event.target.value;
 	}
 }
 
