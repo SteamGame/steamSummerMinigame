@@ -238,7 +238,7 @@ function firstRun() {
 
 	// space for option menu
 	var options_menu = document.querySelector(".game_options");
-	options_menu.style.height = "";
+	options_menu.style.height = "auto";
 	var sfx_btn = document.querySelector(".toggle_sfx_btn");
 	sfx_btn.style.marginLeft = "2px";
 	sfx_btn.style.marginRight = "7px";
