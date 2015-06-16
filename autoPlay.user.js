@@ -460,7 +460,8 @@ function MainLoop() {
 
 		var dps = (damagePerClick * currentClickRate);
 		var dpsText = "" + dps;
-		if (dps > 1000000000) { dpsText = (dps / 1000000000).toFixed(2) + "B"; }
+        if (dps > 1000000000000) { dpsText = (dps / 1000000000000).toFixed(2) + "T"; }
+		else if (dps > 1000000000) { dpsText = (dps / 1000000000).toFixed(2) + "B"; }
 		else if (dps > 1000000) { dpsText = (dps / 1000000).toFixed(2) + "M"; }
 		else if (dps > 1000) { dpsText = (dps / 1000).toFixed(2) + "K"; }
 
@@ -507,7 +508,8 @@ function MainLoop() {
 
 					var gpcText = (goldPerClickPercentage * 100).toFixed(0) + "%";
 					var gpsText = "" + goldPerSecond.toFixed(0);
-					if (goldPerSecond > 1000000000) { gpsText = (goldPerSecond / 1000000000).toFixed(2) + "B"; }
+					if (goldPerSecond > 1000000000000) { gpsText = (goldPerSecond / 1000000000000).toFixed(2) + "T"; }
+                    else if (goldPerSecond > 1000000000) { gpsText = (goldPerSecond / 1000000000).toFixed(2) + "B"; }
 					else if (goldPerSecond > 1000000) { gpsText = (goldPerSecond / 1000000).toFixed(2) + "M"; }
 					else if (goldPerSecond > 1000) { gpsText = (goldPerSecond / 1000).toFixed(2) + "K"; }
 
