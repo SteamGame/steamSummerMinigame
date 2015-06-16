@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.6.9
+// @version 4.7.0
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -150,7 +150,7 @@ var CONTROL = {
 	nukeStartMinutes: 60,
 	wormholeRounds: 100,
 	wormholeEndMinutes: 15,
-	goldholeThreshold: 30000
+	goldholeThreshold: 2000
 };
 
 var GAME_STATUS = {
