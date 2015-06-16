@@ -149,7 +149,8 @@ var CONTROL = {
 	disableGoldRainLevels: 500,
 	nukeStartMinutes: 60,
 	wormholeRounds: 100,
-	wormholeEndMinutes: 15
+	wormholeEndMinutes: 15,
+	goldholeThreshold: 30000
 };
 
 var GAME_STATUS = {
@@ -1365,7 +1366,7 @@ function useAbilities(level, timeLeft)
 			advLog('Less than 60 minutes for game to end. Throwing money at screen for no particular reason...', 2);
 		}
 	}
-	else if(level > 30000 && level % 500 === 0) {
+	else if(level > CONTROL.goldholeThreshold && level % 500 === 0) {
 		advLog('Trying to trigger cooldown and wormhole...', 2);
 
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
