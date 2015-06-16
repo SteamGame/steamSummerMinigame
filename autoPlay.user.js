@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.6.7
+// @version 4.6.8
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -1304,7 +1304,7 @@ function useAbilities(level, timeLeft)
 
 	// Wormhole
 	if (nukeBeforeReset && timeLeft <= CONTROL.nukeStartMinutes) {
-		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
+		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
 
 		// Check if Wormhole is purchased
 		if (timeLeft >= CONTROL.wormholeEndMinutes && isWormholeRound(level) && tryUsingAbility(ABILITIES.WORMHOLE)) {
@@ -1317,7 +1317,7 @@ function useAbilities(level, timeLeft)
 	else if(level > 30000 && level % 500 === 0) {
 		advLog('Trying to trigger cooldown and wormhole...', 2);
 
-		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
+		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
 		tryUsingAbility(ABILITIES.WORMHOLE);
 
 		// Exit right now so we don't use any other abilities after wormhole
@@ -1357,8 +1357,8 @@ function useAbilities(level, timeLeft)
 		}
 		//Bombs away if spawner and 2+ other monsters
 		if (enemySpawnerExists && enemyCount >= 3) {
-			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
-			triggerAbility(ABILITIES.CLUSTER_BOMB);
+			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
+				triggerAbility(ABILITIES.CLUSTER_BOMB);
 			}
 		}
 	}
@@ -1380,8 +1380,8 @@ function useAbilities(level, timeLeft)
 		}
 		//Burn them all if spawner and 2+ other monsters
 		if (enemySpawnerExists && enemyCount >= 3) {
-			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
-			triggerAbility(ABILITIES.NAPALM);
+			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
+				triggerAbility(ABILITIES.NAPALM);
 			}
 		}
 	}
