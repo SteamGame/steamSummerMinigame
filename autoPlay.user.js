@@ -458,9 +458,6 @@ function MainLoop() {
 
 		advLog("Ticked. Current clicks per second: " + absoluteCurrentClickRate + ". Current damage per second: " + (damagePerClick * absoluteCurrentClickRate), 4);
 
-		var dps = (damagePerClick * currentClickRate) + s().m_rgPlayerTechTree.dps;
-		var dpsText = "" + dps;
-
 		document.getElementById('dps').innerHTML = "Current damage per second:<br/>" + w.FormatNumberForDisplay((damagePerClick * currentClickRate) + s().m_rgPlayerTechTree.dps) + 
             " (" + w.FormatNumberForDisplay(damagePerClick * currentClickRate) + " + " + w.FormatNumberForDisplay(s().m_rgPlayerTechTree.dps) + ")";
 
