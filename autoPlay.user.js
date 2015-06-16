@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.7.0
+// @version 4.7.1
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -439,7 +439,12 @@ function MainLoop() {
 		useAutoUpgrade();
 		useAutoPurchaseAbilities();
 
-		s().m_nClicks += currentClickRate;
+		if(level > CONTROL.goldholeThreshold && level % 500 === 0) {
+			advLog('Skipping autoclick on wormhole boss farm.');
+		} else {
+			s().m_nClicks += currentClickRate;
+		}
+
 		s().m_nLastTick = false;
 		w.g_msTickRate = 1000;
 
