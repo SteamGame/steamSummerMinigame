@@ -414,7 +414,11 @@ function MainLoop() {
 		goToLaneWithBestTarget(level);
 
 		attemptRespawn();
+<<<<<<< HEAD
 
+=======
+		
+>>>>>>> origin/feature-2
 		var timeLeft = isNearEndGame(); // Time left in minutes
 		
 		if(timeLeft <= 15) {
@@ -508,6 +512,7 @@ function MainLoop() {
 	}
 }
 
+<<<<<<< HEAD
 function useAutoPurchaseAbilities() {
 	if(!enableAutoPurchase || autoupgrade_update_hilight) { return; }
 
@@ -528,6 +533,8 @@ function useAutoPurchaseAbilities() {
 	});
 }
 
+=======
+>>>>>>> origin/feature-2
 function useAllAbilities() {
 	for(var key in ABILITIES) {
 		if(ABILITIES[key] == ABILITIES.WORMHOLE) { continue; }
