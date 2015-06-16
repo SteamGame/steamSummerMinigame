@@ -194,9 +194,7 @@ function firstRun() {
 	trt_oldPush = s().m_rgClickNumbers.push;
 	trt_oldRender = w.g_Minigame.Render;
 
-	if(enableFingering) {
-		startFingering();
-	}
+	toggleFingering();
 
 	if(enableElementLock) {
 		lockElements();
@@ -329,7 +327,7 @@ function firstRun() {
 		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable AutoRefresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh, false));
 	}
 
-	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent,true));
+	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, toggleFingering, false));
 	options2.appendChild(makeCheckBox("nukeBeforeReset", "Spam abilities 1 hour before game end", nukeBeforeReset, handleEvent, true));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
@@ -691,6 +689,29 @@ function toggleAutoClicker(event) {
 	} else {
 		currentClickRate = 0;
 	}
+}
+
+function toggleFingering(event) {
+	var value = enableFingering;
+	
+	w.CSceneGame.prototype.ClearNewPlayer = function(){};
+
+	if(!s().m_spriteFinger) {
+		w.WebStorage.SetLocal('mg_how2click', 0);
+		s().CheckNewPlayer();
+		w.WebStorage.SetLocal('mg_how2click', 1);
+	}
+
+	if(event !== undefined) {
+		value = handleCheckBox(event);
+	}
+	
+	if(value) {
+		s().m_containerParticles.addChild(s().m_spriteFinger);
+	} else {
+		s().m_containerParticles.removeChild(s().m_spriteFinger);
+	}
+	document.getElementById('newplayer').style.display = 'none';
 }
 
 function toggleAutoRefresh(event) {
@@ -1549,18 +1570,6 @@ w.setTimeout(function() {
 }, autoRefreshSecondsCheckLoadedDelay * 1000);
 
 appendBreadcrumbsTitleInfo();
-
-function startFingering() {
-	w.CSceneGame.prototype.ClearNewPlayer = function(){};
-
-	if(!s().m_spriteFinger) {
-		w.WebStorage.SetLocal('mg_how2click', 0);
-		s().CheckNewPlayer();
-		w.WebStorage.SetLocal('mg_how2click', 1);
-	}
-
-	document.getElementById('newplayer').style.display = 'none';
-}
 
 function enhanceTooltips() {
 	var trt_oldTooltip = w.fnTooltipUpgradeDesc;
