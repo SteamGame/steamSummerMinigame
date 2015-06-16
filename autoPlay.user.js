@@ -471,7 +471,7 @@ function MainLoop() {
 
 				if( s().m_rgStoredCrits.length > 0 ) {
 					var rgDamage = s().m_rgStoredCrits.reduce(function(a,b) {
-						return a + b;enemyBossHealthPercent
+						return a + b;
 					});
 					s().m_rgStoredCrits.length = 0;
 
