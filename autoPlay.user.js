@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.6.6
+// @version 4.6.7
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -1305,7 +1305,7 @@ function useAbilities(level, timeLeft)
 	// Wormhole
 	if (nukeBeforeReset && timeLeft <= CONTROL.nukeStartMinutes) {
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
-		
+
 		// Check if Wormhole is purchased
 		if (timeLeft >= CONTROL.wormholeEndMinutes && isWormholeRound(level) && tryUsingAbility(ABILITIES.WORMHOLE)) {
 			advLog('Less than 60 minutes for game to end. Triggering wormholes...', 2);
@@ -1316,10 +1316,10 @@ function useAbilities(level, timeLeft)
 	}
 	else if(level > 30000 && level % 500 === 0) {
 		advLog('Trying to trigger cooldown and wormhole...', 2);
-		
+
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
 		tryUsingAbility(ABILITIES.WORMHOLE);
-		
+
 		// Exit right now so we don't use any other abilities after wormhole
 		return;
 	}
@@ -1405,7 +1405,7 @@ function useAbilities(level, timeLeft)
 
 	// Tactical Nuke
 	if(!isRainingRound(level) && canUseAbility(ABILITIES.TACTICAL_NUKE)) {
-	
+
 		enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 		// check whether current target is a boss
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
