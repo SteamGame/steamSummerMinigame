@@ -7,3 +7,4 @@ install:
  - npm install jshint -g
 script:
  - jshint autoPlay.user.js
+ - jshint leaderboard.user.js
