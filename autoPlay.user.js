@@ -415,8 +415,14 @@ function MainLoop() {
 		goToLaneWithBestTarget(level);
 
 		attemptRespawn();
-
-		useAbilities(level);
+		
+		var timeLeft = isNearEndGame(); // Time left in minutes
+		
+		if(timeLeft <= 15) {
+			useAllAbilities();
+		} else {
+			useAbilities(level, timeLeft);
+		}
 
 		updatePlayersInGame();
 
@@ -500,6 +506,13 @@ function MainLoop() {
 		{
 			s().m_rgActionLog = e.slice(-20);
 		}
+	}
+}
+
+function useAllAbilities() {
+	for(var key in ABILITIES) {
+		if(ABILITIES[key] == ABILITIES.WORMHOLE) { continue; }
+		tryUsingAbility(ABILITIES[key]);
 	}
 }
 
@@ -1219,7 +1232,7 @@ function hasMaxCriticalOnLane() {
 	}
 }
 
-function useAbilities(level)
+function useAbilities(level, timeLeft)
 {
 
 	var currentLane = s().m_nExpectedLane;
@@ -1464,7 +1477,7 @@ function useAbilities(level)
 	}
 
 	// Wormhole
-	if (isNearEndGame() && nukeBeforeReset) {
+	if (timeLeft <= 60 && timeLeft >= 15 && nukeBeforeReset) {
 
 		// Check if Wormhole is purchased
 		if (tryUsingAbility(ABILITIES.WORMHOLE)) {
