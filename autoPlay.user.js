@@ -146,7 +146,10 @@ var BOSS_DISABLED_ABILITIES = [
 var CONTROL = {
 	speedThreshold: 5000,
 	rainingRounds: 250,
-	disableGoldRainLevels: 500
+	disableGoldRainLevels: 500,
+	nukeStartMinutes: 60,
+	wormholeRounds: 100,
+	wormholeEndMinutes: 15
 };
 
 var GAME_STATUS = {
@@ -1212,7 +1215,6 @@ function goToLaneWithBestTarget(level) {
 	}
 }
 
-
 function hasMaxCriticalOnLane() {
 	var goodLuckCharms = getActiveAbilityLaneCount(ABILITIES.GOOD_LUCK_CHARMS);
 	var crit = getActiveAbilityLaneCount(ABILITIES.CRIT);
@@ -1229,6 +1231,18 @@ function hasMaxCriticalOnLane() {
 function isRainingRound(level)
 {
 	var mod = level % CONTROL.rainingRounds;
+
+	if (mod === 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function isWormholeRound(level)
+{
+	var mod = level % CONTROL.wormholeRounds;
 
 	if (mod === 0) {
 		return true;
@@ -1496,11 +1510,10 @@ function useAbilities(level, timeLeft)
 	}
 
 	// Wormhole
-	if (timeLeft <= 60 && timeLeft >= 15 && nukeBeforeReset) {
-
+	if (nukeBeforeReset && timeLeft <= CONTROL.nukeStartMinutes) {
 		// Check if Wormhole is purchased
-		if (tryUsingAbility(ABILITIES.WORMHOLE)) {
-			advLog('Less than 60 minutes for game to end. Triggering wormholes...', 2);
+		if (timeLeft >= CONTROL.wormholeEndMinutes && isWormholeRound(level) && tryUsingAbility(ABILITIES.WORMHOLE)) {
+				advLog('Less than 60 minutes for game to end. Triggering wormholes...', 2);
 		}
 		else if (tryUsingAbility(ABILITIES.THROW_MONEY_AT_SCREEN)) {
 			advLog('Less than 60 minutes for game to end. Throwing money at screen for no particular reason...', 2);
