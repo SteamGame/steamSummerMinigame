@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.4.9
+// @version 4.5.1
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -142,7 +142,8 @@ var BOSS_DISABLED_ABILITIES = [
 
 var CONTROL = {
 	speedThreshold: 5000,
-	rainingRounds: 250
+	rainingRounds: 250,
+	disableGoldRainLevels: 500
 };
 
 var GAME_STATUS = {
@@ -193,9 +194,7 @@ function firstRun() {
 	trt_oldPush = s().m_rgClickNumbers.push;
 	trt_oldRender = w.g_Minigame.Render;
 
-	if(enableFingering) {
-		startFingering();
-	}
+	toggleFingering();
 
 	if(enableElementLock) {
 		lockElements();
@@ -328,7 +327,7 @@ function firstRun() {
 		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable AutoRefresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh, false));
 	}
 
-	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent,true));
+	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, toggleFingering, false));
 	options2.appendChild(makeCheckBox("nukeBeforeReset", "Spam abilities 1 hour before game end", nukeBeforeReset, handleEvent, true));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
 
@@ -388,7 +387,7 @@ function MainLoop() {
 	{
 		return;
 	}
-	
+
 	var level = s().m_rgGameData.level + 1;
 
 
@@ -475,7 +474,7 @@ function MainLoop() {
 				}
 			}
 		}
-		
+
 		// Prune older entries (for real)
 		var e = s().m_rgActionLog;
 		if(e.length > 20)
@@ -690,6 +689,29 @@ function toggleAutoClicker(event) {
 	} else {
 		currentClickRate = 0;
 	}
+}
+
+function toggleFingering(event) {
+	var value = enableFingering;
+	
+	w.CSceneGame.prototype.ClearNewPlayer = function(){};
+
+	if(!s().m_spriteFinger) {
+		w.WebStorage.SetLocal('mg_how2click', 0);
+		s().CheckNewPlayer();
+		w.WebStorage.SetLocal('mg_how2click', 1);
+	}
+
+	if(event !== undefined) {
+		value = handleCheckBox(event);
+	}
+	
+	if(value) {
+		s().m_containerParticles.addChild(s().m_spriteFinger);
+	} else {
+		s().m_containerParticles.removeChild(s().m_spriteFinger);
+	}
+	document.getElementById('newplayer').style.display = 'none';
 }
 
 function toggleAutoRefresh(event) {
@@ -1103,6 +1125,13 @@ function goToLaneWithBestTarget(level) {
 		} else {
 			enableAbility(ABILITIES.WORMHOLE);
 		}
+
+		// Disable raining gold for the first levels
+		if(level < CONTROL.rainingRounds) {
+			disableAbility(ABILITIES.RAINING_GOLD);
+		} else {
+			enableAbility(ABILITIES.RAINING_GOLD);
+		}		
 	}
 }
 
@@ -1308,12 +1337,12 @@ function useAbilities(level)
 	if (canUseAbility(ABILITIES.RAINING_GOLD)) {
 		// only use if the speed threshold has not been reached,
 		// or it's a designated gold round after the threshold
-		if (level < CONTROL.speedThreshold || level % CONTROL.rainingRounds === 0) {
+		if (level > CONTROL.disableGoldRainLevels && (level < CONTROL.speedThreshold || level % CONTROL.rainingRounds === 0)) {
 			enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 			// check if current target is a boss, otherwise its not worth using the gold rain
 			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-	
+
 				if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
 					// Gold Rain is purchased, cooled down, and needed. Trigger it.
 					advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
@@ -1549,18 +1578,6 @@ w.setTimeout(function() {
 
 appendBreadcrumbsTitleInfo();
 
-function startFingering() {
-	w.CSceneGame.prototype.ClearNewPlayer = function(){};
-
-	if(!s().m_spriteFinger) {
-		w.WebStorage.SetLocal('mg_how2click', 0);
-		s().CheckNewPlayer();
-		w.WebStorage.SetLocal('mg_how2click', 1);
-	}
-
-	document.getElementById('newplayer').style.display = 'none';
-}
-
 function enhanceTooltips() {
 	var trt_oldTooltip = w.fnTooltipUpgradeDesc;
 
@@ -1666,7 +1683,7 @@ function expectedLevel(level) {
 	var passed_time = getCurrentTime() - s().m_rgGameData.timestamp_game_start;
 	var expected_level = Math.floor(((level/passed_time)*remaining_time)+level);
 	var likely_level = Math.floor((expected_level - level)/Math.log(3))+ level;
-	
+
 	return {expected_level : expected_level, likely_level : likely_level, remaining_time : remaining_time};
 }
 
