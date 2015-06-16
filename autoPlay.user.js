@@ -26,6 +26,8 @@ var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
 var enableAutoUpgradeHP = getPreferenceBoolean("enableAutoUpgradeHP", true);
 var enableAutoUpgradeClick = getPreferenceBoolean("enableAutoUpgradeClick", false);
 var enableAutoUpgradeDPS = getPreferenceBoolean("enableAutoUpgradeDPS", false);
+var enableAutoUpgradeElemental = getPreferenceBoolean("enableAutoUpgradeElemental", false);
+var enableAutoPurchase = getPreferenceBoolean("enableAutoPurchase", false);
 
 var removeInterface = getPreferenceBoolean("removeInterface", true); // get rid of a bunch of pointless DOM
 var removeParticles = getPreferenceBoolean("removeParticles", true);
@@ -301,6 +303,8 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("enableAutoUpgradeHP", "Enable AutoUpgrade HP (up to 300k HP)", enableAutoUpgradeHP, toggleAutoUpgradeHP, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeClick", "Enable AutoUpgrade Clicks", enableAutoUpgradeClick, toggleAutoUpgradeClick, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeDPS", "Enable AutoUpgrade DPS", enableAutoUpgradeDPS, toggleAutoUpgradeDPS, false));
+	options1.appendChild(makeCheckBox("enableAutoUpgradeElemental", "Enable AutoUpgrade locked elemental", enableAutoUpgradeElemental, toggleAutoUpgradeElemental, false));
+	options1.appendChild(makeCheckBox("enableAutoPurchase", "Enable AutoPurchase Abilities", enableAutoPurchase, toggleAutoPurchase, false));
 	options1.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeParticles", "Remove particle effects", removeParticles, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent, true));
@@ -423,6 +427,7 @@ function MainLoop() {
 		}
 
 		useAutoUpgrade();
+		useAutoPurchaseAbilities();
 
 		s().m_nClicks += currentClickRate;
 		s().m_nLastTick = false;
@@ -498,24 +503,54 @@ function MainLoop() {
 	}
 }
 
+function useAutoPurchaseAbilities() {
+	if(!enableAutoPurchase || autoupgrade_update_hilight) { return; }
+
+	var elms = document.querySelectorAll(".container_purchase > div:not([class~='cantafford'])");
+
+	if(elms.length === 0) { return; }
+
+	var pData = s().m_rgPlayerData;
+
+	[].forEach.call(elms, function(elm) {
+		if(elm.style.display !== "") { return; }
+
+		var idx = parseInt(elm.id.split('_')[1]);
+
+		if(s().GetUpgradeCost(idx) < pData.gold) {
+			s().TryUpgrade(elm.querySelector('.link'));
+		}
+	});
+}
+
 var autoupgrade_update_hilight = true;
 
 function useAutoUpgrade() {
-	if(!enableAutoUpgradeDPS && !enableAutoUpgradeClick && !enableAutoUpgradeHP) { return; }
+	if(!enableAutoUpgradeDPS
+		&& !enableAutoUpgradeClick
+		&& !enableAutoUpgradeHP
+		&& !enableAutoUpgradeElemental
+		) {
+		autoupgrade_update_hilight = false;
+		return;
+	}
 
 	var upg_order = [
 		UPGRADES.ARMOR_PIERCING_ROUND,
 		UPGRADES.LIGHT_ARMOR,
 		UPGRADES.AUTO_FIRE_CANNON,
+		UPGRADES.LUCKY_SHOT,
 	];
+	if(enableAutoUpgradeElemental && ELEMENTS.LockedElement !== -1) { upg_order.push(ELEMENTS.LockedElement+3); }
 	var upg_map = {};
 
 	upg_order.forEach(function(i) { upg_map[i] = {}; });
 	var pData = s().m_rgPlayerData;
+	var pTree = s().m_rgPlayerTechTree;
 	var cache = s().m_UI.m_rgElementCache;
 	var upg_enabled = [
 		enableAutoUpgradeClick,
-		enableAutoUpgradeHP && pData.hp < 300000,
+		enableAutoUpgradeHP && pTree.max_hp < 300000,
 		enableAutoUpgradeDPS,
 	];
 
@@ -546,7 +581,11 @@ function useAutoUpgrade() {
 
 		// hilight targets
 		[].forEach.call(document.querySelectorAll(Object.keys(upg_map).map(function(i) {
-				return "#upgr_" + upg_map[i].idx + " .info";
+				if(i > UPGRADES.ARMOR_PIERCING_ROUND) {
+					return "#nonexistant";
+				} else {
+					return "#upgr_" + upg_map[i].idx + " .info";
+				}
 			})
 			.join(",")),
 		function(elm) { elm.style.setProperty('color', '#E1B21E', 'important'); });
@@ -554,7 +593,7 @@ function useAutoUpgrade() {
 
 	// do upgrading
 	for(var i = 0; i < upg_order.length; i++ ) {
-		if(!upg_enabled[i]) { continue; }
+		if(!upg_enabled[i] || upg_order[i] > UPGRADES.ARMOR_PIERCING_ROUND) { continue; }
 
 		// prioritize click upgrades over DPS ones, unless they are more cost effective
 		if(upg_order[i] === UPGRADES.AUTO_FIRE_CANNON && enableAutoUpgradeClick) {
@@ -562,10 +601,25 @@ function useAutoUpgrade() {
 		}
 
 		var tree = upg_map[upg_order[i]];
+
+		// upgrade crit/elemental when necessary
+		if(upg_order[i] === UPGRADES.ARMOR_PIERCING_ROUND) {
+			if(upg_map[UPGRADES.LUCKY_SHOT].cost_per_mult < upg_map[UPGRADES.ARMOR_PIERCING_ROUND].cost_per_mult) {
+				tree = upg_map[UPGRADES.LUCKY_SHOT];
+			}
+			else if(enableAutoUpgradeElemental
+					&& upg_map.hasOwnProperty(ELEMENTS.LockedElement+3)
+					&& upg_map[ELEMENTS.LockedElement+3].cost_per_mult < upg_map[UPGRADES.ARMOR_PIERCING_ROUND].cost_per_mult) {
+				tree = upg_map[ELEMENTS.LockedElement+3];
+			}
+		}
+
 		var key = 'upgr_' + tree.idx;
 
 		if(s().GetUpgradeCost(tree.idx) < pData.gold && cache.hasOwnProperty(key)) {
-			s().TryUpgrade(cache[key].find('.link')[0]);
+			var elm = cache[key];
+			// valve pls...
+			s().TryUpgrade(!!elm.find ? elm.find('.link')[0] : elm.querySelector('.link'));
 			autoupgrade_update_hilight = true;
 		}
 	}
@@ -600,6 +654,28 @@ function toggleAutoUpgradeHP(event) {
 	}
 
 	enableAutoUpgradeHP = value;
+}
+
+function toggleAutoUpgradeElemental(event) {
+
+	var value = enableAutoUpgradeElemental;
+
+	if(event !== undefined) {
+		value = handleCheckBox(event);
+	}
+
+	enableAutoUpgradeElemental = value;
+}
+
+function toggleAutoPurchase(event) {
+
+	var value = enableAutoPurchase;
+
+	if(event !== undefined) {
+		value = handleCheckBox(event);
+	}
+
+	enableAutoPurchase = value;
 }
 
 function refreshPlayerData() {
