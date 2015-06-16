@@ -1140,6 +1140,8 @@ function hasMaxCriticalOnLane() {
 	}
 }
 
+var lastGoldRainLevel = -1;
+
 function useAbilities(level)
 {
 
@@ -1158,9 +1160,12 @@ function useAbilities(level)
 			enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-				if (enemyBossHealthPercent>0.5){
+				// When already done gold rain on this level, allow for a lower HP, as this means the boss is going down slowly
+				var bossHealthThreshold = ((lastGoldRainLevel != level) ? 0.5 : 0.25);
+				if (enemyBossHealthPercent >= bossHealthThreshold) {
 					advLog("Cripple Monster available and used on boss", 2);
 					triggerAbility(ABILITIES.CRIPPLE_MONSTER);
+					lastGoldRainLevel = level;
 				}
 			}
 		}
