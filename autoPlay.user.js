@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.5.2
+// @version 4.5.3
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -159,23 +159,23 @@ disableParticles();
 if(!getPreferenceBoolean("alertShown", false)) {
 	w.ShowConfirmDialog(
 		'Welcome to SteamDB\'s Monster Minigame Script',
-		
+
 		'<div style="color:#FF5252">This dialog will be shown just once, so please read through it.<br><br></div>' +
 		'<h3 style="color:yellow">This script does not lag your game,<br>we are limiting it to 1 frame per second to lower CPU usage.</h3>' +
 		'<p>We have multiple options to configure this script, and disabling FPS limiter is one of them.</p>' +
 		'<p><a href="https://github.com/SteamDatabase/steamSummerMinigame" target="_blank">You can report issues on GitHub</a></p>' +
 		'<p>Thanks and have fun!</p>',
-		
+
 		'Disable FPS limiter',
 		'Go away'
 	).fail(function() {
 		setPreference("alertShown", true);
 	}).done(function(strButton) {
 		setPreference("alertShown", true);
-		
+
 		if(strButton === 'OK') {
 			disableRenderer = false;
-			
+
 			if(isPastFirstRun) {
 				toggleRenderer();
 			}
@@ -351,7 +351,7 @@ function firstRun() {
 	ab_box.appendChild(lock_elements_box);
 
 	enhanceTooltips();
-	
+
 	isPastFirstRun = true;
 }
 
@@ -364,6 +364,35 @@ function disableParticles() {
 				emitter.emit = false;
 				return emitter;
 			};
+
+			var particles = s().m_rgActiveParticles;
+
+			if(particles) {
+				if (particles[ 7 ]) {
+					particles[ 7 ][0].emit = false;
+					particles[ 7 ][1].emit = false;
+				}
+
+				if (particles[ 5 ]) {
+					particles[ 5 ][0].emit = false;
+				}
+
+				if (particles[ 6 ]) {
+					particles[ 6 ][0].emit = false;
+					particles[ 6 ][1].emit = false;
+				}
+
+				if (particles[ 8 ]) {
+					particles[ 8 ][0].emit = false;
+					particles[ 8 ][1].emit = false;
+					particles[ 8 ][2].emit = false;
+				}
+
+				if (particles[ 9 ]) {
+					particles[ 9 ][0].emit = false;
+					particles[ 9 ][1].emit = false;
+				}
+			}
 		}
 	}
 }
@@ -693,7 +722,7 @@ function toggleAutoClicker(event) {
 
 function toggleFingering(event) {
 	var value = enableFingering;
-	
+
 	w.CSceneGame.prototype.ClearNewPlayer = function(){};
 
 	if(!s().m_spriteFinger) {
@@ -705,7 +734,7 @@ function toggleFingering(event) {
 	if(event !== undefined) {
 		value = handleCheckBox(event);
 	}
-	
+
 	if(value) {
 		s().m_containerParticles.addChild(s().m_spriteFinger);
 	} else {
@@ -1131,7 +1160,7 @@ function goToLaneWithBestTarget(level) {
 			disableAbility(ABILITIES.RAINING_GOLD);
 		} else {
 			enableAbility(ABILITIES.RAINING_GOLD);
-		}		
+		}
 	}
 }
 
