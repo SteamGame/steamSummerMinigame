@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.6.3
+// @version 4.6.4
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -695,6 +695,7 @@ function refreshPlayerData() {
 				instance.m_rgPlayerData = rgResult.response.player_data;
 				instance.ApplyClientOverrides('player_data');
 				instance.ApplyClientOverrides('ability');
+				instance.ApplyClientOverrides('upgrades');
 			}
 
 			if( rgResult.response.tech_tree ) {
