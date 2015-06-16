@@ -436,6 +436,7 @@ function MainLoop() {
 		}
 
 		useAutoUpgrade();
+		useHealthUpgrade();
 		useAutoPurchaseAbilities();
 
 		s().m_nClicks += currentClickRate;
@@ -537,7 +538,6 @@ var autoupgrade_update_hilight = true;
 function useAutoUpgrade() {
 	if(!enableAutoUpgradeDPS
 		&& !enableAutoUpgradeClick
-		&& !enableAutoUpgradeHP
 		&& !enableAutoUpgradeElemental
 		) {
 		autoupgrade_update_hilight = false;
@@ -546,7 +546,6 @@ function useAutoUpgrade() {
 
 	var upg_order = [
 		UPGRADES.ARMOR_PIERCING_ROUND,
-		UPGRADES.LIGHT_ARMOR,
 		UPGRADES.AUTO_FIRE_CANNON,
 		UPGRADES.LUCKY_SHOT,
 	];
@@ -559,7 +558,6 @@ function useAutoUpgrade() {
 	var cache = s().m_UI.m_rgElementCache;
 	var upg_enabled = [
 		enableAutoUpgradeClick,
-		enableAutoUpgradeHP && pTree.max_hp < 300000,
 		enableAutoUpgradeDPS,
 	];
 
@@ -635,6 +633,59 @@ function useAutoUpgrade() {
 
 }
 
+function useHealthUpgrade() {
+	if(!enableAutoUpgradeHP) { return; }
+
+	var upg_order = [
+		UPGRADES.LIGHT_ARMOR,
+	];
+	var upg_map = {};
+
+	upg_order.forEach(function(i) { upg_map[i] = {}; });
+	var pData = s().m_rgPlayerData;
+	var pTree = s().m_rgPlayerTechTree;
+	var cache = s().m_UI.m_rgElementCache;
+	var upg_enabled = [
+		enableAutoUpgradeHP && pTree.max_hp < 300000,
+	];
+	var pHealthPercent = pData.hp / pTree.max_hp;
+
+	// loop over all upgrades and find the most cost effective ones
+
+	if(pHealthPercent > .40) { return; }
+
+	s().m_rgTuningData.upgrades.forEach(function(upg, idx) {
+		if(upg_map.hasOwnProperty(upg.type)) {
+
+			var cost = s().GetUpgradeCost(idx) / parseFloat(upg.multiplier);
+
+			if(!upg_map[upg.type].hasOwnProperty('idx') || upg_map[upg.type].cost_per_mult > cost) {
+				if(upg.hasOwnProperty('required_upgrade') && s().GetUpgradeLevel(upg.required_upgrade) < upg.required_upgrade_level) { return; }
+
+				upg_map[upg.type] = {
+					'idx': idx,
+					'cost_per_mult': cost,
+				};
+			}
+		}
+	});
+
+
+	// do upgrading
+		var tree = upg_map[UPGRADES.LIGHT_ARMOR];
+
+
+		var key = 'upgr_' + tree.idx;
+
+		if(s().GetUpgradeCost(tree.idx) < pData.gold && cache.hasOwnProperty(key)) {
+			var elm = cache[key];
+			// valve pls...
+			s().TryUpgrade(!!elm.find ? elm.find('.link')[0] : elm.querySelector('.link'));
+			autoupgrade_update_hilight = true;
+		}
+	
+
+} 
 function toggleAutoUpgradeDPS(event) {
 	var value = enableAutoUpgradeDPS;
 
