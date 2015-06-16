@@ -1327,7 +1327,7 @@ function useAbilities(level)
 			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 
-				if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
+				if (enemyBossHealthPercent >= 0.6 || level % CONTROL.rainingRounds === 0) { // We want sufficient time for the gold rain to be applicable
 					// Gold Rain is purchased, cooled down, and needed. Trigger it.
 					advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
 					triggerAbility(ABILITIES.RAINING_GOLD);
