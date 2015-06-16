@@ -388,11 +388,10 @@ function isNearEndGame() {
 	var cHours = cTime.getUTCHours();
 	var cMins = cTime.getUTCMinutes();
 	var timeLeft = 60 - cMins;
-	if (cHours == 15 && timeLeft <= 60 && timeLeft >= 15) {
-		return true;
-	}
-	else {
-		return false;
+	if (cHours == 15) {
+		return timeLeft;
+	} else {
+		return 61;
 	}
 }
 
@@ -416,7 +415,13 @@ function MainLoop() {
 
 		attemptRespawn();
 
-		useAbilities(level);
+		var timeLeft = isNearEndGame(); // Time left in minutes
+		
+		if(timeLeft <= 15) {
+			useAllAbilities();
+		} else {
+			useAbilities(level, timeLeft);
+		}
 
 		updatePlayersInGame();
 
@@ -521,6 +526,13 @@ function useAutoPurchaseAbilities() {
 			s().TryUpgrade(elm.querySelector('.link'));
 		}
 	});
+}
+
+function useAllAbilities() {
+	for(var key in ABILITIES) {
+		if(ABILITIES[key] == ABILITIES.WORMHOLE) { continue; }
+		tryUsingAbility(ABILITIES[key]);
+	}
 }
 
 var autoupgrade_update_hilight = true;
@@ -1219,9 +1231,8 @@ function hasMaxCriticalOnLane() {
 	}
 }
 
-function useAbilities(level)
+function useAbilities(level, timeLeft)
 {
-
 	var currentLane = s().m_nExpectedLane;
 
 	var i = 0;
@@ -1464,7 +1475,7 @@ function useAbilities(level)
 	}
 
 	// Wormhole
-	if (isNearEndGame() && nukeBeforeReset) {
+	if (timeLeft <= 60 && timeLeft >= 15 && nukeBeforeReset) {
 
 		// Check if Wormhole is purchased
 		if (tryUsingAbility(ABILITIES.WORMHOLE)) {
