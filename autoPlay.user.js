@@ -276,7 +276,7 @@ function firstRun() {
 	options1.style.width = "50%";
 	options1.style.float = "left";
 
-	options1.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker, false));
+	options1.appendChild(makeCheckBox("enableAutoClicker", "Enable AutoClicker", enableAutoClicker, toggleAutoClicker, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeHP", "Enable AutoUpgrade HP (up to 300k HP)", enableAutoUpgradeHP, toggleAutoUpgradeHP, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeClick", "Enable AutoUpgrade Clicks", enableAutoUpgradeClick, toggleAutoUpgradeClick, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeDPS", "Enable AutoUpgrade DPS", enableAutoUpgradeDPS, toggleAutoUpgradeDPS, false));
@@ -297,7 +297,7 @@ function firstRun() {
 	options2.style.float = "left";
 
 	if (typeof GM_info !==  "undefined") {
-		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable auto-refresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh, false));
+		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable AutoRefresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh, false));
 	}
 
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, handleEvent,true));
