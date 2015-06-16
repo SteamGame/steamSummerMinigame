@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.5.3
+// @version 4.5.4
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -1388,7 +1388,7 @@ function useAbilities(level)
 	if (isNearEndGame() && nukeBeforeReset) {
 
 		// Check if Wormhole is purchased
-		if (tryUsingAbility(ABILITIES.WORMHOLE, true)) {
+		if (tryUsingAbility(ABILITIES.WORMHOLE)) {
 			advLog('Less than 60 minutes for game to end. Triggering wormholes...', 2);
 		}
 		else if (tryUsingAbility(ABILITIES.THROW_MONEY_AT_SCREEN)) {
