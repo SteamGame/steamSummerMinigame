@@ -304,7 +304,7 @@ function firstRun() {
 	options1.className = "options_column";
 
 	options1.appendChild(makeCheckBox("enableAutoClicker", "Enable AutoClicker", enableAutoClicker, toggleAutoClicker, false));
-	options1.appendChild(makeCheckBox("enableAutoUpgradeHP", "Enable AutoUpgrade HP (up to 300k HP)", enableAutoUpgradeHP, toggleAutoUpgradeHP, false));
+	options1.appendChild(makeCheckBox("enableAutoUpgradeHP", "Enable AutoUpgrade HP", enableAutoUpgradeHP, toggleAutoUpgradeHP, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeClick", "Enable AutoUpgrade Clicks", enableAutoUpgradeClick, toggleAutoUpgradeClick, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeDPS", "Enable AutoUpgrade DPS", enableAutoUpgradeDPS, toggleAutoUpgradeDPS, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeElemental", "Enable AutoUpgrade locked elemental", enableAutoUpgradeElemental, toggleAutoUpgradeElemental, false));
@@ -555,12 +555,13 @@ function useAutoUpgrade() {
 	var upg_map = {};
 
 	upg_order.forEach(function(i) { upg_map[i] = {}; });
+	var gData = s().m_rgGameData;
 	var pData = s().m_rgPlayerData;
 	var pTree = s().m_rgPlayerTechTree;
 	var cache = s().m_UI.m_rgElementCache;
 	var upg_enabled = [
 		enableAutoUpgradeClick,
-		enableAutoUpgradeHP && pTree.max_hp < 300000,
+		enableAutoUpgradeHP && pTree.max_hp < Math.max(300000, gData.level * 30),
 		enableAutoUpgradeDPS,
 	];
 
