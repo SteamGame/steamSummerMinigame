@@ -44,6 +44,7 @@ var autoRefreshMinutesRandomDelay = 10;
 var autoRefreshSecondsCheckLoadedDelay = 30;
 
 // DO NOT MODIFY
+var isPastFirstRun = false;
 var isAlreadyRunning = false;
 var refreshTimer = null;
 var currentClickRate = clickRate;
@@ -153,6 +154,33 @@ var GAME_STATUS = {
 // Try to disable particles straight away,
 // if not yet available, they will be disabled in firstRun
 disableParticles();
+
+if(!getPreferenceBoolean("alertShown", false)) {
+	w.ShowConfirmDialog(
+		'Welcome to SteamDB\'s Monster Minigame Script',
+		
+		'<div style="color:#FF5252">This dialog will be shown just once, so please read through it.<br><br></div>' +
+		'<h3 style="color:yellow">This script does not lag your game,<br>we are limiting it to 1 frame per second to lower CPU usage.</h3>' +
+		'<p>We have multiple options to configure this script, and disabling FPS limiter is one of them.</p>' +
+		'<p><a href="https://github.com/SteamDatabase/steamSummerMinigame" target="_blank">You can report issues on GitHub</a></p>' +
+		'<p>Thanks and have fun!</p>',
+		
+		'Disable FPS limiter',
+		'Go away'
+	).fail(function() {
+		setPreference("alertShown", true);
+	}).done(function(strButton) {
+		setPreference("alertShown", true);
+		
+		if(strButton === 'OK') {
+			disableRenderer = false;
+			
+			if(isPastFirstRun) {
+				toggleRenderer();
+			}
+		}
+	});
+}
 
 function s() {
 	return w.g_Minigame.m_CurrentScene;
@@ -324,6 +352,8 @@ function firstRun() {
 	ab_box.appendChild(lock_elements_box);
 
 	enhanceTooltips();
+	
+	isPastFirstRun = true;
 }
 
 function disableParticles() {
