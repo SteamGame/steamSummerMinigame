@@ -224,14 +224,46 @@ function firstRun() {
 		toggleAllText();
 	}
 
-	var node = document.getElementById("abilities");
-
-	if( node ) {
-		node.style.textAlign = 'left';
-	}
+	// style
+	var styleNode = document.createElement('style');
+	styleNode.type = 'text/css';
+	var styleText = [
+		// Page content
+		".pagecontent {padding: 0}",
+		// Align abilities to the left
+		"#abilitiescontainer {text-align: left;}",
+		// Activitylog and ability list
+		"#activeinlanecontainer:hover {height: auto; background: rgba(50,50,50,0.9); padding-bottom: 10px; position:absolute; z-index: 1;}",
+		"#activeinlanecontainer:hover + #activitylog {margin-top: 88px;}",
+		"#activitylog {margin-top: 20px}",
+		// Hide leave game button
+		".leave_game_btn {display: none;}",
+		// Option menu
+		".game_options {height: auto;}",
+		".game_options .toggle_sfx_btn {margin: 6px 7px 0px 2px; float: right;}",
+		".game_options .toggle_music_btn {margin-right: 2px; float: right;}",
+		".options_box {background-color: #000; width: 940px; padding: 12px; box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.6); color: #EDEDED; margin: 4px auto 0; overflow: auto; float: left;}",
+		".options_box span.asterisk {color: #FF5252; font-size: 24px; line-height: 4px; vertical-align: bottom;}",
+		".options_column {-moz-column-count: 2; -webkit-column-count: 2; column-count: 2; width: 50%; float: left;}",
+		".options_column label {display: inline-block;}",
+		".options_column input {float: left;}",
+		".options_column input[type=number] {margin: 6px 5px 0 0; padding: 2px 0px 0px 4px;}",
+		".options_column input[name=setLogLevel] {width: 25px;}",
+		".options_column span.asterisk {line-height: 14px;}",
+		// Element lock box
+		".lock_elements_box {width: 165px; top: -76px; left: 303px; box-sizing: border-box; line-height: 1rem; padding: 7px 10px; position: absolute; color: #EDEDED;}",
+		// Breadcrumbs
+		".bc_span {text-shadow: 1px 1px 0px rgba( 0, 0, 0, 0.3 );}",
+		".bc_room {color: #D4E157;}",
+		".bc_level {color: #FFA07A;}",
+		".bc_time {color: #9AC0FF;}",
+		""
+	];
+	styleNode.textContent = styleText.join("");
+	document.head.appendChild(styleNode);
 
 	if( removeInterface ) {
-		node = document.getElementById("global_header");
+		var node = document.getElementById("global_header");
 		if (node && node.parentNode) {
 			node.parentNode.removeChild( node );
 		}
@@ -243,10 +275,6 @@ function firstRun() {
 		if (node && node.parentNode) {
 			node.parentNode.removeChild( node );
 		}
-		node = document.querySelector(".pagecontent");
-		if (node) {
-			node.style.paddingBottom = 0;
-		}
 		document.body.style.backgroundPosition = "0 0";
 	}
 
@@ -257,51 +285,16 @@ function firstRun() {
 	titleActivity.insertBefore(playersInGame, titleActivity.firstChild);
 	ELEMENTS.PlayersInGame = document.getElementById("players_in_game");
 
-	// Fix alignment of acvititylog and expand list of active abilities on hover
-	var abilities_extra_styles = document.createElement('style');
-	abilities_extra_styles.type = 'text/css';
-	abilities_extra_styles.textContent = '#activeinlanecontainer:hover {height:auto;background:rgba(50,50,50,0.9);padding-bottom:10px;position:absolute;z-index:1} #activeinlanecontainer:hover + #activitylog {margin-top:88px} #activitylog {margin-top: 20px}';
-	document.getElementsByTagName('head')[0].appendChild(abilities_extra_styles);
-
-	// space for option menu
-	var options_menu = document.querySelector(".game_options");
-	options_menu.style.height = "auto";
-	var sfx_btn = document.querySelector(".toggle_sfx_btn");
-	sfx_btn.style.marginLeft = "2px";
-	sfx_btn.style.marginRight = "7px";
-	sfx_btn.style.cssFloat = "right";
-	sfx_btn.style.styleFloat = "right";
-	var music_btn = document.querySelector(".toggle_music_btn");
-	music_btn.style.marginRight = "2px";
-	music_btn.style.cssFloat = "right";
-	music_btn.style.styleFloat = "right";
-	var leave_btn = document.querySelector(".leave_game_btn");
-	leave_btn.style.display = "none";
-
 	var info_box = document.querySelector(".leave_game_helper");
-	document.querySelector(".pagecontent").style.padding = "0";
+	info_box.className = "options_box";
+	var options_menu = document.querySelector(".game_options");
+	var sfx_btn = document.querySelector(".toggle_sfx_btn");
 	options_menu.insertBefore(info_box, sfx_btn);
 
-	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !==  "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span style="color:#FF5252;font-size:22px;line-height:4px;vertical-align:bottom;">*</span> requires a refresh to take effect.<hr>';
-
-	// reset the CSS for the info box for aesthetics
-	info_box.className = "options_box";
-	info_box.style.backgroundColor = "#000000";
-	info_box.style.width = "800px";
-	info_box.style.padding = "12px";
-	info_box.style.boxShadow = "2px 2px 0 rgba( 0, 0, 0, 0.6 )";
-	info_box.style.color = "#ededed";
-	info_box.style.margin = "2px auto";
-	info_box.style.overflow = "auto";
-	info_box.style.cssFloat = "left";
-	info_box.style.styleFloat = "left";
+	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !== "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span class="asterisk">*</span> requires a refresh to take effect.<hr>';
 
 	var options1 = document.createElement("div");
-	options1.style["-moz-column-count"] = 2;
-	options1.style["-webkit-column-count"] = 2;
-	options1.style["column-count"] = 2;
-	options1.style.width = "50%";
-	options1.style.float = "left";
+	options1.className = "options_column";
 
 	options1.appendChild(makeCheckBox("enableAutoClicker", "Enable AutoClicker", enableAutoClicker, toggleAutoClicker, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeHP", "Enable AutoUpgrade HP (up to 300k HP)", enableAutoUpgradeHP, toggleAutoUpgradeHP, false));
@@ -317,19 +310,15 @@ function firstRun() {
 	info_box.appendChild(options1);
 
 	var options2 = document.createElement("div");
-	options2.style["-moz-column-count"] = 2;
-	options2.style["-webkit-column-count"] = 2;
-	options2.style["column-count"] = 2;
-	options2.style.width = "50%";
-	options2.style.float = "left";
+	options2.className = "options_column";
 
-	if (typeof GM_info !==  "undefined") {
+	if (typeof GM_info !== "undefined") {
 		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable AutoRefresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh, false));
 	}
 
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, toggleFingering, false));
 	options2.appendChild(makeCheckBox("nukeBeforeReset", "Spam abilities 1 hour before game end", nukeBeforeReset, handleEvent, true));
-	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", "25px", logLevel, 0, 5, updateLogLevel));
+	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
 
@@ -337,14 +326,6 @@ function firstRun() {
 	var ab_box = document.getElementById("abilities");
 	var lock_elements_box = document.createElement("div");
 	lock_elements_box.className = "lock_elements_box";
-	lock_elements_box.style.width = "165px";
-	lock_elements_box.style.top = "-76px";
-	lock_elements_box.style.left = "303px";
-	lock_elements_box.style.boxSizing = "border-box";
-	lock_elements_box.style.lineHeight = "1rem";
-	lock_elements_box.style.padding = "7px 10px";
-	lock_elements_box.style.position = "absolute";
-	lock_elements_box.style.color = "#ededed";
 	lock_elements_box.title = "To maximise team damage players should max only one element. But distributions of elements through people should be equal. So we calculated your element using your unique ID. Upgrade your element to make maximum performance or disable this checkbox.";
 	var lock_elements_checkbox = makeCheckBox("enableElementLock", "Lock element upgrades for more team dps", enableElementLock, toggleElementLock, false);
 	lock_elements_box.appendChild(lock_elements_checkbox);
@@ -646,15 +627,13 @@ function refreshPlayerData() {
 	);
 }
 
-function makeNumber(name, desc, width, value, min, max, listener) {
-	var label= document.createElement("label");
+function makeNumber(name, desc, value, min, max, listener) {
+	var label = document.createElement("label");
 	var description = document.createTextNode(desc);
 	var number = document.createElement("input");
 
 	number.type = "number";
 	number.name = name;
-	number.style.width = width;
-	number.style.marginRight = "5px";
 	number.value = value;
 	number.min = min;
 	number.max = max;
@@ -669,13 +648,10 @@ function makeNumber(name, desc, width, value, min, max, listener) {
 
 function makeCheckBox(name, desc, state, listener, reqRefresh) {
 	var asterisk = document.createElement('span');
+	asterisk.className = "asterisk";
 	asterisk.appendChild(document.createTextNode("*"));
-	asterisk.style.color = "#FF5252";
-	asterisk.style.fontSize = "22px";
-	asterisk.style.lineHeight = "14px";
-	asterisk.style.verticalAlign = "bottom";
 
-	var label= document.createElement("label");
+	var label = document.createElement("label");
 	var description = document.createTextNode(desc);
 	var checkbox = document.createElement("input");
 
@@ -1066,7 +1042,7 @@ function goToLaneWithBestTarget(level) {
 						}
 					}
 					advLog("[Gold rain] preferredLane: " + preferredLane, 5);
-					advLog("[Gold rain] preferredTarget: " +  preferredTarget, 5);
+					advLog("[Gold rain] preferredTarget: " + preferredTarget, 5);
 				}
 			}
 		}
@@ -1599,8 +1575,8 @@ w.SteamDB_Minigame_Timer = w.setInterval(function(){
 w.setTimeout(function() {
 	// m_rgGameData is 'undefined' if stuck at 97/97 or below
 	if (!w.g_Minigame
-		||  !w.g_Minigame.m_CurrentScene
-		||  !w.g_Minigame.m_CurrentScene.m_rgGameData) {
+		|| !w.g_Minigame.m_CurrentScene
+		|| !w.g_Minigame.m_CurrentScene.m_rgGameData) {
 		w.location.reload(true);
 }
 }, autoRefreshSecondsCheckLoadedDelay * 1000);
@@ -1728,8 +1704,7 @@ function appendBreadcrumbsTitleInfo() {
 	breadcrumbs.appendChild(element);
 
 	element = document.createElement('span');
-	element.style.color = '#D4E157';
-	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
+	element.className = "bc_span bc_room";
 	element.textContent = 'Room ' + w.g_GameID;
 	breadcrumbs.appendChild(element);
 
@@ -1738,8 +1713,7 @@ function appendBreadcrumbsTitleInfo() {
 	breadcrumbs.appendChild(element);
 
 	element = document.createElement('span');
-	element.style.color = '#FFA07A';
-	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
+	element.className = "bc_span bc_level";
 	element.textContent = 'Level: 0, Expected Level: 0, Likely Level: 0';
 	breadcrumbs.appendChild(element);
 	ELEMENTS.ExpectedLevel = element;
@@ -1749,8 +1723,7 @@ function appendBreadcrumbsTitleInfo() {
 	breadcrumbs.appendChild(element);
 
 	element = document.createElement('span');
-	element.style.color = '#9AC0FF';
-	element.style.textShadow = '1px 1px 0px rgba( 0, 0, 0, 0.3 )';
+	element.className = "bc_span bc_time";
 	element.textContent = 'Remaining Time: 0 hours, 0 minutes.';
 	breadcrumbs.appendChild(element);
 	ELEMENTS.RemainingTime = element;
