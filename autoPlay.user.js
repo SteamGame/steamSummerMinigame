@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.6.5
+// @version 4.6.9
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -150,7 +150,11 @@ var BOSS_DISABLED_ABILITIES = [
 var CONTROL = {
 	speedThreshold: 5000,
 	rainingRounds: 250,
-	disableGoldRainLevels: 500
+	disableGoldRainLevels: 500,
+	nukeStartMinutes: 60,
+	wormholeRounds: 100,
+	wormholeEndMinutes: 15,
+	goldholeThreshold: 30000
 };
 
 var GAME_STATUS = {
@@ -1322,13 +1326,36 @@ function goToLaneWithBestTarget(level) {
 	}
 }
 
-
 function hasMaxCriticalOnLane() {
 	var goodLuckCharms = getActiveAbilityLaneCount(ABILITIES.GOOD_LUCK_CHARMS);
 	var crit = getActiveAbilityLaneCount(ABILITIES.CRIT);
 	var totalCritical = goodLuckCharms + crit;
 
 	if (totalCritical >= 99) { // Lane has 1% by default
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function isRainingRound(level)
+{
+	var mod = level % CONTROL.rainingRounds;
+
+	if (mod === 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function isWormholeRound(level)
+{
+	var mod = level % CONTROL.wormholeRounds;
+
+	if (mod === 0) {
 		return true;
 	}
 	else {
@@ -1386,6 +1413,29 @@ function useAbilities(level, timeLeft)
 
 	}
 
+	// Wormhole
+	if (nukeBeforeReset && timeLeft <= CONTROL.nukeStartMinutes) {
+		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
+
+		// Check if Wormhole is purchased
+		if (timeLeft >= CONTROL.wormholeEndMinutes && isWormholeRound(level) && tryUsingAbility(ABILITIES.WORMHOLE)) {
+			advLog('Less than 60 minutes for game to end. Triggering wormholes...', 2);
+		}
+		else if (tryUsingAbility(ABILITIES.THROW_MONEY_AT_SCREEN)) {
+			advLog('Less than 60 minutes for game to end. Throwing money at screen for no particular reason...', 2);
+		}
+	}
+	else if(level > CONTROL.goldholeThreshold && level % 500 === 0) {
+		advLog('Trying to trigger cooldown and wormhole...', 2);
+
+		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
+		tryUsingAbility(ABILITIES.WORMHOLE);
+		tryUsingAbility(ABILITIES.RAINING_GOLD);
+
+		// Exit right now so we don't use any other abilities after wormhole
+		return;
+	}
+
 	// Good Luck Charms / Crit
 	if(!hasMaxCriticalOnLane())
 	{
@@ -1419,8 +1469,8 @@ function useAbilities(level, timeLeft)
 		}
 		//Bombs away if spawner and 2+ other monsters
 		if (enemySpawnerExists && enemyCount >= 3) {
-			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
-			triggerAbility(ABILITIES.CLUSTER_BOMB);
+			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
+				triggerAbility(ABILITIES.CLUSTER_BOMB);
 			}
 		}
 	}
@@ -1442,8 +1492,8 @@ function useAbilities(level, timeLeft)
 		}
 		//Burn them all if spawner and 2+ other monsters
 		if (enemySpawnerExists && enemyCount >= 3) {
-			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
-			triggerAbility(ABILITIES.NAPALM);
+			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
+				triggerAbility(ABILITIES.NAPALM);
 			}
 		}
 	}
@@ -1466,26 +1516,39 @@ function useAbilities(level, timeLeft)
 	}
 
 	// Tactical Nuke
-	if(canUseAbility(ABILITIES.TACTICAL_NUKE)) {
-		//Check that the lane has a spawner and record it's health percentage
-			enemySpawnerExists = false;
-			enemySpawnerHealthPercent = 0.0;
-		//Count each slot in lane
-		for (i = 0; i < 4; i++) {
-			enemy = s().GetEnemy(currentLane, i);
-			if (enemy) {
-				if (enemy.m_data.type === 0) {
-					enemySpawnerExists = true;
-					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+	if(!isRainingRound(level) && canUseAbility(ABILITIES.TACTICAL_NUKE)) {
+
+		enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
+		// check whether current target is a boss
+		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+			if (level >= CONTROL.speedThreshold) { // Start nuking bosses at level CONTROL.speedThreshold
+				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+
+				// Use Nuke on boss with >= 50% HP but only if Raining Gold is not active in the lane
+				if (enemyBossHealthPercent >= 0.5 && getActiveAbilityLaneCount(ABILITIES.RAINING_GOLD) <= 0) {
+					if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
+						advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
+						triggerAbility(ABILITIES.TACTICAL_NUKE);
+					}
 				}
 			}
 		}
-
-		// If there is a spawner and it's health is between 60% and 30%, nuke it!
-		if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
-			advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
-			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
-			triggerAbility(ABILITIES.TACTICAL_NUKE);
+		else {
+			//Check that the lane has a spawner and record it's health percentage
+			//Count each slot in lane
+			for (i = 0; i < 4; i++) {
+				enemy = s().GetEnemy(currentLane, i);
+				if (enemy && enemy.m_data.type == ENEMY_TYPE.SPAWNER) {
+					enemySpawnerHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+					// If there is a spawner and it's health is between 60% and 30%, nuke it!
+					if (enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
+						if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
+							advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
+							triggerAbility(ABILITIES.TACTICAL_NUKE);
+						}
+					}
+					break; // No reason to continue the loop after finding a spawner
+				}
 			}
 		}
 	}
@@ -1578,18 +1641,6 @@ function useAbilities(level, timeLeft)
 	if (tryUsingAbility(ABILITIES.MAX_ELEMENTAL_DAMAGE, true)) {
 		// Max Elemental Damage is purchased, cooled down, and needed. Trigger it.
 		advLog('Max Elemental Damage is purchased and cooled down, triggering it.', 2);
-	}
-
-	// Wormhole
-	if (timeLeft <= 60 && timeLeft >= 15 && nukeBeforeReset) {
-
-		// Check if Wormhole is purchased
-		if (tryUsingAbility(ABILITIES.WORMHOLE)) {
-			advLog('Less than 60 minutes for game to end. Triggering wormholes...', 2);
-		}
-		else if (tryUsingAbility(ABILITIES.THROW_MONEY_AT_SCREEN)) {
-			advLog('Less than 60 minutes for game to end. Throwing money at screen for no particular reason...', 2);
-		}
 	}
 
 	// Resurrect
