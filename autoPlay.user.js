@@ -1173,9 +1173,9 @@ function useAbilities(level)
 		}
 		//Bombs away if spawner and 2+ other monsters
 		if (enemySpawnerExists && enemyCount >= 3) {
-            if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
+			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
 			triggerAbility(ABILITIES.CLUSTER_BOMB);
-            }                
+			}                
 		}
 	}
 
@@ -1196,9 +1196,9 @@ function useAbilities(level)
 		}
 		//Burn them all if spawner and 2+ other monsters
 		if (enemySpawnerExists && enemyCount >= 3) {
-            if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
-            triggerAbility(ABILITIES.NAPALM);
-            }                
+			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
+			triggerAbility(ABILITIES.NAPALM);
+			}                
 		}
 	}
 
@@ -1238,9 +1238,9 @@ function useAbilities(level)
 		// If there is a spawner and it's health is between 60% and 30%, nuke it!
 		if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
 			advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
-            if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
-            triggerAbility(ABILITIES.TACTICAL_NUKE);
-            }                
+			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
+			triggerAbility(ABILITIES.TACTICAL_NUKE);
+			}                
 		}
 	}
 
