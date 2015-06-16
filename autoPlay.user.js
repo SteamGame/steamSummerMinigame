@@ -26,6 +26,7 @@ var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
 var enableAutoUpgradeHP = getPreferenceBoolean("enableAutoUpgradeHP", true);
 var enableAutoUpgradeClick = getPreferenceBoolean("enableAutoUpgradeClick", false);
 var enableAutoUpgradeDPS = getPreferenceBoolean("enableAutoUpgradeDPS", false);
+var enableAutoPurchase = getPreferenceBoolean("enableAutoPurchase", false);
 
 var removeInterface = getPreferenceBoolean("removeInterface", true); // get rid of a bunch of pointless DOM
 var removeParticles = getPreferenceBoolean("removeParticles", true);
@@ -301,6 +302,7 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("enableAutoUpgradeHP", "Enable AutoUpgrade HP (up to 300k HP)", enableAutoUpgradeHP, toggleAutoUpgradeHP, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeClick", "Enable AutoUpgrade Clicks", enableAutoUpgradeClick, toggleAutoUpgradeClick, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeDPS", "Enable AutoUpgrade DPS", enableAutoUpgradeDPS, toggleAutoUpgradeDPS, false));
+	options1.appendChild(makeCheckBox("enableAutoPurchase", "Enable AutoPurchase Abilities", enableAutoPurchase, toggleAutoPurchase, false));
 	options1.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeParticles", "Remove particle effects", removeParticles, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent, true));
@@ -420,6 +422,7 @@ function MainLoop() {
 		}
 
 		useAutoUpgrade();
+		useAutoPurchaseAbilities();
 
 		s().m_nClicks += currentClickRate;
 		s().m_nLastTick = false;
@@ -495,10 +498,33 @@ function MainLoop() {
 	}
 }
 
+function useAutoPurchaseAbilities() {
+	if(!enableAutoPurchase || autoupgrade_update_hilight) { return; }
+
+	var elms = document.querySelectorAll(".container_purchase > div:not([class~='cantafford'])");
+
+	if(elms.length === 0) { return; }
+
+	var pData = s().m_rgPlayerData;
+
+	[].forEach.call(elms, function(elm) {
+		if(elm.style.display !== "") { return; }
+
+		var idx = parseInt(elm.id.split('_')[1]);
+
+		if(s().GetUpgradeCost(idx) < pData.gold) {
+			s().TryUpgrade(elm.querySelector('.link'));
+		}
+	});
+}
+
 var autoupgrade_update_hilight = true;
 
 function useAutoUpgrade() {
-	if(!enableAutoUpgradeDPS && !enableAutoUpgradeClick && !enableAutoUpgradeHP) { return; }
+	if(!enableAutoUpgradeDPS && !enableAutoUpgradeClick && !enableAutoUpgradeHP) {
+		autoupgrade_update_hilight = false;
+		return;
+	}
 
 	var upg_order = [
 		UPGRADES.ARMOR_PIERCING_ROUND,
@@ -597,6 +623,17 @@ function toggleAutoUpgradeHP(event) {
 	}
 
 	enableAutoUpgradeHP = value;
+}
+
+function toggleAutoPurchase(event) {
+
+	var value = enableAutoPurchase;
+
+	if(event !== undefined) {
+		value = handleCheckBox(event);
+	}
+
+	enableAutoPurchase = value;
 }
 
 function refreshPlayerData() {
