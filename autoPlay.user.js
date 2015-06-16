@@ -605,7 +605,7 @@ function useAutoUpgrade() {
 
 		// prioritize click upgrades over DPS ones, unless they are more cost effective
 		if(upg_order[i] === UPGRADES.AUTO_FIRE_CANNON && enableAutoUpgradeClick) {
-			if(upg_map[UPGRADES.AUTO_FIRE_CANNON].cost_per_mult >= upg_map[UPGRADES.ARMOR_PIERCING_ROUND].cost_per_mult / 10) { continue; }
+			if(upg_map[UPGRADES.AUTO_FIRE_CANNON].cost_per_mult > upg_map[UPGRADES.ARMOR_PIERCING_ROUND].cost_per_mult / 4) { continue; }
 		}
 
 		var tree = upg_map[upg_order[i]];
