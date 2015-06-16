@@ -1302,6 +1302,28 @@ function useAbilities(level, timeLeft)
 
 	}
 
+	// Wormhole
+	if (nukeBeforeReset && timeLeft <= CONTROL.nukeStartMinutes) {
+		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
+		
+		// Check if Wormhole is purchased
+		if (timeLeft >= CONTROL.wormholeEndMinutes && isWormholeRound(level) && tryUsingAbility(ABILITIES.WORMHOLE)) {
+			advLog('Less than 60 minutes for game to end. Triggering wormholes...', 2);
+		}
+		else if (tryUsingAbility(ABILITIES.THROW_MONEY_AT_SCREEN)) {
+			advLog('Less than 60 minutes for game to end. Throwing money at screen for no particular reason...', 2);
+		}
+	}
+	else if(level > 30000 && level % 500 === 0) {
+		advLog('Trying to trigger cooldown and wormhole...', 2);
+		
+		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
+		tryUsingAbility(ABILITIES.WORMHOLE);
+		
+		// Exit right now so we don't use any other abilities after wormhole
+		return;
+	}
+
 	// Good Luck Charms / Crit
 	if(!hasMaxCriticalOnLane())
 	{
@@ -1507,24 +1529,6 @@ function useAbilities(level, timeLeft)
 	if (tryUsingAbility(ABILITIES.MAX_ELEMENTAL_DAMAGE, true)) {
 		// Max Elemental Damage is purchased, cooled down, and needed. Trigger it.
 		advLog('Max Elemental Damage is purchased and cooled down, triggering it.', 2);
-	}
-
-	// Wormhole
-	if (nukeBeforeReset && timeLeft <= CONTROL.nukeStartMinutes) {
-		// Check if Wormhole is purchased
-		if (timeLeft >= CONTROL.wormholeEndMinutes && isWormholeRound(level) && tryUsingAbility(ABILITIES.WORMHOLE)) {
-			advLog('Less than 60 minutes for game to end. Triggering wormholes...', 2);
-		}
-		else if (tryUsingAbility(ABILITIES.THROW_MONEY_AT_SCREEN)) {
-			advLog('Less than 60 minutes for game to end. Throwing money at screen for no particular reason...', 2);
-		}
-		
-		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
-	}
-	else if(level > 30000 && level % 500 === 0 && tryUsingAbility(ABILITIES.WORMHOLE)) {
-		advLog('Triggering wormholes...', 2);
-		
-		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
 	}
 
 	// Resurrect
