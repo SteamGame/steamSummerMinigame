@@ -1102,19 +1102,6 @@ function useAbilities(level)
 	var enemy = false;
 	var enemyBossHealthPercent = 0;
 
-	// Cooldown
-	if(getActiveAbilityLaneCount(ABILITIES.DECREASE_COOLDOWNS) > 0) {
-		disableAbility(ABILITIES.DECREASE_COOLDOWNS);
-	}
-	else
-	{
-		if(!s().bIsAbilityActive(ABILITIES.DECREASE_COOLDOWNS)) {
-			enableAbility(ABILITIES.DECREASE_COOLDOWNS);
-		}
-
-		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS);
-	}
-
 	// Cripple Monster
 	if(canUseAbility(ABILITIES.CRIPPLE_MONSTER)) {
 		if (level > CONTROL.speedThreshold && level % CONTROL.rainingRounds !== 0 && level % 10 === 0) {
@@ -1186,7 +1173,9 @@ function useAbilities(level)
 		}
 		//Bombs away if spawner and 2+ other monsters
 		if (enemySpawnerExists && enemyCount >= 3) {
+            if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
 			triggerAbility(ABILITIES.CLUSTER_BOMB);
+            }                
 		}
 	}
 
@@ -1207,7 +1196,9 @@ function useAbilities(level)
 		}
 		//Burn them all if spawner and 2+ other monsters
 		if (enemySpawnerExists && enemyCount >= 3) {
-			triggerAbility(ABILITIES.NAPALM);
+            if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
+            triggerAbility(ABILITIES.NAPALM);
+            }                
 		}
 	}
 
@@ -1247,7 +1238,9 @@ function useAbilities(level)
 		// If there is a spawner and it's health is between 60% and 30%, nuke it!
 		if (enemySpawnerExists && enemySpawnerHealthPercent < 0.6 && enemySpawnerHealthPercent > 0.3) {
 			advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
-			triggerAbility(ABILITIES.TACTICAL_NUKE);
+            if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS)) {
+            triggerAbility(ABILITIES.TACTICAL_NUKE);
+            }                
 		}
 	}
 
