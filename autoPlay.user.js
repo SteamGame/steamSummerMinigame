@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.6.4
+// @version 4.6.5
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -383,17 +383,17 @@ function disableParticles() {
 	}
 }
 
-function isNearEndGame() {
+function getTimeleft() {
 	var cTime = new Date();
 	var cHours = cTime.getUTCHours();
 	var cMins = cTime.getUTCMinutes();
 	var timeLeft = 60 - cMins;
-	if (cHours == 15 && timeLeft <= 60 && timeLeft >= 15) {
-		return true;
+
+	if (cHours == 15) {
+		return timeLeft;
 	}
-	else {
-		return false;
-	}
+
+	return 61;
 }
 
 function MainLoop() {
@@ -415,9 +415,9 @@ function MainLoop() {
 		goToLaneWithBestTarget(level);
 
 		attemptRespawn();
-		
-		var timeLeft = isNearEndGame(); // Time left in minutes
-		
+
+		var timeLeft = getTimeleft(); // Time left in minutes
+
 		if(timeLeft <= 15) {
 			useAllAbilities();
 		} else {
