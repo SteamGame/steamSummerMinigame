@@ -41,6 +41,8 @@ function initLeaderboard() {
     thc.appendChild(document.createTextNode('Rank'));
     thn.appendChild(document.createTextNode('Name'));
     thl.appendChild(document.createTextNode('Level'));
+    
+    thn.style.textAlign = "center";
 
     th.appendChild(thc);
     th.appendChild(thn);
