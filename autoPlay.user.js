@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.6.2
+// @version 4.6.3
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -492,13 +492,6 @@ function MainLoop() {
 					);
 				}
 			}
-		}
-
-		// Prune older entries (for real)
-		var e = s().m_rgActionLog;
-		if(e.length > 20)
-		{
-			s().m_rgActionLog = e.slice(-20);
 		}
 	}
 }
