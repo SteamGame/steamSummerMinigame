@@ -359,7 +359,7 @@ function MainLoop() {
 	{
 		return;
 	}
-	
+
 	var level = s().m_rgGameData.level + 1;
 
 
@@ -446,7 +446,7 @@ function MainLoop() {
 				}
 			}
 		}
-		
+
 		// Prune older entries (for real)
 		var e = s().m_rgActionLog;
 		if(e.length > 20)
@@ -1074,6 +1074,13 @@ function goToLaneWithBestTarget(level) {
 		} else {
 			enableAbility(ABILITIES.WORMHOLE);
 		}
+
+		// Disable raining gold for the first levels
+		if(level < CONTROL.rainingRounds) {
+			disableAbility(ABILITIES.RAINING_GOLD);
+		} else {
+			enableAbility(ABILITIES.RAINING_GOLD);
+		}		
 	}
 }
 
@@ -1284,7 +1291,7 @@ function useAbilities(level)
 			// check if current target is a boss, otherwise its not worth using the gold rain
 			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-	
+
 				if (enemyBossHealthPercent >= 0.6) { // We want sufficient time for the gold rain to be applicable
 					// Gold Rain is purchased, cooled down, and needed. Trigger it.
 					advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
@@ -1637,7 +1644,7 @@ function expectedLevel(level) {
 	var passed_time = getCurrentTime() - s().m_rgGameData.timestamp_game_start;
 	var expected_level = Math.floor(((level/passed_time)*remaining_time)+level);
 	var likely_level = Math.floor((expected_level - level)/Math.log(3))+ level;
-	
+
 	return {expected_level : expected_level, likely_level : likely_level, remaining_time : remaining_time};
 }
 
