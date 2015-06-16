@@ -1336,9 +1336,9 @@ function useAbilities(level)
 	}
 
 	// Max Elemental
-	if (tryUsingAbility(ABILITIES.MAX_ELEMENTAL_DAMAGE, true)) {
+	if (typeof s().m_rgLaneData[s().m_rgPlayerData.current_lane].abilities[ABILITIES.MAX_ELEMENTAL_DAMAGE] == 'undefined' && tryUsingAbility(ABILITIES.MAX_ELEMENTAL_DAMAGE, true)) {
 		// Max Elemental Damage is purchased, cooled down, and needed. Trigger it.
-		advLog('Max Elemental Damage is purchased and cooled down, triggering it.', 2);
+		advLog('Max Elemental Damage is purchased and cooled down and not active in lane, triggering it.', 2);
 	}
 
 	// Wormhole
