@@ -560,7 +560,7 @@ function useAutoUpgrade() {
     var pData = s().m_rgPlayerData;
     var pTree = s().m_rgPlayerTechTree;
     var cache = s().m_UI.m_rgElementCache;
-    var pHealthPercent = pData.hp / pTree.max_hp;
+    var pHealthPercent = pData.hp / pTree.max_hp * 100;
     var upg_enabled = [
         enableAutoUpgradeClick,
         enableAutoUpgradeHP && (pHealthPercent < healthPercentage || pTree.max_hp < 300000),
