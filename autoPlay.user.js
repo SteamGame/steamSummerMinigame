@@ -399,6 +399,17 @@ function getTimeleft() {
 	return 61;
 }
 
+function GetSuffix(value) {
+    var text = "" + value.toFixed(0);
+    
+    if (value > 1000000000000) { text = (value / 1000000000000).toFixed(2) + "T"; }
+    else if (value > 1000000000) { text = (value / 1000000000).toFixed(2) + "B"; }
+    else if (value > 1000000) { text = (value / 1000000).toFixed(2) + "M"; }
+    else if (value > 1000) { text = (value / 1000).toFixed(2) + "K"; }
+    
+    return text;
+}
+
 function MainLoop() {
 	var status = s().m_rgGameData.status;
 	if(status != GAME_STATUS.RUNNING) {
@@ -460,12 +471,9 @@ function MainLoop() {
 
 		var dps = (damagePerClick * currentClickRate) + s().m_rgPlayerTechTree.dps;
 		var dpsText = "" + dps;
-        if (dps > 1000000000000) { dpsText = (dps / 1000000000000).toFixed(2) + "T"; }
-		else if (dps > 1000000000) { dpsText = (dps / 1000000000).toFixed(2) + "B"; }
-		else if (dps > 1000000) { dpsText = (dps / 1000000).toFixed(2) + "M"; }
-		else if (dps > 1000) { dpsText = (dps / 1000).toFixed(2) + "K"; }
 
-		document.getElementById('dps').innerHTML = "Current damage per second:<br/>" + dpsText;
+		document.getElementById('dps').innerHTML = "Current damage per second:<br/>" + GetSuffix((damagePerClick * currentClickRate) + s().m_rgPlayerTechTree.dps) + 
+            " (" + GetSuffix(damagePerClick * currentClickRate) + " + " + GetSuffix(s().m_rgPlayerTechTree.dps) + ")";
 
 		if(disableRenderer) {
 			s().Tick();
@@ -512,14 +520,8 @@ function MainLoop() {
 						4
 					);
                     
-					var gpcText = (goldPerClickPercentage * 100).toFixed(0) + "%";
-					var gpsText = "" + goldPerSecond.toFixed(0);
-					if (goldPerSecond > 1000000000000) { gpsText = (goldPerSecond / 1000000000000).toFixed(2) + "T"; }
-                    else if (goldPerSecond > 1000000000) { gpsText = (goldPerSecond / 1000000000).toFixed(2) + "B"; }
-					else if (goldPerSecond > 1000000) { gpsText = (goldPerSecond / 1000000).toFixed(2) + "M"; }
-					else if (goldPerSecond > 1000) { gpsText = (goldPerSecond / 1000).toFixed(2) + "K"; }
-                    
-					document.getElementById('gps').innerHTML = "Current gold per second:<br/>" + gpsText + "(" + gpcText + ")";
+					document.getElementById('gps').innerHTML = "Current gold per second:<br/>" + GetSuffix(goldPerSecond) + 
+                        " (" + (goldPerClickPercentage * 100).toFixed(0) + "%)";
 
 					displayText(
 						enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
