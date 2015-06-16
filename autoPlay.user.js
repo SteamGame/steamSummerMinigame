@@ -543,10 +543,11 @@ function useAutoUpgrade() {
 
 	upg_order.forEach(function(i) { upg_map[i] = {}; });
 	var pData = s().m_rgPlayerData;
+	var pTree = s().m_rgPlayerTechTree;
 	var cache = s().m_UI.m_rgElementCache;
 	var upg_enabled = [
 		enableAutoUpgradeClick,
-		enableAutoUpgradeHP && pData.hp < 300000,
+		enableAutoUpgradeHP && pTree.max_hp < 300000,
 		enableAutoUpgradeDPS,
 	];
 
