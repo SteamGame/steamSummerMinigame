@@ -9,6 +9,7 @@
 	"laxbreak": true,
 	"globals":
 	{
+		"GM_xmlhttpRequest": false,
 		"GM_info": false
 	}
 }
