@@ -141,7 +141,8 @@ var BOSS_DISABLED_ABILITIES = [
 
 var CONTROL = {
 	speedThreshold: 5000,
-	rainingRounds: 250
+	rainingRounds: 250,
+	disableGoldRainLevels: 500
 };
 
 var GAME_STATUS = {
@@ -1278,7 +1279,7 @@ function useAbilities(level)
 	if (canUseAbility(ABILITIES.RAINING_GOLD)) {
 		// only use if the speed threshold has not been reached,
 		// or it's a designated gold round after the threshold
-		if (level < CONTROL.speedThreshold || level % CONTROL.rainingRounds === 0) {
+		if (level > CONTROL.disableGoldRainLevels && (level < CONTROL.speedThreshold || level % CONTROL.rainingRounds === 0)) {
 			enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 			// check if current target is a boss, otherwise its not worth using the gold rain
 			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
