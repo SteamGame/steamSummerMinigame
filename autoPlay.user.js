@@ -503,9 +503,7 @@ function MainLoop() {
 function useAllAbilities() {
 	for(var key in ABILITIES) {
 		if(ABILITIES[key] == ABILITIES.WORMHOLE) { continue; }
-		if(canUseAbility(ABILITIES[key])) {
-			tryUsingAbility(ABILITIES[key]);
-		}
+		tryUsingAbility(ABILITIES[key]);
 	}
 }
 
