@@ -2,38 +2,21 @@
 
 [![forthebadge](http://forthebadge.com/images/badges/fuck-it-ship-it.svg)](http://forthebadge.com) [![Build Status](https://travis-ci.org/SteamDatabase/steamSummerMinigame.svg?branch=master)](https://travis-ci.org/SteamDatabase/steamSummerMinigame)
 
-## Purpose ##
-
-it cheats for you.
-
-This fork has:
-* Elemental damage prioritizing, gold prioritizing
-* Auto clicking
-* Tickrate set to 1000ms every second
-* Disable most particles
-* Auto use abilities
-* idk
-
-
 ## Features ##
 
-- Moves you to the lane most likely to give you gold, prioritized like so:
-	1. The lane with a Treasure Minion or Boss
-	2. The lane with the Miniboss with the lowest health
-	3. The lane with a Spawner below 40% health
-	4. The lane with a Creep below 10% health
-	5. The lane with the Spawner with the lowest health
-- Activates most reusable abilities, if they are purchased and cooled down:
-	- Medics if your health is below 50%
-	- Morale Booster, Napalm, and Cluster Bombs if the lane has a Spawner and 2-3 Creeps
-	- Good Luck Charm as soon as possible
-	- Tactical Nuke if the current Spawner is between 60% and 30% health
-- Activates some items if you have them and the situation calls for them:
-	- God Mode if Medics is in cooldown and your health is low
-	- Cripple Spawner if the spawner in the current lane has more than 95% health
-	- Gold Rain if facing a Boss who has more than 60% health
-- Respawns you after 5 seconds (instead of 1 minute) if you die
-- Disables certain abilities and items if facing a Boss (to try to maximize Raining Gold and Metal Detector benefits)
+This is a script that plays the [Monster Summer Game](http://steamcommunity.com/minigame/) for you. It has a lot of features, and the most important are:
+* Auto buy DPS and click upgrades if they are cost-effective
+* Lock elemental for more team DPS
+* Auto clicking
+* Auto use damage and healing abilities
+* Options box
+* Reduced memory-leak
+* Room indicator
+* Expected level indicator
+* Moves you to the lane most that gives you most gold
+* Disable certain abilities if fighting a boss
+* Auto respawn
+* Auto heal
 
 ## Installation ##
 
