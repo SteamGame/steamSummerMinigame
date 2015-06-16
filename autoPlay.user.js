@@ -277,7 +277,7 @@ function firstRun() {
 	options1.style.float = "left";
 
 	options1.appendChild(makeCheckBox("enableAutoClicker", "Enable autoclicker", enableAutoClicker, toggleAutoClicker, false));
-	options1.appendChild(makeCheckBox("enableAutoUpgradeHP", "Enable AutoUpgrade HP (up to 500k HP)", enableAutoUpgradeHP, toggleAutoUpgradeHP, false));
+	options1.appendChild(makeCheckBox("enableAutoUpgradeHP", "Enable AutoUpgrade HP (up to 300k HP)", enableAutoUpgradeHP, toggleAutoUpgradeHP, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeClick", "Enable AutoUpgrade Clicks", enableAutoUpgradeClick, toggleAutoUpgradeClick, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeDPS", "Enable AutoUpgrade DPS", enableAutoUpgradeDPS, toggleAutoUpgradeDPS, false));
 	options1.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleEvent, true));
@@ -472,7 +472,7 @@ function useAutoUpgrade() {
 	var cache = s().m_UI.m_rgElementCache;
 	var upg_enabled = [
 		enableAutoUpgradeClick,
-		enableAutoUpgradeHP && pData.hp < 500000,
+		enableAutoUpgradeHP && pData.hp < 300000,
 		enableAutoUpgradeDPS,
 	];
 
@@ -514,8 +514,8 @@ function useAutoUpgrade() {
 		if(!upg_enabled[i]) { continue; }
 
 		// prioritize click upgrades over DPS ones, unless they are more cost effective
-		if(upg_order[i] === UPGRADES.AUTO_FIRE_CANNON) {
-			if(upg_map[UPGRADES.AUTO_FIRE_CANNON].cost_per_mult < upg_map[UPGRADES.ARMOR_PIERCING_ROUND].cost_per_mult * 10) { continue; }
+		if(upg_order[i] === UPGRADES.AUTO_FIRE_CANNON && enableAutoUpgradeClick) {
+			if(upg_map[UPGRADES.AUTO_FIRE_CANNON].cost_per_mult >= upg_map[UPGRADES.ARMOR_PIERCING_ROUND].cost_per_mult / 10) { continue; }
 		}
 
 		var tree = upg_map[upg_order[i]];
