@@ -92,4 +92,6 @@ This project is open-source on github. There are different ways you can help:
 
 - Do NOT change the script version in your PR as it could be incremented before your PR is merged.
 - Test your changes both in console and Greasemonkey/Tampermonkey.
+- [Rebase](https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request) your PR branch when you're done and upstream has changed.
+- Do NOT delete the current one and make a new PR to add new commits, just keep commiting on the PR's branch.
 - Squash your commits before submitting the PR.
