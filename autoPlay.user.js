@@ -458,7 +458,7 @@ function MainLoop() {
 
 		advLog("Ticked. Current clicks per second: " + absoluteCurrentClickRate + ". Current damage per second: " + (damagePerClick * absoluteCurrentClickRate), 4);
 
-		var dps = (damagePerClick * currentClickRate);
+		var dps = (damagePerClick * currentClickRate) + s().m_rgPlayerTechTree.dps;
 		var dpsText = "" + dps;
         if (dps > 1000000000000) { dpsText = (dps / 1000000000000).toFixed(2) + "T"; }
 		else if (dps > 1000000000) { dpsText = (dps / 1000000000).toFixed(2) + "B"; }
