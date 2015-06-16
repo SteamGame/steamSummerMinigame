@@ -237,6 +237,7 @@ function firstRun() {
 
 	// space for option menu
 	var options_menu = document.querySelector(".game_options");
+	options_menu.style.height = "";
 	var sfx_btn = document.querySelector(".toggle_sfx_btn");
 	sfx_btn.style.marginLeft = "2px";
 	sfx_btn.style.marginRight = "7px";
@@ -250,8 +251,7 @@ function firstRun() {
 	leave_btn.style.display = "none";
 
 	var info_box = document.querySelector(".leave_game_helper");
-	var pagecontent = document.querySelector(".pagecontent");
-	pagecontent.style.padding = "0";
+	document.querySelector(".pagecontent").style.padding = "0";
 	options_menu.insertBefore(info_box, sfx_btn);
 
 	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !==  "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span style="color:#FF5252;font-size:22px;line-height:4px;vertical-align:bottom;">*</span> requires a refresh to take effect.<hr>';
