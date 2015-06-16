@@ -408,8 +408,12 @@ function MainLoop() {
 		goToLaneWithBestTarget(level);
 
 		attemptRespawn();
-
-		useAbilities(level);
+		
+		if(isNearEndGame()) {
+			useAllAbilities();
+		} else {
+			useAbilities(level);
+		}
 
 		updatePlayersInGame();
 
@@ -491,6 +495,14 @@ function MainLoop() {
 		if(e.length > 20)
 		{
 			s().m_rgActionLog = e.slice(-20);
+		}
+	}
+}
+
+function useAllAbilities() {
+	for(var key in ABILITIES) {
+		if(canUseAbility(ABILITIES[key])) {
+			tryUsingAbility(ABILITIES[key]);
 		}
 	}
 }
