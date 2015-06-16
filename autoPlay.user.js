@@ -356,7 +356,7 @@ function MainLoop() {
 	{
 		return;
 	}
-	
+
 	var level = s().m_rgGameData.level + 1;
 
 
@@ -443,7 +443,7 @@ function MainLoop() {
 				}
 			}
 		}
-		
+
 		// Prune older entries (for real)
 		var e = s().m_rgActionLog;
 		if(e.length > 20)
@@ -492,13 +492,13 @@ function useAutoUpgrade() {
 	var key = '';
 	var cache = s().m_UI.m_rgElementCache;
 
-	if(enableAutoUpgradeDPS) {
-		key = 'upgr_' + upg_map[UPGRADES.AUTO_FIRE_CANNON].idx;
+	if(enableAutoUpgradeClick) {
+		key = 'upgr_' + upg_map[UPGRADES.ARMOR_PIERCING_ROUND].idx;
 		if(cache.hasOwnProperty(key)) { s().TryUpgrade(cache[key].find('.link')[0]); }
 	}
 
-	if(enableAutoUpgradeClick) {
-		key = 'upgr_' + upg_map[UPGRADES.ARMOR_PIERCING_ROUND].idx;
+	if(enableAutoUpgradeDPS) {
+		key = 'upgr_' + upg_map[UPGRADES.AUTO_FIRE_CANNON].idx;
 		if(cache.hasOwnProperty(key)) { s().TryUpgrade(cache[key].find('.link')[0]); }
 	}
 }
@@ -1240,7 +1240,7 @@ function useAbilities(level)
 
 	// Gold Rain
 	if (canUseAbility(ABILITIES.RAINING_GOLD)) {
-	
+
 		enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 		// check if current target is a boss, otherwise its not worth using the gold rain
 		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
@@ -1597,7 +1597,7 @@ function expectedLevel(level) {
 	var passed_time = getCurrentTime() - s().m_rgGameData.timestamp_game_start;
 	var expected_level = Math.floor(((level/passed_time)*remaining_time)+level);
 	var likely_level = Math.floor((expected_level - level)/Math.log(3))+ level;
-	
+
 	return {expected_level : expected_level, likely_level : likely_level, remaining_time : remaining_time};
 }
 
