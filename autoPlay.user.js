@@ -18,6 +18,7 @@
 // OPTIONS
 var clickRate = 20;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
+var healthPercentage = 10;
 
 var nukeBeforeReset = getPreferenceBoolean("nukeBeforeReset", true);
 
@@ -328,6 +329,7 @@ function firstRun() {
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, toggleFingering, false));
 	options2.appendChild(makeCheckBox("nukeBeforeReset", "Spam abilities 1 hour before game end", nukeBeforeReset, handleEvent, true));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", logLevel, 0, 5, updateLogLevel));
+    options2.appendChild(makeNumber("healthPercentage", "If you get blow this HP% buy more", healthPercentage, 1, 30, updateHealthPercentage));
 
 	info_box.appendChild(options2);
 
@@ -558,9 +560,10 @@ function useAutoUpgrade() {
 	var pData = s().m_rgPlayerData;
 	var pTree = s().m_rgPlayerTechTree;
 	var cache = s().m_UI.m_rgElementCache;
+    var pHealthPercent = pData.hp / pTree.max_hp
 	var upg_enabled = [
 		enableAutoUpgradeClick,
-		enableAutoUpgradeHP && pTree.max_hp < 300000,
+		enableAutoUpgradeHP && (pHealthPercent < healthPercentage || pTree.max_hp < 300000),
 		enableAutoUpgradeDPS,
 	];
 
@@ -921,6 +924,12 @@ function updateLogLevel(event) {
 	if(event !== undefined) {
 		logLevel = event.target.value;
 	}
+}
+
+function updateHealthPercentage(event) {
+    if(event !== undefined) {
+        healthPercentage = event.target.value;
+    }
 }
 
 function setPreference(key, value) {
