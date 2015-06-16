@@ -344,7 +344,7 @@ function isNearEndGame() {
 	var cHours = cTime.getUTCHours();
 	var cMins = cTime.getUTCMinutes();
 	var timeLeft = 60 - cMins;
-	if (cHours == 15 && timeLeft <= 60) {
+	if (cHours == 15 && timeLeft <= 60 && timeLeft >= 15) {
 		return true;
 	}
 	else {
