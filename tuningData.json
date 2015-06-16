@@ -1,5 +1,5 @@
 {
-    "version": 1434388755,
+    "version": 1434425115,
     "player": {
         "respawn_time": 60,
         "min_dead_time": 5,
@@ -251,7 +251,7 @@
             "instant": 1,
             "duration": 0,
             "cooldown": 5,
-            "desc": "Gives you 100k of gold and automatically deploys Metal Detector in your lane for free."
+            "desc": "Gives you a base 100k of gold and automatically deploys Metal Detector in your lane for free.<br><br>More gold will be given based on the level you are on when this item is used."
         },
         "23": {
             "name": "Steal Health",
@@ -276,8 +276,8 @@
             "instant": 1,
             "duration": 10,
             "cooldown": 1800,
-            "start_of_game_cooldown": 600,
-            "desc": "Grant every alive player in your lane one random special item.<br><br>This item can only be acquired by spending badge points and cannot be activated within the first 10 minutes of the game."
+            "start_of_game_cooldown": 0,
+            "desc": "Grant every alive player in your lane one random special item.<br><br>This item can only be acquired by spending badge points."
         },
         "26": {
             "name": "Wormhole",
@@ -287,8 +287,8 @@
             "instant": 1,
             "duration": 10,
             "cooldown": 60,
-            "start_of_game_cooldown": 600,
-            "desc": "Skips a level with each use (stackable) and grants 50k of gold to every player. However, enemies will not drop gold or loot for any skipped levels.<br><br>You must defeat a boss level after using Wormhole in order to level up your Monster Summer Badge.<br><br>This item can only be acquired by spending badge points and cannot be activated within the first 10 minutes of the game."
+            "start_of_game_cooldown": 0,
+            "desc": "Skip a level with each use (stackable) after the current level has been cleared, and grants 50k of gold to every player. Enemies will not drop gold or loot for any skipped levels.<br><br>When used on every 100th level, will skip 10 levels with each use and grant the appropriate amount of gold.<br><br>You must defeat a boss level after using Wormhole in order to level up your Monster Summer Badge.<br><br>This item can only be acquired by spending badge points."
         },
         "27": {
             "name": "Like New",
@@ -296,8 +296,8 @@
             "badge_points_cost": 100,
             "duration": 5,
             "cooldown": 1,
-            "start_of_game_cooldown": 600,
-            "desc": "While active, clears the cooldown on every ability for all players in your lane.<br><br>This item can only be acquired by spending badge points and cannot be activated within the first 10 minutes of the game."
+            "start_of_game_cooldown": 0,
+            "desc": "While active, clears the cooldown on every ability for all players in your lane.<br><br>This item can only be acquired by spending badge points."
         }
     },
     "upgrades": {
@@ -547,7 +547,7 @@
             "name": "Cybernetic Enhancements",
             "multiplier": 10000,
             "type": 0,
-            "cost": 10000000,
+            "cost": "10000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 23,
             "required_upgrade_level": 10,
@@ -557,7 +557,7 @@
             "name": "Level 1 Sentry Gun",
             "multiplier": 10000,
             "type": 1,
-            "cost": 10000000,
+            "cost": "10000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 24,
             "required_upgrade_level": 10,
@@ -567,9 +567,69 @@
             "name": "Titanium Mouse Button",
             "multiplier": 10000,
             "type": 2,
-            "cost": 10000000,
+            "cost": "10000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 25,
+            "required_upgrade_level": 10,
+            "desc": "Increases your click damage"
+        },
+        "29": {
+            "name": "Exoskeleton",
+            "multiplier": 100000,
+            "type": 0,
+            "cost": "100000000.0",
+            "cost_exponential_base": "2.2",
+            "required_upgrade": 26,
+            "required_upgrade_level": 10,
+            "desc": "Increases your health (HP)"
+        },
+        "30": {
+            "name": "Level 2 Sentry Gun",
+            "multiplier": 100000,
+            "type": 1,
+            "cost": "100000000.0",
+            "cost_exponential_base": "2.2",
+            "required_upgrade": 27,
+            "required_upgrade_level": 10,
+            "desc": "Increases the damage inflicted by your Auto-fire Cannon"
+        },
+        "31": {
+            "name": "Double-Barrelled Mouse",
+            "multiplier": 100000,
+            "type": 2,
+            "cost": "100000000.0",
+            "cost_exponential_base": "2.2",
+            "required_upgrade": 28,
+            "required_upgrade_level": 10,
+            "desc": "Increases your click damage"
+        },
+        "32": {
+            "name": "Yoga Training",
+            "multiplier": 1000000,
+            "type": 0,
+            "cost": "1000000000.0",
+            "cost_exponential_base": "2.2",
+            "required_upgrade": 29,
+            "required_upgrade_level": 10,
+            "desc": "Increases your health (HP)"
+        },
+        "33": {
+            "name": "Level 3 Sentry Gun",
+            "multiplier": 1000000,
+            "type": 1,
+            "cost": "1000000000.0",
+            "cost_exponential_base": "2.2",
+            "required_upgrade": 30,
+            "required_upgrade_level": 10,
+            "desc": "Increases the damage inflicted by your Auto-fire Cannon"
+        },
+        "34": {
+            "name": "Bionic Finger",
+            "multiplier": 1000000,
+            "type": 2,
+            "cost": "1000000000.0",
+            "cost_exponential_base": "2.2",
+            "required_upgrade": 31,
             "required_upgrade_level": 10,
             "desc": "Increases your click damage"
         }
