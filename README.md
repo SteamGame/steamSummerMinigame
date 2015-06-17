@@ -2,6 +2,8 @@
 
 [![forthebadge](http://forthebadge.com/images/badges/fuck-it-ship-it.svg)](http://forthebadge.com) [![Build Status](https://travis-ci.org/SteamDatabase/steamSummerMinigame.svg?branch=master)](https://travis-ci.org/SteamDatabase/steamSummerMinigame)
 
+## Current Version: 4.8.1
+
 ## Purpose ##
 
 it cheats for you.
