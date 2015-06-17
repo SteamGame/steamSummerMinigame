@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.8.6
+// @version 4.8.7
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -1279,15 +1279,6 @@ function goToLaneWithBestTarget(level) {
 		BOSS_DISABLED_ABILITIES.forEach(enableAbility);
 	}
 
-	// Always disable wormhole on lower levels
-	if(level < CONTROL.speedThreshold) {
-		disableAbility(ABILITIES.WORMHOLE);
-		disableAbility(ABILITIES.LIKE_NEW);
-	} else {
-		enableAbility(ABILITIES.WORMHOLE);
-		enableAbility(ABILITIES.LIKE_NEW);
-	}
-
 	// Disable raining gold for the first levels
 	if(level < CONTROL.rainingRounds) {
 		disableAbility(ABILITIES.RAINING_GOLD);
@@ -1363,6 +1354,9 @@ function useAbilities(level)
 
 	// Wormhole
 	if(level > CONTROL.speedThreshold && levelRainingMod === 0) {
+		enableAbility(ABILITIES.WORMHOLE);
+		enableAbility(ABILITIES.LIKE_NEW);
+
 		advLog('Trying to trigger cooldown and wormhole...', 1);
 
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
@@ -1375,6 +1369,9 @@ function useAbilities(level)
 
 		// Exit right now so we don't use any other abilities after wormhole
 		return;
+	} else {
+		disableAbility(ABILITIES.WORMHOLE);
+		disableAbility(ABILITIES.LIKE_NEW);
 	}
 
 	// Skip doing any damage x levels before upcoming wormhole round
