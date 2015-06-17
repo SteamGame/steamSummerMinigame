@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.7.2
+// @version 4.7.3
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -49,7 +49,7 @@ var autoRefreshSecondsCheckLoadedDelay = 30;
 var isPastFirstRun = false;
 var isAlreadyRunning = false;
 var refreshTimer = null;
-var currentClickRate = clickRate;
+var currentClickRate = enableAutoClicker ? clickRate : 0;
 var lastLevel = 0;
 var trt_oldCrit = function() {};
 var trt_oldPush = function() {};
