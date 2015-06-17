@@ -574,14 +574,25 @@ function useAutoUpgrade() {
 	s().m_rgTuningData.upgrades.forEach(function(upg, idx) {
 		if(upg_map.hasOwnProperty(upg.type)) {
 
-			var cost = s().GetUpgradeCost(idx) / parseFloat(upg.multiplier);
+			var multiplier;
+			switch(upg.type) {
+				case 2: // Type for click damage. All tiers.
+					var new_damage = pTree.damage_per_click + pTree.base_dps * parseFloat(upg.multiplier);
+					multiplier = new_damage / pTree.damage_per_click;
+					break;
+				default:
+					multiplier = parseFloat(upg.multiplier);
+					break;
+			}
+			var cost_per_mult = s().GetUpgradeCost(idx) / multiplier;
 
-			if(!upg_map[upg.type].hasOwnProperty('idx') || upg_map[upg.type].cost_per_mult > cost) {
+			if(!upg_map[upg.type].hasOwnProperty('idx') || upg_map[upg.type].cost_per_mult > cost_per_mult) {
+				// skip this upgrade if another upgrade is required at a certain level
 				if(upg.hasOwnProperty('required_upgrade') && s().GetUpgradeLevel(upg.required_upgrade) < upg.required_upgrade_level) { return; }
 
 				upg_map[upg.type] = {
 					'idx': idx,
-					'cost_per_mult': cost,
+					'cost_per_mult': cost_per_mult,
 				};
 			}
 		}
