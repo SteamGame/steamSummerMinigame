@@ -146,8 +146,9 @@ var BOSS_DISABLED_ABILITIES = [
 var CONTROL = {
 	speedThreshold: 5000,
 	rainingRounds: 250,
+	endGame: 960,
 	disableGoldRainLevels: 500,
-	nukeStartMinutes: 60,
+	nukeStartMinutes: 150, // 2 hours and 30 minutes
 	wormholeRounds: 100,
 	wormholeEndMinutes: 15,
 	goldholeThreshold: 2000
@@ -391,13 +392,16 @@ function getTimeleft() {
 	var cTime = new Date();
 	var cHours = cTime.getUTCHours();
 	var cMins = cTime.getUTCMinutes();
-	var timeLeft = 60 - cMins;
+	
+	cMins += cHours * 60;
 
-	if (cHours == 15) {
-		return timeLeft;
+	var timeLeft = CONTROL.endGame - cMins;
+
+	if (timeLeft < 0) {
+		timeLeft += 1440; // +One day in minutes
 	}
 
-	return 61;
+	return timeLeft;
 }
 
 function MainLoop() {
