@@ -634,94 +634,94 @@
             "desc": "Increases your click damage"
         },
         "35": {
-            "name": "#TowerAttack_Upgrade_HP8",
+            "name": "Protein Shakes",
             "multiplier": 10000000,
             "type": 0,
             "cost": "10000000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 32,
             "required_upgrade_level": 10,
-            "desc": "#TowerAttack_Upgrade_HP8_Desc"
+            "desc": "Increases your health (HP)"
         },
         "36": {
-            "name": "#TowerAttack_Upgrade_DPS8",
+            "name": "Level 1 Drones",
             "multiplier": 10000000,
             "type": 1,
             "cost": "10000000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 33,
             "required_upgrade_level": 10,
-            "desc": "#TowerAttack_Upgrade_DPS8_Desc"
+            "desc": "Increases the damage inflicted by your Auto-fire Cannon"
         },
         "37": {
-            "name": "#TowerAttack_Upgrade_Click8",
+            "name": "Two Bionic Fingers",
             "multiplier": 10000000,
             "type": 2,
             "cost": "10000000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 34,
             "required_upgrade_level": 10,
-            "desc": "#TowerAttack_Upgrade_Click8_Desc"
+            "desc": "Increases your click damage"
         },
         "38": {
-            "name": "#TowerAttack_Upgrade_HP9",
+            "name": "Martial Arts Training",
             "multiplier": 100000000,
             "type": 0,
             "cost": "100000000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 35,
             "required_upgrade_level": 10,
-            "desc": "#TowerAttack_Upgrade_HP9_Desc"
+            "desc": "Increases your health (HP)"
         },
         "39": {
-            "name": "#TowerAttack_Upgrade_DPS9",
+            "name": "Level 2 Drones",
             "multiplier": 100000000,
             "type": 1,
             "cost": "100000000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 36,
             "required_upgrade_level": 10,
-            "desc": "#TowerAttack_Upgrade_DPS9_Desc"
+            "desc": "Increases the damage inflicted by your Auto-fire Cannon"
         },
         "40": {
-            "name": "#TowerAttack_Upgrade_Click9",
+            "name": "Bionic Hand",
             "multiplier": 100000000,
             "type": 2,
             "cost": "100000000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 37,
             "required_upgrade_level": 10,
-            "desc": "#TowerAttack_Upgrade_Click9_Desc"
+            "desc": "Increases your click damage"
         },
         "41": {
-            "name": "#TowerAttack_Upgrade_HP10",
+            "name": "Seriously? Another HP Upgrade",
             "multiplier": 1000000000,
             "type": 0,
             "cost": "1000000000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 38,
             "required_upgrade_level": 10,
-            "desc": "#TowerAttack_Upgrade_HP10_Desc"
+            "desc": "Increases your health (HP)"
         },
         "42": {
-            "name": "#TowerAttack_Upgrade_DPS10",
+            "name": "Level 3 Drones",
             "multiplier": 1000000000,
             "type": 1,
             "cost": "1000000000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 39,
             "required_upgrade_level": 10,
-            "desc": "#TowerAttack_Upgrade_DPS10_Desc"
+            "desc": "Increases the damage inflicted by your Auto-fire Cannon"
         },
         "43": {
-            "name": "#TowerAttack_Upgrade_Click10",
+            "name": "Bionic Arm",
             "multiplier": 1000000000,
             "type": 2,
             "cost": "1000000000000.0",
             "cost_exponential_base": "2.2",
             "required_upgrade": 40,
             "required_upgrade_level": 10,
-            "desc": "#TowerAttack_Upgrade_Click10_Desc"
+            "desc": "Increases your click damage"
         }
     }
 }
