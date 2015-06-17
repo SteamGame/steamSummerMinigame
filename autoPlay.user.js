@@ -43,6 +43,15 @@ var autoRefreshMinutes = 30;
 var autoRefreshMinutesRandomDelay = 10;
 var autoRefreshSecondsCheckLoadedDelay = 30;
 
+var enableDrag = 1;
+var dragStart = 5; //Slow down click when within x ticks of a WH Boss
+var maxDrag = 0.1;
+var velocityFalloff = 0.95; //Exponent for dropoff velocity calculation.
+var velicityOutlier = 1000; //Ignore outliers in velocity likely caused by WH
+
+// Persistent info
+var levelVelocity = 0.0; //Velocity in levels per tick
+
 // DO NOT MODIFY
 var isPastFirstRun = false;
 var isAlreadyRunning = false;
@@ -425,6 +434,7 @@ function MainLoop() {
 
 		updatePlayersInGame();
 
+		var levelDelta = level-lastLevel;
 		if( level !== lastLevel ) {
 			lastLevel = level;
 			updateLevelInfoTitle(level);
@@ -434,12 +444,24 @@ function MainLoop() {
 		useAutoUpgrade();
 		useAutoPurchaseAbilities();
 
+		//Update velocity and estimate correct clickrate to hit 'rain rounds' without overshooting.
+		if(levelDelta < velicityOutlier){
+			levelVelocity = (velocityFalloff * levelVelocity) + ((1.0-velocityFalloff) * (levelDelta));
+		}
+		var leveldistance = CONTROL.rainingRounds - (level%CONTROL.rainingRounds);
+		var tickdistance = leveldistance/levelVelocity;
+		var drag = 1.0;
+		if(tickdistance < 5 && enableDrag === 1){
+		  drag = Math.max(tickdistance/5,maxDrag); //Compute drag, but never go smaller than maxDrag;
+		}
+		
 		var absoluteCurrentClickRate = 0;
-
+		
 		if(currentClickRate > 0) {
+
 			var levelRainingMod = level % CONTROL.rainingRounds;
 
-			absoluteCurrentClickRate = level > CONTROL.goldholeThreshold && (levelRainingMod === 0 || 3 >= (CONTROL.rainingRounds - levelRainingMod)) ? 2 : currentClickRate;
+			absoluteCurrentClickRate = level > CONTROL.goldholeThreshold && (levelRainingMod === 0 || 3 >= (CONTROL.rainingRounds - levelRainingMod)) ? 2 : Math.round(currentClickRate * drag);
 
 			s().m_nClicks += absoluteCurrentClickRate;
 		}
