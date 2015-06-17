@@ -36,6 +36,7 @@ var removeCritText = getPreferenceBoolean("removeCritText", false);
 var removeAllText = getPreferenceBoolean("removeAllText", false);
 var enableFingering = getPreferenceBoolean("enableFingering", true);
 var disableRenderer = getPreferenceBoolean("disableRenderer", true);
+var enablePurchaseWormhole = getPreferenceBoolean("enablePurchaseWormhole", true);
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
@@ -327,6 +328,7 @@ function firstRun() {
 
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, toggleFingering, false));
 	options2.appendChild(makeCheckBox("nukeBeforeReset", "Spam abilities 1 hour before game end", nukeBeforeReset, handleEvent, true));
+	options2.appendChild(makeCheckBox("enablePurchaseWormhole", "Spend available badge points on wormholes", enablePurchaseWormhole, handleEvent, false));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
@@ -411,6 +413,30 @@ function MainLoop() {
 	}
 
 	var level = s().m_rgGameData.level + 1;
+	
+	// check if the spend badge points dialog is displayed
+	if (s().m_UI.m_spendBadgePointsDialog[0].style.display != 'none') {
+		if (enablePurchaseWormhole) {
+			var avalPoints = s().m_rgPlayerTechTree.badge_points;
+			var wormholeCost = 100;
+			var buyInterval = null;
+			
+			if (avalPoints >= wormholeCost) {
+				console.log('User has enough badge points to buy Wormholes, buying them.');
+				buyInterval = w.setInterval(function() {
+					s().TrySpendBadgePoints(document.getElementById('purchase_abilityitem_26')); // todo: replace this function with something else
+					// update the dialog
+					s().m_UI.UpdateSpendBadgePointsDialog();
+					avalPoints = s().m_rgPlayerTechTree.badge_points;
+				}, 500);
+			}
+			
+			if (buyInterval) {
+				w.clearInterval(buyInterval);
+				s().m_rgPlayerTechTree.badge_points = 0;
+			}
+		}
+	}
 
 
 	if (!isAlreadyRunning) {
