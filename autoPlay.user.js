@@ -143,7 +143,7 @@ var BOSS_DISABLED_ABILITIES = [
 ];
 
 var CONTROL = {
-	speedThreshold: 2000,
+	speedThreshold: 500,
 	rainingRounds: 100,
 	disableGoldRainLevels: 500,
 	rainingSafeRounds: 10
