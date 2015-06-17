@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.7.3
+// @version 4.7.4
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -1325,6 +1325,7 @@ function useAbilities(level, timeLeft)
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
 		tryUsingAbility(ABILITIES.WORMHOLE);
 		tryUsingAbility(ABILITIES.RAINING_GOLD);
+		tryUsingAbility(ABILITIES.LIKE_NEW, true);
 
 		// Exit right now so we don't use any other abilities after wormhole
 		return;
