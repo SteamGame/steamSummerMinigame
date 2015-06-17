@@ -524,7 +524,7 @@ function useAutoBadgePurchase() {
 	if(!enableAutoBadgePurchase) { return; }
 
 	// id = ability
-	// ratio = how much of the left badges to spend
+	// ratio = how much of the remaining badges to spend
 	var abilityPriorityList = [
 		{ id: ABILITIES.WORMHOLE,   ratio: 0.9 },
 		{ id: ABILITIES.LIKE_NEW,   ratio: 1 },
@@ -541,11 +541,15 @@ function useAutoBadgePurchase() {
 		var id = abilityPriorityList[i].id;
 		var ratio = abilityPriorityList[i].ratio;
 		var cost = abilityData[id].badge_points_cost;
+		var portion = parseInt(badgePoints * ratio);
+		badgePoints -= portion;
 
-		while(badgePoints * ratio >= cost) {
+		while(portion >= cost) {
 			abilityPurchaseQueue.push(id);
-			badgePoints -= cost;
+			portion -= cost;
 		}
+
+		badgePoints += portion;
 	}
 
 	s().m_rgPurchaseItemsQueue = s().m_rgPurchaseItemsQueue.concat(abilityPurchaseQueue);
