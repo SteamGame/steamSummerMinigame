@@ -353,8 +353,8 @@ function purchaseBadgeItems() {
   // Priorities based on http://steamcommunity.com/groups/MSG2015/discussions/0/598198356167623323/
   var abilityItemPriority = [
     [ABILITIES.WORMHOLE, 100],
-    [ABILITIES.CRIT, 0],
-    [ABILITIES.TREASURE, 0],
+    [ABILITIES.CRIT, 1],
+    [ABILITIES.TREASURE, 1],
     [ABILITIES.PUMPED_UP, 0]
   ];
 
