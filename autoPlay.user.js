@@ -439,7 +439,7 @@ function MainLoop() {
 		useAutoUpgrade();
 		useAutoPurchaseAbilities();
 
-		if(level > CONTROL.goldholeThreshold && level % 500 === 0) {
+		if(level > CONTROL.goldholeThreshold && isWormholeRound(level)) {
 			advLog('Skipping autoclick on wormhole boss farm.');
 		} else {
 			s().m_nClicks += currentClickRate;
@@ -1251,12 +1251,7 @@ function isWormholeRound(level)
 {
 	var mod = level % CONTROL.wormholeRounds;
 
-	if (mod === 0) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return (mod === 0);
 }
 
 function useAbilities(level, timeLeft)
@@ -1321,7 +1316,7 @@ function useAbilities(level, timeLeft)
 			advLog('Less than 60 minutes for game to end. Throwing money at screen for no particular reason...', 2);
 		}
 	}
-	else if(level > CONTROL.goldholeThreshold && level % 500 === 0) {
+	else if(level > CONTROL.goldholeThreshold && isWormholeRound(level)) {
 		advLog('Trying to trigger cooldown and wormhole...', 2);
 
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
