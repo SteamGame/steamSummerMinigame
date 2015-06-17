@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.8.4
+// @version 4.8.5
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -1283,8 +1283,10 @@ function goToLaneWithBestTarget(level) {
 	// Always disable wormhole on lower levels
 	if(level < CONTROL.speedThreshold) {
 		disableAbility(ABILITIES.WORMHOLE);
+		disableAbility(ABILITIES.LIKE_NEW);
 	} else {
 		enableAbility(ABILITIES.WORMHOLE);
+		enableAbility(ABILITIES.LIKE_NEW);
 	}
 
 	// Disable raining gold for the first levels
