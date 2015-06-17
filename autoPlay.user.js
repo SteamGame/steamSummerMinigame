@@ -19,6 +19,8 @@
 var clickRate = 20;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
 
+var isUserScript = (typeof GM_info !== "undefined");
+
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
 
 var enableAutoUpgradeHP = getPreferenceBoolean("enableAutoUpgradeHP", true);
@@ -37,7 +39,7 @@ var disableRenderer = getPreferenceBoolean("disableRenderer", true);
 
 var enableElementLock = getPreferenceBoolean("enableElementLock", true);
 
-var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", typeof GM_info !== "undefined");
+var enableAutoRefresh = getPreferenceBoolean("enableAutoRefresh", isUserScript);
 
 var autoRefreshMinutes = 30;
 var autoRefreshMinutesRandomDelay = 10;
@@ -294,7 +296,7 @@ function firstRun() {
 	var sfx_btn = document.querySelector(".toggle_sfx_btn");
 	options_menu.insertBefore(info_box, sfx_btn);
 
-	info_box.innerHTML = '<b>OPTIONS</b>' + ((typeof GM_info !== "undefined") ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span class="asterisk">*</span> requires a refresh to take effect.<hr>';
+	info_box.innerHTML = '<b>OPTIONS</b>' + (isUserScript ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span class="asterisk">*</span> requires a refresh to take effect.<hr>';
 
 	var options1 = document.createElement("div");
 	options1.className = "options_column";
@@ -317,7 +319,7 @@ function firstRun() {
 	var options2 = document.createElement("div");
 	options2.className = "options_column";
 
-	if (typeof GM_info !== "undefined") {
+	if (isUserScript) {
 		options2.appendChild(makeCheckBox("enableAutoRefresh", "Enable AutoRefresh (mitigate memory leak)", enableAutoRefresh, toggleAutoRefresh, false));
 	}
 
