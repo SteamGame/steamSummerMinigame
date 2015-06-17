@@ -547,6 +547,13 @@ function useAutoUpgrade() {
 		return;
 	}
 
+	// fixes hiligh when we tick before elements are created
+	if(!document.querySelector('.container_upgrades')
+		|| !document.querySelector('.container_upgrades').hasChildNodes()
+		) {
+		return;
+	}
+
 	var upg_order = [
 		UPGRADES.ARMOR_PIERCING_ROUND,
 		UPGRADES.LIGHT_ARMOR,
