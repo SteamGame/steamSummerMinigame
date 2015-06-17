@@ -538,6 +538,7 @@ function useAutoPurchaseAbilities() {
 }
 
 var autoupgrade_update_hilight = true;
+var autoupgrade_hp_threshold = 0;
 
 function useAutoUpgrade() {
 	if(!enableAutoUpgradeDPS
@@ -564,15 +565,23 @@ function useAutoUpgrade() {
 	];
 	if(enableAutoUpgradeElemental && ELEMENTS.LockedElement !== -1) { upg_order.push(ELEMENTS.LockedElement+3); }
 	var upg_map = {};
-
 	upg_order.forEach(function(i) { upg_map[i] = {}; });
-	var gData = s().m_rgGameData;
 	var pData = s().m_rgPlayerData;
 	var pTree = s().m_rgPlayerTechTree;
 	var cache = s().m_UI.m_rgElementCache;
+
+	// calculate hp threshold based on mob dps
+	var mob = s().m_rgEnemies[0];
+	if(!!mob) {
+		var threshold = mob.m_data.dps * 300 * 2.5;
+		if(threshold > autoupgrade_hp_threshold) {
+			autoupgrade_hp_threshold = threshold;
+		}
+	}
+
 	var upg_enabled = [
 		enableAutoUpgradeClick,
-		enableAutoUpgradeHP && pTree.max_hp < Math.max(300000, gData.level * 30),
+		enableAutoUpgradeHP && pTree.max_hp < Math.max(100000, autoupgrade_hp_threshold),
 		enableAutoUpgradeDPS,
 	];
 
