@@ -1324,7 +1324,7 @@ function useAbilities(level, timeLeft)
 
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
 		tryUsingAbility(ABILITIES.WORMHOLE);
-		tryUsingAbility(ABILITIES.RAINING_GOLD);
+		// Since we are disabling auto clicker in wormhole levels, we should not waste raining golds here
 
 		// Exit right now so we don't use any other abilities after wormhole
 		return;
