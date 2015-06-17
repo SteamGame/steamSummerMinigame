@@ -15,6 +15,9 @@
 (function(w) {
 	"use strict";
 
+// REPO URL
+var gitHub = "https://github.com/SteamDatabase/steamSummerMinigame";
+
 // OPTIONS
 var clickRate = 20;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
@@ -168,7 +171,7 @@ if(!getPreferenceBoolean("alertShown", false)) {
 		'<div style="color:#FF5252">This dialog will be shown just once, so please read through it.<br><br></div>' +
 		'<h3 style="color:yellow">This script does not lag your game,<br>we are limiting it to 1 frame per second to lower CPU usage.</h3>' +
 		'<p>We have multiple options to configure this script, and disabling FPS limiter is one of them.</p>' +
-		'<p><a href="https://github.com/SteamDatabase/steamSummerMinigame" target="_blank">You can report issues on GitHub</a></p>' +
+		'<p><a href="' + gitHub + '" target="_blank">You can report issues on GitHub</a></p>' +
 		'<p>Thanks and have fun!</p>',
 
 		'Disable FPS limiter',
@@ -249,6 +252,8 @@ function firstRun() {
 		".game_options .toggle_music_btn {margin-right: 2px; float: right;}",
 		".options_box {background-color: #000; width: 940px; padding: 12px; box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.6); color: #EDEDED; margin: 4px auto 0; overflow: auto; float: left;}",
 		".options_box span.asterisk {color: #FF5252; font-size: 24px; line-height: 4px; vertical-align: bottom;}",
+		".options_header a {color: #4078C0;}",
+		".options_header > span {display: block;}",
 		".options_column {-moz-column-count: 2; -webkit-column-count: 2; column-count: 2; width: 50%; float: left;}",
 		".options_column label {display: inline-block;}",
 		".options_column input {float: left;}",
@@ -298,7 +303,7 @@ function firstRun() {
 	var sfx_btn = document.querySelector(".toggle_sfx_btn");
 	options_menu.insertBefore(info_box, sfx_btn);
 
-	info_box.innerHTML = '<b>OPTIONS</b>' + (isUserScript ? ' (v' + GM_info.script.version + ')' : '') + '<br>Settings marked with a <span class="asterisk">*</span> requires a refresh to take effect.<hr>';
+	info_box.innerHTML = '<div class="options_header"><span><b>OPTIONS</b>' + (isUserScript ? ' (v' + GM_info.script.version + ') ' : ' ') + '[<a href="' + gitHub + '">SteamDB</a>]</span><span>Settings marked with a <span class="asterisk">*</span> requires a refresh to take effect.</span></div><hr>';
 
 	var options1 = document.createElement("div");
 	options1.className = "options_column";
