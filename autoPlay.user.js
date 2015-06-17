@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.7.4
+// @version 4.7.5
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -438,9 +438,13 @@ function MainLoop() {
 
 		useAutoUpgrade();
 		useAutoPurchaseAbilities();
-	
+
+		var absoluteCurrentClickRate = 0;
+
 		if(currentClickRate > 0) {
-			s().m_nClicks += level > CONTROL.goldholeThreshold && level % 500 === 0 ? 2 : currentClickRate;
+			absoluteCurrentClickRate = level > CONTROL.goldholeThreshold && level % 500 === 0 ? 2 : currentClickRate;
+
+			s().m_nClicks += absoluteCurrentClickRate;
 		}
 
 		s().m_nLastTick = false;
@@ -451,7 +455,7 @@ function MainLoop() {
 			s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].element
 		);
 
-		advLog("Ticked. Current clicks per second: " + currentClickRate + ". Current damage per second: " + (damagePerClick * currentClickRate), 4);
+		advLog("Ticked. Current clicks per second: " + absoluteCurrentClickRate + ". Current damage per second: " + (damagePerClick * absoluteCurrentClickRate), 4);
 
 		if(disableRenderer) {
 			s().Tick();
@@ -463,7 +467,7 @@ function MainLoop() {
 
 		isAlreadyRunning = false;
 
-		if( currentClickRate > 0 ) {
+		if( bsoluteCurrentClickRate > 0) {
 			var enemy = s().GetEnemy(
 				s().m_rgPlayerData.current_lane,
 				s().m_rgPlayerData.target);
@@ -472,7 +476,7 @@ function MainLoop() {
 				displayText(
 					enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
 					enemy.m_Sprite.position.y - 52,
-					"-" + w.FormatNumberForDisplay((damagePerClick * currentClickRate), 5),
+					"-" + w.FormatNumberForDisplay((damagePerClick * absoluteCurrentClickRate), 5),
 					"#aaf"
 				);
 
@@ -487,7 +491,7 @@ function MainLoop() {
 
 				var goldPerClickPercentage = s().m_rgGameData.lanes[s().m_rgPlayerData.current_lane].active_player_ability_gold_per_click;
 				if (goldPerClickPercentage > 0 && enemy.m_data.hp > 0) {
-					var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * currentClickRate;
+					var goldPerSecond = enemy.m_data.gold * goldPerClickPercentage * absoluteCurrentClickRate;
 
 					s().ClientOverride('player_data', 'gold', s().m_rgPlayerData.gold + goldPerSecond);
 					s().ApplyClientOverrides('player_data', true);
