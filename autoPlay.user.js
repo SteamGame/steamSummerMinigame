@@ -26,6 +26,7 @@ var enableAutoUpgradeClick = getPreferenceBoolean("enableAutoUpgradeClick", fals
 var enableAutoUpgradeDPS = getPreferenceBoolean("enableAutoUpgradeDPS", false);
 var enableAutoUpgradeElemental = getPreferenceBoolean("enableAutoUpgradeElemental", false);
 var enableAutoPurchase = getPreferenceBoolean("enableAutoPurchase", false);
+var enableAutoPurchaseBadgeItems = getPreferenceBoolean("enableAutoPurchaseBadgeItems", true);
 
 var removeInterface = getPreferenceBoolean("removeInterface", true); // get rid of a bunch of pointless DOM
 var removeParticles = getPreferenceBoolean("removeParticles", true);
@@ -197,6 +198,11 @@ function firstRun() {
 	trt_oldPush = s().m_rgClickNumbers.push;
 	trt_oldRender = w.g_Minigame.Render;
 
+	// If purchase item window is open spend badge points
+	if (s().m_UI.m_spendBadgePointsDialog[0].style.display != 'none' && enableAutoPurchaseBadgeItems) {
+		purchaseBadgeItems();
+	}
+
 	toggleFingering();
 
 	if(enableElementLock) {
@@ -323,6 +329,7 @@ function firstRun() {
 
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, toggleFingering, false));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", logLevel, 0, 5, updateLogLevel));
+	options2.appendChild(makeCheckBox("enableAutoPurchaseBadgeItems", "Spends badge points when joining a new game", enableAutoPurchaseBadgeItems, handleEvent, true));
 
 	info_box.appendChild(options2);
 
@@ -338,6 +345,65 @@ function firstRun() {
 	enhanceTooltips();
 
 	isPastFirstRun = true;
+}
+
+function purchaseBadgeItems() {
+  // Spends badge points (BP's) when joining a new game.
+  // Dict contains the priority in terms of amount to buy (percentage of purchase). Probably a nicer way to do this...
+  // Priorities based on http://steamcommunity.com/groups/MSG2015/discussions/0/598198356167623323/
+  var abilityItemPriority = [
+    [ABILITIES.WORMHOLE, 100],
+    [ABILITIES.CRIT, 0],
+    [ABILITIES.TREASURE, 0]
+  ];
+
+  // Being extra paranoid about spending, since abilities update slowly.
+  var safeToBuy = true;
+  var intervalID = window.setInterval( function() {
+    var queueLen = s().m_rgPurchaseItemsQueue.length;
+    if (safeToBuy && queueLen > 0){
+      safeToBuy = false;
+    }
+    else if (!safeToBuy && queueLen === 0){
+      safeToBuy = true;
+    }
+  }, 100);
+
+  var buyItem = function(id) {
+    s().TrySpendBadgePoints(document.getElementById('purchase_abilityitem_' + id));
+    s().m_UI.UpdateSpendBadgePointsDialog();
+  };
+
+  var badgePoints = s().m_rgPlayerTechTree.badge_points;
+
+  for (var i = 0; i < abilityItemPriority.length; i++) {
+    var abilityItem = abilityItemPriority[i];
+    var cost = w.$J(document.getElementById('purchase_abilityitem_' + abilityItem[0])).data('cost');
+
+    // Maximum amount to spend on each upgrade. i.e. 100 BP on item with a 10% share = 10 BP
+    var maxSpend = badgePoints * abilityItem[1] / 100;
+    var spent = 0;
+
+    // Don't over-spend the budget for each item, and don't overdraft on the BP
+    while (spent < maxSpend && cost <= s().m_rgPlayerTechTree.badge_points) {
+      if (!safeToBuy){
+        continue;
+      }
+      buyItem(abilityItem[0]);
+      spent += cost;
+    }
+  }
+
+  // Get any stragling 1 or 2 BP left over, using the last item (1 BP) in the priority array
+  while (s().m_rgPlayerTechTree.badge_points > 0) {
+    if (!safeToBuy) {
+      continue;
+    }
+    buyItem(abilityItemPriority[abilityItemPriority.length - 1][0]);
+  }
+
+  // Get rid of that interval, it could end up taking up too many resources
+  window.clearInterval(intervalID);
 }
 
 function disableParticles() {
@@ -1211,6 +1277,12 @@ function goToLaneWithBestTarget(level) {
 		disableAbility(ABILITIES.WORMHOLE);
 	} else {
 		enableAbility(ABILITIES.WORMHOLE);
+		// Disable raining gold for the first levels
+		if(level < CONTROL.rainingRounds) {
+			disableAbility(ABILITIES.RAINING_GOLD);
+		} else {
+			enableAbility(ABILITIES.RAINING_GOLD);
+		}
 	}
 
 	// Disable raining gold for the first levels
