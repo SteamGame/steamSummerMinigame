@@ -1367,7 +1367,10 @@ function useAbilities(level)
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
 		tryUsingAbility(ABILITIES.WORMHOLE);
 		tryUsingAbility(ABILITIES.RAINING_GOLD);
-		tryUsingAbility(ABILITIES.LIKE_NEW, true);
+
+		if(Math.random() <= 0.2) {
+			tryUsingAbility(ABILITIES.LIKE_NEW, true);
+		}
 
 		// Exit right now so we don't use any other abilities after wormhole
 		return;
