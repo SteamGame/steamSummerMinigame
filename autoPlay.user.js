@@ -439,7 +439,7 @@ function MainLoop() {
 		useAutoUpgrade();
 		useAutoPurchaseAbilities();
 
-		if(level > CONTROL.goldholeThreshold && level % 500 === 0) {
+		if(level > CONTROL.goldholeThreshold && level % CONTROL.wormholeRounds === 0) {
 			advLog('Skipping autoclick on wormhole boss farm.');
 		} else {
 			s().m_nClicks += currentClickRate;
