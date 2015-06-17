@@ -354,7 +354,8 @@ function purchaseBadgeItems() {
   var abilityItemPriority = [
     [ABILITIES.WORMHOLE, 100],
     [ABILITIES.CRIT, 0],
-    [ABILITIES.TREASURE, 0]
+    [ABILITIES.TREASURE, 0],
+    [ABILITIES.PUMPED_UP, 0]
   ];
 
   // Being extra paranoid about spending, since abilities update slowly.
@@ -1277,12 +1278,6 @@ function goToLaneWithBestTarget(level) {
 		disableAbility(ABILITIES.WORMHOLE);
 	} else {
 		enableAbility(ABILITIES.WORMHOLE);
-		// Disable raining gold for the first levels
-		if(level < CONTROL.rainingRounds) {
-			disableAbility(ABILITIES.RAINING_GOLD);
-		} else {
-			enableAbility(ABILITIES.RAINING_GOLD);
-		}
 	}
 
 	// Disable raining gold for the first levels
