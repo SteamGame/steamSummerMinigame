@@ -26,6 +26,7 @@ var enableAutoUpgradeClick = getPreferenceBoolean("enableAutoUpgradeClick", fals
 var enableAutoUpgradeDPS = getPreferenceBoolean("enableAutoUpgradeDPS", false);
 var enableAutoUpgradeElemental = getPreferenceBoolean("enableAutoUpgradeElemental", false);
 var enableAutoPurchase = getPreferenceBoolean("enableAutoPurchase", false);
+var enableAutoBadgePurchase = getPreferenceBoolean("enableAutoBadgePurchase", false);
 
 var removeInterface = getPreferenceBoolean("removeInterface", true); // get rid of a bunch of pointless DOM
 var removeParticles = getPreferenceBoolean("removeParticles", true);
@@ -305,6 +306,7 @@ function firstRun() {
 	options1.appendChild(makeCheckBox("enableAutoUpgradeDPS", "Enable AutoUpgrade DPS", enableAutoUpgradeDPS, toggleAutoUpgradeDPS, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeElemental", "Enable AutoUpgrade locked elemental", enableAutoUpgradeElemental, toggleAutoUpgradeElemental, false));
 	options1.appendChild(makeCheckBox("enableAutoPurchase", "Enable AutoPurchase Abilities", enableAutoPurchase, toggleAutoPurchase, false));
+	options1.appendChild(makeCheckBox("enableAutoBadgePurchase", "Enable AutoPurchase badges (WH strat)", enableAutoBadgePurchase, toggleAutoBadgePurchase, false));
 	options1.appendChild(makeCheckBox("removeInterface", "Remove interface", removeInterface, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeParticles", "Remove particle effects", removeParticles, handleEvent, true));
 	options1.appendChild(makeCheckBox("removeFlinching", "Remove flinching effects", removeFlinching, handleEvent, true));
@@ -432,9 +434,14 @@ function MainLoop() {
 		}
 
 		// only AutoUpgrade after we've spend all badge points
-		if(s().m_rgPlayerTechTree && s().m_rgPlayerTechTree.badge_points === 0) {
-			useAutoUpgrade();
-			useAutoPurchaseAbilities();
+		if(s().m_rgPlayerTechTree) {
+			if(s().m_rgPlayerTechTree.badge_points === 0) {
+				useAutoUpgrade();
+				useAutoPurchaseAbilities();
+			}
+			else {
+				useAutoBadgePurchase();
+			}
 		}
 
 		var absoluteCurrentClickRate = 0;
@@ -511,6 +518,42 @@ function MainLoop() {
 			}
 		}
 	}
+}
+
+function useAutoBadgePurchase() {
+	if(!enableAutoBadgePurchase) { return; }
+
+	var abilitiesToBuy = [
+		ABILITIES.WORMHOLE,
+		ABILITIES.CRIT,
+		ABILITIES.TREASURE,
+		ABILITIES.PUMPED_UP
+	];
+
+	var badgePoints = s().m_rgPlayerTechTree.badge_points;
+	var abilityData = s().m_rgTuningData.abilities;
+	var abilityPurchaseQueue = [];
+
+	for (var i = 0; i < abilitiesToBuy.length; i++) {
+		var cost = abilityData[abilitiesToBuy[i]].badge_points_cost;
+		while(badgePoints >= cost) {
+			abilityPurchaseQueue.push(abilitiesToBuy[i]);
+			badgePoints -= cost;
+		}
+	}
+
+	s().m_rgPurchaseItemsQueue = s().m_rgPurchaseItemsQueue.concat(abilityPurchaseQueue);
+	s().m_UI.UpdateSpendBadgePointsDialog();
+}
+
+function toggleAutoBadgePurchase(event) {
+	var value = enableAutoBadgePurchase;
+
+	if(event !== undefined) {
+		value = handleCheckBox(event);
+	}
+
+	enableAutoBadgePurchase = value;
 }
 
 function useAllAbilities() {
