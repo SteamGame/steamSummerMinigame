@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.7.5
+// @version 4.7.6
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -18,8 +18,6 @@
 // OPTIONS
 var clickRate = 20;
 var logLevel = 1; // 5 is the most verbose, 0 disables all log
-
-var nukeBeforeReset = getPreferenceBoolean("nukeBeforeReset", true);
 
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
 
@@ -144,13 +142,10 @@ var BOSS_DISABLED_ABILITIES = [
 ];
 
 var CONTROL = {
-	speedThreshold: 5000,
-	rainingRounds: 250,
+	speedThreshold: 2000,
+	rainingRounds: 100,
 	disableGoldRainLevels: 500,
-	nukeStartMinutes: 60,
-	wormholeRounds: 100,
-	wormholeEndMinutes: 15,
-	goldholeThreshold: 2000
+	goldholeThreshold: 200
 };
 
 var GAME_STATUS = {
@@ -326,7 +321,6 @@ function firstRun() {
 	}
 
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, toggleFingering, false));
-	options2.appendChild(makeCheckBox("nukeBeforeReset", "Spam abilities 1 hour before game end", nukeBeforeReset, handleEvent, true));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", logLevel, 0, 5, updateLogLevel));
 
 	info_box.appendChild(options2);
@@ -425,7 +419,7 @@ function MainLoop() {
 		if(timeLeft <= 15) {
 			useAllAbilities();
 		} else {
-			useAbilities(level, timeLeft);
+			useAbilities(level);
 		}
 
 		updatePlayersInGame();
@@ -442,7 +436,7 @@ function MainLoop() {
 		var absoluteCurrentClickRate = 0;
 
 		if(currentClickRate > 0) {
-			absoluteCurrentClickRate = level > CONTROL.goldholeThreshold && level % 500 === 0 ? 2 : currentClickRate;
+			absoluteCurrentClickRate = level > CONTROL.goldholeThreshold && level % CONTROL.rainingRounds === 0 ? 2 : currentClickRate;
 
 			s().m_nClicks += absoluteCurrentClickRate;
 		}
@@ -467,7 +461,7 @@ function MainLoop() {
 
 		isAlreadyRunning = false;
 
-		if( bsoluteCurrentClickRate > 0) {
+		if( absoluteCurrentClickRate > 0) {
 			var enemy = s().GetEnemy(
 				s().m_rgPlayerData.current_lane,
 				s().m_rgPlayerData.target);
@@ -1249,19 +1243,7 @@ function isRainingRound(level)
 	}
 }
 
-function isWormholeRound(level)
-{
-	var mod = level % CONTROL.wormholeRounds;
-
-	if (mod === 0) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-function useAbilities(level, timeLeft)
+function useAbilities(level)
 {
 
 	var currentLane = s().m_nExpectedLane;
@@ -1312,19 +1294,8 @@ function useAbilities(level, timeLeft)
 	}
 
 	// Wormhole
-	if (nukeBeforeReset && timeLeft <= CONTROL.nukeStartMinutes) {
-		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
-
-		// Check if Wormhole is purchased
-		if (timeLeft >= CONTROL.wormholeEndMinutes && isWormholeRound(level) && tryUsingAbility(ABILITIES.WORMHOLE)) {
-			advLog('Less than 60 minutes for game to end. Triggering wormholes...', 2);
-		}
-		else if (tryUsingAbility(ABILITIES.THROW_MONEY_AT_SCREEN)) {
-			advLog('Less than 60 minutes for game to end. Throwing money at screen for no particular reason...', 2);
-		}
-	}
-	else if(level > CONTROL.goldholeThreshold && level % 500 === 0) {
-		advLog('Trying to trigger cooldown and wormhole...', 2);
+	if(level > CONTROL.goldholeThreshold && level % CONTROL.rainingRounds === 0) {
+		advLog('Trying to trigger cooldown and wormhole...', 1);
 
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
 		tryUsingAbility(ABILITIES.WORMHOLE);
