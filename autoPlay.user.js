@@ -523,21 +523,27 @@ function MainLoop() {
 function useAutoBadgePurchase() {
 	if(!enableAutoBadgePurchase) { return; }
 
-	var abilitiesToBuy = [
-		ABILITIES.WORMHOLE,
-		ABILITIES.CRIT,
-		ABILITIES.TREASURE,
-		ABILITIES.PUMPED_UP
+	// id = ability
+	// ratio = how much of the left badges to spend
+	var abilityPriorityList = [
+		{ id: ABILITIES.WORMHOLE,   ratio: 0.9 },
+		{ id: ABILITIES.LIKE_NEW,   ratio: 1 },
+		{ id: ABILITIES.CRIT,       ratio: 1 },
+		{ id: ABILITIES.TREASURE,   ratio: 1 },
+		{ id: ABILITIES.PUMPED_UP,  ratio: 1 },
 	];
 
 	var badgePoints = s().m_rgPlayerTechTree.badge_points;
 	var abilityData = s().m_rgTuningData.abilities;
 	var abilityPurchaseQueue = [];
 
-	for (var i = 0; i < abilitiesToBuy.length; i++) {
-		var cost = abilityData[abilitiesToBuy[i]].badge_points_cost;
-		while(badgePoints >= cost) {
-			abilityPurchaseQueue.push(abilitiesToBuy[i]);
+	for (var i = 0; i < abilityPriorityList.length; i++) {
+		var id = abilityPriorityList[i].id;
+		var ratio = abilityPriorityList[i].ratio;
+		var cost = abilityData[id].badge_points_cost;
+
+		while(badgePoints * ratio >= cost) {
+			abilityPurchaseQueue.push(id);
 			badgePoints -= cost;
 		}
 	}
