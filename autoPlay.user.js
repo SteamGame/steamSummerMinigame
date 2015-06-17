@@ -431,8 +431,11 @@ function MainLoop() {
 			refreshPlayerData();
 		}
 
-		useAutoUpgrade();
-		useAutoPurchaseAbilities();
+		// only AutoUpgrade after we've spend all badge points
+		if(s().m_rgPlayerTechTree && s().m_rgPlayerTechTree.badge_points === 0) {
+			useAutoUpgrade();
+			useAutoPurchaseAbilities();
+		}
 
 		var absoluteCurrentClickRate = 0;
 
