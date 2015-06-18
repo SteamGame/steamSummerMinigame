@@ -1364,7 +1364,7 @@ function useAbilities(level)
 		advLog('Trying to trigger cooldown and wormhole...', 1);
 
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
-		tryUsingAbility(ABILITIES.WORMHOLE);
+		tryUsingAbility(ABILITIES.WORMHOLE, false, true);
 
 		// Chance of using at least one like new with X active script users
 		// 5% chance to use
@@ -1621,16 +1621,16 @@ function bHaveItem(itemId) {
 	return false;
 }
 
-function canUseAbility(abilityId) {
+function canUseAbility(abilityId, skipCooldownCheck) {
 	if(!s().bHaveAbility(abilityId) && !bHaveItem(abilityId)) {
 		return false;
 	}
 
-	return s().GetCooldownForAbility(abilityId) <= 0 && isAbilityEnabled(abilityId);
+	return (skipCooldownCheck || s().GetCooldownForAbility(abilityId)) <= 0 && isAbilityEnabled(abilityId);
 }
 
-function tryUsingAbility(itemId, checkInLane) {
-	if (!canUseAbility(itemId)) {
+function tryUsingAbility(itemId, checkInLane, skipCooldownCheck) {
+	if (!canUseAbility(itemId, skipCooldownCheck)) {
 		return false;
 	}
 
