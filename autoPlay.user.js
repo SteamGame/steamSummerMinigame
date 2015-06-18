@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.8.10
+// @version 4.8.11
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -1626,7 +1626,7 @@ function canUseAbility(abilityId, skipCooldownCheck) {
 		return false;
 	}
 
-	return (skipCooldownCheck || s().GetCooldownForAbility(abilityId)) <= 0 && isAbilityEnabled(abilityId);
+	return (skipCooldownCheck || s().GetCooldownForAbility(abilityId) <= 0) && isAbilityEnabled(abilityId);
 }
 
 function tryUsingAbility(itemId, checkInLane, skipCooldownCheck) {
