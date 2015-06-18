@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.0.3
+// @version 5.0.4
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -561,6 +561,8 @@ function useAutoBadgePurchase() {
 		badgePoints += portion;
 	}
 
+	s().m_bUpgradesBusy = true;
+	s().m_rgPlayerTechTree.badge_points = badgePoints;
 	s().m_rgPurchaseItemsQueue = s().m_rgPurchaseItemsQueue.concat(abilityPurchaseQueue);
 	s().m_UI.UpdateSpendBadgePointsDialog();
 }
