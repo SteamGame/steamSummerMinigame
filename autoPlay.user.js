@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.8.11
+// @version 4.8.12
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -1367,12 +1367,12 @@ function useAbilities(level)
 		tryUsingAbility(ABILITIES.WORMHOLE, false, true);
 
 		// Chance of using at least one like new with X active script users
-		// 5% chance to use
+		// 10% chance to use
 		// -------
-		// 20  users = 64%
-		// 50  users = 92%
-		// 100 users = 99%
-		if(Math.random() <= 0.03) {
+		// 20  users = 87.84%
+		// 50  users = 99.48%
+		// 100 users = 99.99%
+		if(Math.random() <= 0.1) {
 			tryUsingAbility(ABILITIES.LIKE_NEW, true);
 		}
 
