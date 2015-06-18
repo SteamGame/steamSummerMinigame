@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.0.2
+// @version 5.0.3
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -438,6 +438,7 @@ function MainLoop() {
 				refreshPlayerData();
 			}
 
+			s().m_rgAbilityQueue = [];
 			lastLevel = level;
 		}
 
