@@ -1916,7 +1916,7 @@ function updateLevelInfoTitle(level)
 	var exp_lvl = expectedLevel(level);
 	var rem_time = countdown(exp_lvl.remaining_time);
 
-	ELEMENTS.ExpectedLevel.textContent = 'Level: ' + level + ', Expected Level: ' + exp_lvl.expected_level + ', Likely Level: ' + exp_lvl.likely_level;
+	ELEMENTS.ExpectedLevel.textContent = 'Level: ' + w.FormatNumberForDisplay(level) + ', Expected Level: ' + w.FormatNumberForDisplay(exp_lvl.expected_level) + ', Likely Level: ' + w.FormatNumberForDisplay(exp_lvl.likely_level);
 	ELEMENTS.RemainingTime.textContent = 'Remaining Time: ' + rem_time.hours + ' hours, ' + rem_time.minutes + ' minutes.';
 }
 
