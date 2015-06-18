@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.9.3
+// @version 5.0.0
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -22,6 +22,7 @@ var logLevel = 1; // 5 is the most verbose, 0 disables all log
 var isUserScript = (typeof GM_info !== "undefined");
 
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
+var enableOffensiveAbilities = getPreferenceBoolean("enableOffensiveAbilities", false);
 
 var enableAutoUpgradeHP = getPreferenceBoolean("enableAutoUpgradeHP", true);
 var enableAutoUpgradeClick = getPreferenceBoolean("enableAutoUpgradeClick", false);
@@ -304,6 +305,7 @@ function firstRun() {
 	options1.className = "options_column";
 
 	options1.appendChild(makeCheckBox("enableAutoClicker", "Enable AutoClicker", enableAutoClicker, toggleAutoClicker, false));
+	options1.appendChild(makeCheckBox("enableOffensiveAbilities", "Enable Offensive ability use", enableOffensiveAbilities, toggleOffensiveAbilities, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeHP", "Enable AutoUpgrade HP", enableAutoUpgradeHP, toggleAutoUpgradeHP, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeClick", "Enable AutoUpgrade Clicks", enableAutoUpgradeClick, toggleAutoUpgradeClick, false));
 	options1.appendChild(makeCheckBox("enableAutoUpgradeDPS", "Enable AutoUpgrade DPS", enableAutoUpgradeDPS, toggleAutoUpgradeDPS, false));
@@ -772,6 +774,17 @@ function toggleAutoPurchase(event) {
 	}
 
 	enableAutoPurchase = value;
+}
+
+function toggleOffensiveAbilities(event) {
+
+	var value = enableOffensiveAbilities;
+
+	if(event !== undefined) {
+		value = handleCheckBox(event);
+	}
+
+	enableOffensiveAbilities = value;
 }
 
 function refreshPlayerData() {
@@ -1323,7 +1336,7 @@ function useAbilities(level)
 	var enemyBossHealthPercent = 0;
 
 	// Cripple Monster
-	if(canUseAbility(ABILITIES.CRIPPLE_MONSTER)) {
+	if(enableOffensiveAbilities && canUseAbility(ABILITIES.CRIPPLE_MONSTER)) {
 		if (level >= CONTROL.speedThreshold && level % CONTROL.rainingRounds !== 0 && level % 10 === 0) {
 			enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
@@ -1390,7 +1403,7 @@ function useAbilities(level)
 	}
 
 	// Skip doing any damage x levels before upcoming wormhole round
-	if(CONTROL.rainingSafeRounds >= (CONTROL.rainingRounds - levelRainingMod)) {
+	if(!enableOffensiveAbilities || CONTROL.rainingSafeRounds >= (CONTROL.rainingRounds - levelRainingMod)) {
 		tryUsingAbility(ABILITIES.RESURRECTION, true);
 
 		return;
