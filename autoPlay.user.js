@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.0.0
+// @version 5.0.1
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -1335,20 +1335,6 @@ function useAbilities(level)
 	var enemy = false;
 	var enemyBossHealthPercent = 0;
 
-	// Cripple Monster
-	if(enableOffensiveAbilities && canUseAbility(ABILITIES.CRIPPLE_MONSTER)) {
-		if (level >= CONTROL.speedThreshold && level % CONTROL.rainingRounds !== 0 && level % 10 === 0) {
-			enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
-			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-				if (enemyBossHealthPercent>0.5){
-					advLog("Cripple Monster available and used on boss", 2);
-					triggerAbility(ABILITIES.CRIPPLE_MONSTER);
-				}
-			}
-		}
-	}
-
 	// Medic & Pumped Up
 	if (tryUsingAbility(ABILITIES.PUMPED_UP)){
 		// Pumped Up is purchased, cooled down, and needed. Trigger it.
@@ -1407,6 +1393,20 @@ function useAbilities(level)
 		tryUsingAbility(ABILITIES.RESURRECTION, true);
 
 		return;
+	}
+
+	// Cripple Monster
+	if(canUseAbility(ABILITIES.CRIPPLE_MONSTER)) {
+		if (level >= CONTROL.speedThreshold && level % CONTROL.rainingRounds !== 0 && level % 10 === 0) {
+			enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
+			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+				if (enemyBossHealthPercent>0.5){
+					advLog("Cripple Monster available and used on boss", 2);
+					triggerAbility(ABILITIES.CRIPPLE_MONSTER);
+				}
+			}
+		}
 	}
 
 	// Good Luck Charms / Crit
