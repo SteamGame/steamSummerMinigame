@@ -452,7 +452,7 @@ function MainLoop() {
 		if(currentClickRate > 0) {
 			var levelRainingMod = level % CONTROL.rainingRounds;
 
-			absoluteCurrentClickRate = level > CONTROL.speedThreshold && (levelRainingMod === 0 || 3 >= (CONTROL.rainingRounds - levelRainingMod)) ? 0 : currentClickRate;
+			absoluteCurrentClickRate = level >= CONTROL.speedThreshold && (levelRainingMod === 0 || 3 >= (CONTROL.rainingRounds - levelRainingMod)) ? 0 : currentClickRate;
 
 			s().m_nClicks += absoluteCurrentClickRate;
 		}
@@ -1318,7 +1318,7 @@ function useAbilities(level)
 
 	// Cripple Monster
 	if(canUseAbility(ABILITIES.CRIPPLE_MONSTER)) {
-		if (level > CONTROL.speedThreshold && level % CONTROL.rainingRounds !== 0 && level % 10 === 0) {
+		if (level >= CONTROL.speedThreshold && level % CONTROL.rainingRounds !== 0 && level % 10 === 0) {
 			enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
 			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
 				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
@@ -1357,7 +1357,7 @@ function useAbilities(level)
 	var levelRainingMod = level % CONTROL.rainingRounds;
 
 	// Wormhole
-	if(level > CONTROL.speedThreshold && levelRainingMod === 0) {
+	if(level >= CONTROL.speedThreshold && levelRainingMod === 0) {
 		enableAbility(ABILITIES.WORMHOLE);
 		enableAbility(ABILITIES.LIKE_NEW);
 
