@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.9.2
+// @version 4.9.3
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -412,7 +412,6 @@ function MainLoop() {
 
 	var level = s().m_rgGameData.level + 1;
 
-
 	if (!isAlreadyRunning) {
 		isAlreadyRunning = true;
 
@@ -430,10 +429,14 @@ function MainLoop() {
 
 		updatePlayersInGame();
 
-		if( level !== lastLevel ) {
+		if(level !== lastLevel) {
+			if(lastLevel > 0) {
+				updateLevelInfoTitle(level, lastLevel);
+
+				refreshPlayerData();
+			}
+
 			lastLevel = level;
-			updateLevelInfoTitle(level);
-			refreshPlayerData();
 		}
 
 		// only AutoUpgrade after we've spend all badge points
@@ -1911,12 +1914,17 @@ function appendBreadcrumbsTitleInfo() {
 	ELEMENTS.RemainingTime = element;
 }
 
-function updateLevelInfoTitle(level)
+function updateLevelInfoTitle(level, lastLevel)
 {
 	var exp_lvl = expectedLevel(level);
 	var rem_time = countdown(exp_lvl.remaining_time);
 
-	ELEMENTS.ExpectedLevel.textContent = 'Level: ' + w.FormatNumberForDisplay(level) + ', Expected Level: ' + w.FormatNumberForDisplay(exp_lvl.expected_level) + ', Likely Level: ' + w.FormatNumberForDisplay(exp_lvl.likely_level);
+	ELEMENTS.ExpectedLevel.textContent =
+		'Level: ' + w.FormatNumberForDisplay(level) +
+		', Expected Level: ' + w.FormatNumberForDisplay(exp_lvl.expected_level) +
+		', Likely Level: ' + w.FormatNumberForDisplay(exp_lvl.likely_level) +
+		', Last jump: ' + w.FormatNumberForDisplay(level - lastLevel);
+
 	ELEMENTS.RemainingTime.textContent = 'Remaining Time: ' + rem_time.hours + ' hours, ' + rem_time.minutes + ' minutes.';
 }
 
