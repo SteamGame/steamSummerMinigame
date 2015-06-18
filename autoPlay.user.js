@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.0.1
+// @version 5.0.2
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -22,7 +22,7 @@ var logLevel = 1; // 5 is the most verbose, 0 disables all log
 var isUserScript = (typeof GM_info !== "undefined");
 
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
-var enableOffensiveAbilities = getPreferenceBoolean("enableOffensiveAbilities", false);
+var enableOffensiveAbilities = getPreferenceBoolean("enableOffensiveAbilities", true);
 
 var enableAutoUpgradeHP = getPreferenceBoolean("enableAutoUpgradeHP", true);
 var enableAutoUpgradeClick = getPreferenceBoolean("enableAutoUpgradeClick", false);
