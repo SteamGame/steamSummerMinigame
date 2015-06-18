@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.8.12
+// @version 4.9.0
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -422,7 +422,7 @@ function MainLoop() {
 
 		var timeLeft = getTimeleft(); // Time left in minutes
 
-		if(timeLeft <= 15) {
+		if(timeLeft <= 5) {
 			useAllAbilities();
 		} else {
 			useAbilities(level);
