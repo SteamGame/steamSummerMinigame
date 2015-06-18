@@ -13,8 +13,15 @@
 
 (function(w) {
     "use strict";
+    
+var showNames = true;
+var thn = document.createElement('th');
 
 function initLeaderboard() {
+    
+    var col_right = document.getElementById('col_right');
+    
+    col_right.style.zIndex = '13';
 
     var container = document.createElement('div');
     container.id = 'leaderboard_wrapper';
@@ -26,7 +33,7 @@ function initLeaderboard() {
     container.style.margin =  "50px 0 0 5px";
     container.style.padding = "5px";
 
-    document.getElementById('col_right').appendChild(container);
+    col_right.appendChild(container);
 
     var leaderboard = document.createElement('table');
     leaderboard.id = 'leaderboard';
@@ -36,13 +43,13 @@ function initLeaderboard() {
     th.style.color = '#ddd';
 
     var thc = document.createElement('th');
-    var thn = document.createElement('th');
     var thl = document.createElement('th');
     thc.appendChild(document.createTextNode('Rank'));
     thn.appendChild(document.createTextNode('Name'));
     thl.appendChild(document.createTextNode('Level'));
     
     thn.style.textAlign = "center";
+    thn.style.width = "100%";
 
     th.appendChild(thc);
     th.appendChild(thn);
@@ -70,7 +77,21 @@ function initLeaderboard() {
     toggler.style.cursor = "pointer";
     toggler.appendChild(document.createTextNode("Show Leaderboards"));
 
-    document.getElementById('col_right').appendChild(toggler);
+    col_right.appendChild(toggler);
+    
+    var name_toggler = document.createElement('div');
+    name_toggler.id = "leaderboard_name_toggler";
+    name_toggler.onclick = toggleLeaderboardNames;
+    name_toggler.style.position = 'absolute';
+    name_toggler.style.bottom = "-72px";
+    name_toggler.style.color = "black";
+    name_toggler.style.textAlign = "center";
+    name_toggler.style.width = '261px';
+    name_toggler.style.cursor = "pointer";
+    name_toggler.style.display = 'none';
+    name_toggler.appendChild(document.createTextNode("Use ID"));
+
+    col_right.appendChild(name_toggler);
 
 	if (!w.Leaderboard_Timer) {
 		clearInterval(w.Leaderboard_Timer);
@@ -91,7 +112,7 @@ function drawLeaderboardRoom(room) {
 
     var name = document.createElement('td');
     name.style.textAlign = 'center';
-    name.appendChild(document.createTextNode(room.name));
+    name.appendChild(document.createTextNode(showNames ? room.name : room.id));
 
     var level = document.createElement('td');
     level.style.textAlign = 'right';
@@ -135,15 +156,31 @@ function toggleLeaderboard() {
     var a = document.getElementById('leaderboard_wrapper');
     var b = document.getElementById('activitylog');
     var c = document.getElementById('leaderboard_toggler');
+    var d = document.getElementById('leaderboard_name_toggler');
     if (a.style.display == 'block') {
         a.style.display = 'none';
         b.style.display = 'block';
         c.innerHTML = "Show Leaderboards";
+        d.style.display = 'none';
     } else {
         a.style.display = 'block';
         b.style.display = 'none';
         c.innerHTML = "Show Activity";
+        d.style.display = 'block';
     }
+}
+    
+function toggleLeaderboardNames() {
+    showNames = !showNames;
+    var a = document.getElementById('leaderboard_name_toggler');
+    if (showNames) {
+        thn.innerHTML = "Name";
+        a.innerHTML = "Use ID";
+    } else {
+        thn.innerHTML = "ID";
+        a.innerHTML = "Use Name";
+    }
+    getLeaderboard();
 }
 
 initLeaderboard();
