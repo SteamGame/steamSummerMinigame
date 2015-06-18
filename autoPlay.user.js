@@ -1366,7 +1366,13 @@ function useAbilities(level)
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
 		tryUsingAbility(ABILITIES.WORMHOLE);
 
-		if(Math.random() <= 0.2) {
+		// Chance of using at least one like new with X active script users
+		// 5% chance to use
+		// -------
+		// 20  users = 64%
+		// 50  users = 92%
+		// 100 users = 99%
+		if(Math.random() <= 0.03) {
 			tryUsingAbility(ABILITIES.LIKE_NEW, true);
 		}
 
