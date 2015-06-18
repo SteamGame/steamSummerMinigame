@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 4.9.0
+// @version 4.9.1
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -693,13 +693,16 @@ function useAutoUpgrade() {
 		var tree = upg_map[upg_order[i]];
 
 		// upgrade crit/elemental when necessary
-		if(upg_order[i] === UPGRADES.ARMOR_PIERCING_ROUND) {
-			if(upg_map[UPGRADES.LUCKY_SHOT].cost_per_mult < upg_map[UPGRADES.ARMOR_PIERCING_ROUND].cost_per_mult) {
+		if(
+			(enableAutoUpgradeClick && upg_order[i] === UPGRADES.ARMOR_PIERCING_ROUND)
+			|| (!enableAutoUpgradeClick && enableAutoUpgradeDPS && upg_order[i] === UPGRADES.AUTO_FIRE_CANNON)
+		) {
+			if(enableAutoUpgradeClick && upg_map[UPGRADES.LUCKY_SHOT].cost_per_mult < upg_map[upg_order[i]].cost_per_mult) {
 				tree = upg_map[UPGRADES.LUCKY_SHOT];
 			}
 			else if(enableAutoUpgradeElemental
 					&& upg_map.hasOwnProperty(ELEMENTS.LockedElement+3)
-					&& upg_map[ELEMENTS.LockedElement+3].cost_per_mult < upg_map[UPGRADES.ARMOR_PIERCING_ROUND].cost_per_mult) {
+					&& upg_map[ELEMENTS.LockedElement+3].cost_per_mult < upg_map[upg_order[i]].cost_per_mult) {
 				tree = upg_map[ELEMENTS.LockedElement+3];
 			}
 		}
