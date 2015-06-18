@@ -1,6 +1,6 @@
 {
-    "universe_level": 1000000000,
-    "version": 1434642785,
+    "universe_level": 100000000,
+    "version": 1434662461,
     "player": {
         "respawn_time": 60,
         "min_dead_time": 5,
