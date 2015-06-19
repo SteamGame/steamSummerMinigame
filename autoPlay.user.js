@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.1.1
+// @version 5.2.0
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -149,7 +149,8 @@ var CONTROL = {
 	speedThreshold: 200,
 	rainingRounds: 100,
 	disableGoldRainLevels: 500,
-	rainingSafeRounds: 10
+	rainingSafeRounds: 10,
+	wormholesPerTick: 10, // you only click once
 };
 
 var GAME_STATUS = {
@@ -1451,11 +1452,15 @@ function useAbilities(level)
 		advLog('Trying to trigger cooldown and wormhole...', 1);
 
 		tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true);
-		tryUsingAbility(ABILITIES.WORMHOLE, false, true);
 
-		// Chance of using at least one like new with X active script users
-		if(Math.random() <= 0.05) {
-			tryUsingAbility(ABILITIES.LIKE_NEW, false, true);
+
+		for(var j = 0; j < CONTROL.wormholesPerTick; j++) {
+			tryUsingAbility(ABILITIES.WORMHOLE, false, true);
+
+			// Chance of using at least one like new with X active script users
+			if(Math.random() <= 0.05) {
+				tryUsingAbility(ABILITIES.LIKE_NEW, false, true);
+			}
 		}
 
 		// Exit right now so we don't use any other abilities after wormhole
