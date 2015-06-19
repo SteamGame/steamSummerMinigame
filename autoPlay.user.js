@@ -231,6 +231,8 @@ function firstRun() {
 		toggleAllText();
 	}
 
+	updateLevelInfoTitle(s().m_rgGameData.level + 1, 0);
+
 	// style
 	var styleNode = document.createElement('style');
 	styleNode.type = 'text/css';
@@ -1965,7 +1967,7 @@ function updateLevelInfoTitle(level, lastLevel)
 		'Level: ' + w.FormatNumberForDisplay(level) +
 		', Expected Level: ' + w.FormatNumberForDisplay(exp_lvl.expected_level) +
 		', Likely Level: ' + w.FormatNumberForDisplay(exp_lvl.likely_level) +
-		', Last jump: ' + w.FormatNumberForDisplay(level - lastLevel);
+		', Last jump: ' + (lastLevel > 0 ? w.FormatNumberForDisplay(level - lastLevel) : 0);
 
 	ELEMENTS.RemainingTime.textContent = 'Remaining Time: ' + rem_time.hours + ' hours, ' + rem_time.minutes + ' minutes.';
 }
