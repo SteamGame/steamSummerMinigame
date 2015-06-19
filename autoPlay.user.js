@@ -426,7 +426,7 @@ function MainLoop() {
 	if (!isAlreadyRunning) {
 		isAlreadyRunning = true;
 
-if (level % control.rainingRounds === 0) {
+if (level % CONTROL.rainingRounds === 0) {
 				goToRainingLane();
 			} else {
 				goToLaneWithBestTarget(level);
