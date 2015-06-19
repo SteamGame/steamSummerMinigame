@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.0.8
+// @version 5.0.9
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -412,7 +412,7 @@ function MainLoop() {
 
 	var level = s().m_rgGameData.level + 1;
 
-	if(level === w.g_TuningData.universe_level) {
+	if(level >= w.g_TuningData.universe_level) {
 		render();
 
 		return;
