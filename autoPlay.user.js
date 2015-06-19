@@ -458,7 +458,19 @@ function MainLoop() {
 		if(currentClickRate > 0) {
 			var levelRainingMod = level % CONTROL.rainingRounds;
 
-			absoluteCurrentClickRate = level >= CONTROL.speedThreshold && (levelRainingMod === 0 || 3 >= (CONTROL.rainingRounds - levelRainingMod)) ? 0 : currentClickRate;
+			absoluteCurrentClickRate = currentClickRate;
+			// Disable autoclicking if DPS would be too high against a boss (doubtful but possible?)
+			// Doesn't do very good DPS calculation (ignores crit chance / elem mult) 
+			// but should still be very generous
+			if (level >= CONTROL.speedThreshold && levelRainingMod === 0 && enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+				var currentCritMultiplier = s().m_rgPlayerTechTree.damage_multiplier_crit;
+				var currentCrit = s().m_rgPlayerTechTree.damage_per_click * currentCritMultiplier;
+				var numSecondsToKill = enemy.m_data.max_hp / (currentCrit * 20 * 1500);
+				// If it would take less than a day to kill the boss, disable clicking
+				if(numSecondsToKill < 24 * 60 * 60) {
+					absoluteCurrentClickRate = 0;
+				}
+			}
 
 			s().m_nClicks += absoluteCurrentClickRate;
 		}
@@ -1362,6 +1374,67 @@ function useAbilities(level)
 
 	var levelRainingMod = level % CONTROL.rainingRounds;
 
+	// Gold Rain
+	if (canUseAbility(ABILITIES.RAINING_GOLD)) {
+		// only use if the speed threshold has not been reached,
+		// or it's a designated gold round after the threshold
+		if (level > CONTROL.disableGoldRainLevels && (level < CONTROL.speedThreshold || level % CONTROL.rainingRounds === 0)) {
+			enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
+			// check if current target is a boss, otherwise its not worth using the gold rain
+			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+
+				if (enemyBossHealthPercent >= 0.6 || level % CONTROL.rainingRounds === 0) { // We want sufficient time for the gold rain to be applicable
+					// Gold Rain is purchased, cooled down, and needed. Trigger it.
+					advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
+					triggerAbility(ABILITIES.RAINING_GOLD);
+				}
+			}
+		}
+	}
+
+	// Metal Detector
+	if(canUseAbility(ABILITIES.METAL_DETECTOR)) {
+
+		enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
+		// check if current target is a boss, otherwise we won't use metal detector
+		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+			enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+
+			// we want to use metal detector at 25% hp, or even less
+			if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
+				// Metal Detector is purchased, cooled down, and needed. Trigger it.
+				advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
+				triggerAbility(ABILITIES.METAL_DETECTOR);
+			}
+		}
+	}
+
+	// Treasure
+	if (canUseAbility(ABILITIES.TREASURE)) {
+
+		// check if current level is higher than 50
+		if (level > 50) {
+			enemy = s().GetTargetedEnemy();
+			// check if current target is a boss, otherwise we won't use metal detector
+			if (enemy && enemy.type == ENEMY_TYPE.BOSS) {
+				enemyBossHealthPercent = enemy.hp / enemy.max_hp;
+
+				// we want to use Treasure at 25% hp, or even less
+				if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
+					// Treasure is purchased, cooled down, and needed. Trigger it.
+					advLog('Treasure is purchased and cooled down, triggering it.', 2);
+					triggerAbility(ABILITIES.TREASURE);
+				}
+			}
+		}
+		else {
+			// Treasure is purchased, cooled down, and needed. Trigger it.
+			advLog('Treasure is purchased and cooled down, triggering it.', 2);
+			triggerAbility(ABILITIES.TREASURE);
+		}
+	}
+
 	// Wormhole
 	if(level >= CONTROL.speedThreshold && levelRainingMod === 0) {
 		enableAbility(ABILITIES.WORMHOLE);
@@ -1541,67 +1614,6 @@ function useAbilities(level)
 		if (enemySpawnerExists && enemySpawnerHealthPercent > 0.95) {
 			advLog("Cripple Spawner available, and needed. Cripple 'em.", 2);
 			triggerAbility(ABILITIES.CRIPPLE_SPAWNER);
-		}
-	}
-
-	// Gold Rain
-	if (canUseAbility(ABILITIES.RAINING_GOLD)) {
-		// only use if the speed threshold has not been reached,
-		// or it's a designated gold round after the threshold
-		if (level > CONTROL.disableGoldRainLevels && (level < CONTROL.speedThreshold || level % CONTROL.rainingRounds === 0)) {
-			enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
-			// check if current target is a boss, otherwise its not worth using the gold rain
-			if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-
-				if (enemyBossHealthPercent >= 0.6 || level % CONTROL.rainingRounds === 0) { // We want sufficient time for the gold rain to be applicable
-					// Gold Rain is purchased, cooled down, and needed. Trigger it.
-					advLog('Gold rain is purchased and cooled down, Triggering it on boss', 2);
-					triggerAbility(ABILITIES.RAINING_GOLD);
-				}
-			}
-		}
-	}
-
-	// Metal Detector
-	if(canUseAbility(ABILITIES.METAL_DETECTOR)) {
-
-		enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
-		// check if current target is a boss, otherwise we won't use metal detector
-		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
-			enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
-
-			// we want to use metal detector at 25% hp, or even less
-			if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
-				// Metal Detector is purchased, cooled down, and needed. Trigger it.
-				advLog('Metal Detector is purchased and cooled down, Triggering it on boss', 2);
-				triggerAbility(ABILITIES.METAL_DETECTOR);
-			}
-		}
-	}
-
-	// Treasure
-	if (canUseAbility(ABILITIES.TREASURE)) {
-
-		// check if current level is higher than 50
-		if (level > 50) {
-			enemy = s().GetTargetedEnemy();
-			// check if current target is a boss, otherwise we won't use metal detector
-			if (enemy && enemy.type == ENEMY_TYPE.BOSS) {
-				enemyBossHealthPercent = enemy.hp / enemy.max_hp;
-
-				// we want to use Treasure at 25% hp, or even less
-				if (enemyBossHealthPercent <= 0.25) { // We want sufficient time for the metal detector to be applicable
-					// Treasure is purchased, cooled down, and needed. Trigger it.
-					advLog('Treasure is purchased and cooled down, triggering it.', 2);
-					triggerAbility(ABILITIES.TREASURE);
-				}
-			}
-		}
-		else {
-			// Treasure is purchased, cooled down, and needed. Trigger it.
-			advLog('Treasure is purchased and cooled down, triggering it.', 2);
-			triggerAbility(ABILITIES.TREASURE);
 		}
 	}
 
