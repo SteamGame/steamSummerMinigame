@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.0.9
+// @version 5.1.0
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -1902,6 +1902,14 @@ function expectedLevel(level) {
 	var passed_time = getCurrentTime() - s().m_rgGameData.timestamp_game_start;
 	var expected_level = Math.floor(((level/passed_time)*remaining_time)+level);
 	var likely_level = Math.floor((expected_level - level)/Math.log(3))+ level;
+
+	if(expected_level > w.g_TuningData.universe_level) {
+		expected_level = w.g_TuningData.universe_level;
+	}
+
+	if(likely_level > w.g_TuningData.universe_level) {
+		likely_level = w.g_TuningData.universe_level;
+	}
 
 	return {expected_level : expected_level, likely_level : likely_level, remaining_time : remaining_time};
 }
