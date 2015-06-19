@@ -331,6 +331,10 @@ function firstRun() {
 	options2.appendChild(makeCheckBox("enableFingering", "Enable targeting pointer", enableFingering, toggleFingering, false));
 	options2.appendChild(makeNumber("setLogLevel", "Change the log level (you shouldn't need to touch this)", logLevel, 0, 5, updateLogLevel));
 
+	options2.appendChild(makeLabel("dps", "dpsDisplay", "Current damage per second"));
+	options2.appendChild(document.createElement("br"));
+	options2.appendChild(makeLabel("gps", "gpsDisplay", "Current gold per second"));
+
 	info_box.appendChild(options2);
 
 	//Elemental upgrades lock
@@ -473,6 +477,9 @@ function MainLoop() {
 
 		advLog("Ticked. Current clicks per second: " + absoluteCurrentClickRate + ". Current damage per second: " + (damagePerClick * absoluteCurrentClickRate), 4);
 
+		document.getElementById('dps').innerHTML = "Current damage per second:<br/>" + w.FormatNumberForDisplay((damagePerClick * currentClickRate) + s().m_rgPlayerTechTree.dps) + 
+            " (" + w.FormatNumberForDisplay(damagePerClick * currentClickRate) + " + " + w.FormatNumberForDisplay(s().m_rgPlayerTechTree.dps) + ")";
+
 		if(disableRenderer) {
 			s().Tick();
 
@@ -517,12 +524,20 @@ function MainLoop() {
 						+ "%. Approximately gold per second: " + goldPerSecond,
 						4
 					);
+                    
+					document.getElementById('gps').innerHTML = "Current gold per second:<br/>" + w.FormatNumberForDisplay(goldPerSecond) + 
+                        " (" + (goldPerClickPercentage * 100).toFixed(0) + "%)";
+
 					displayText(
 						enemy.m_Sprite.position.x - (enemy.m_nLane * 440),
 						enemy.m_Sprite.position.y - 17,
 						"+" + w.FormatNumberForDisplay(goldPerSecond, 5),
 						"#e1b21e"
 					);
+				}
+				else
+				{
+					document.getElementById('gps').innerHTML = "Current gold per second:<br/>0 (NOT ACTIVE)";
 				}
 			}
 		}
@@ -859,6 +874,16 @@ function makeCheckBox(name, desc, state, listener, reqRefresh) {
 	}
 	label.appendChild(document.createElement("br"));
 	return label;
+}
+
+function makeLabel(id, name, title) {
+    var label = document.createElement("label");
+
+    label.id = id;
+    label.name = name;
+    label.title = title;
+
+    return label;
 }
 
 function handleEvent(event) {
