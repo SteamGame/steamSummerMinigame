@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.0.7
+// @version 5.0.8
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -405,14 +405,18 @@ function getTimeleft() {
 function MainLoop() {
 	var status = s().m_rgGameData.status;
 	if(status != GAME_STATUS.RUNNING) {
-		if(disableRenderer) {
-			s().Tick();
-		}
+		render();
 
 		return;
 	}
 
 	var level = s().m_rgGameData.level + 1;
+
+	if(level === g_TuningData.universe_level) {
+		render();
+
+		return;
+	}
 
 	if (!isAlreadyRunning) {
 		isAlreadyRunning = true;
@@ -485,13 +489,7 @@ function MainLoop() {
 
 		advLog("Ticked. Current clicks per second: " + absoluteCurrentClickRate + ". Current damage per second: " + (damagePerClick * absoluteCurrentClickRate), 4);
 
-		if(disableRenderer) {
-			s().Tick();
-
-			requestAnimationFrame(function() {
-				w.g_Minigame.Renderer.render(s().m_Container);
-			});
-		}
+		render();
 
 		isAlreadyRunning = false;
 
@@ -538,6 +536,16 @@ function MainLoop() {
 				}
 			}
 		}
+	}
+}
+
+function render() {
+	if(disableRenderer) {
+		s().Tick();
+
+		requestAnimationFrame(function() {
+			w.g_Minigame.Renderer.render(s().m_Container);
+		});
 	}
 }
 
