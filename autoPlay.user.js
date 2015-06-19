@@ -426,11 +426,11 @@ function MainLoop() {
 	if (!isAlreadyRunning) {
 		isAlreadyRunning = true;
 
-if (level % CONTROL.rainingRounds === 0) {
-				goToRainingLane();
-			} else {
-				goToLaneWithBestTarget(level);
-			}
+		if (level % CONTROL.rainingRounds === 0) {
+			goToRainingLane();
+		} else {
+			goToLaneWithBestTarget(level);
+		}
 
 		attemptRespawn();
 
@@ -1384,9 +1384,6 @@ function useAbilities(level)
 	var enemySpawnerHealthPercent = false;
 	var enemy = false;
 	var enemyBossHealthPercent = 0;
-
-
-
 
 	// Medic & Pumped Up
 	if (tryUsingAbility(ABILITIES.PUMPED_UP)){
