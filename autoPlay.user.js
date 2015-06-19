@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.2.0
+// @version 5.2.1
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -268,6 +268,8 @@ function firstRun() {
 		".bc_time {color: #9AC0FF;}",
 		// Always show ability count
 		".abilitytemplate > a > .abilityitemquantity {visibility: visible; pointer-events: none;}",
+		// Hide loot notification forever
+		"#loot_notification {display: none !important;}",
 		""
 	];
 	styleNode.textContent = styleText.join("");
