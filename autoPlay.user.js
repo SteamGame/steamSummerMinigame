@@ -412,7 +412,7 @@ function MainLoop() {
 
 	var level = s().m_rgGameData.level + 1;
 
-	if(level === g_TuningData.universe_level) {
+	if(level === w.g_TuningData.universe_level) {
 		render();
 
 		return;
