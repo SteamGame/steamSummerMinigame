@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.3.1
+// @version 5.3.2
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -170,6 +170,7 @@ if(!getPreferenceBoolean("alertShown", false)) {
 		'<div style="color:#FF5252">This dialog will be shown just once, so please read through it.<br><br></div>' +
 		'<h3 style="color:yellow">This script does not lag your game,<br>we are limiting it to 1 frame per second to lower CPU usage.</h3>' +
 		'<p>We have multiple options to configure this script, and disabling FPS limiter is one of them.</p>' +
+		'<p style="color:#FFF">This script is configured for wormhole strategy, and badges/upgrades are automatically bought. Offensive abilities are not used on Gold Helm bosses.</p>' +
 		'<p><a href="https://github.com/SteamDatabase/steamSummerMinigame" target="_blank">You can report issues on GitHub</a></p>' +
 		'<p>Thanks and have fun!</p>',
 
