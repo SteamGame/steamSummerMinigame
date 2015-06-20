@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.3.0
+// @version 5.3.1
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -22,14 +22,14 @@ var logLevel = 1; // 5 is the most verbose, 0 disables all log
 var isUserScript = (typeof GM_info !== "undefined");
 
 var enableAutoClicker = getPreferenceBoolean("enableAutoClicker", true);
-var enableOffensiveAbilities = getPreferenceBoolean("enableOffensiveAbilities", true);
+var enableOffensiveAbilities = getPreferenceBoolean("enableOffensiveAbilities", false);
 
 var enableAutoUpgradeHP = getPreferenceBoolean("enableAutoUpgradeHP", true);
 var enableAutoUpgradeClick = getPreferenceBoolean("enableAutoUpgradeClick", false);
 var enableAutoUpgradeDPS = getPreferenceBoolean("enableAutoUpgradeDPS", false);
 var enableAutoUpgradeElemental = getPreferenceBoolean("enableAutoUpgradeElemental", false);
 var enableAutoPurchase = getPreferenceBoolean("enableAutoPurchase", false);
-var enableAutoBadgePurchase = getPreferenceBoolean("enableAutoBadgePurchase", false);
+var enableAutoBadgePurchase = getPreferenceBoolean("enableAutoBadgePurchase", true);
 
 var removeInterface = getPreferenceBoolean("removeInterface", true); // get rid of a bunch of pointless DOM
 var removeParticles = getPreferenceBoolean("removeParticles", true);
@@ -146,7 +146,7 @@ var BOSS_DISABLED_ABILITIES = [
 ];
 
 var CONTROL = {
-	speedThreshold: 200,
+	speedThreshold: 100,
 	rainingRounds: 100,
 	disableGoldRainLevels: 500,
 	rainingSafeRounds: 10,
