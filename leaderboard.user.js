@@ -6,6 +6,7 @@
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
 // @grant        GM_xmlhttpRequest
+// @grant        unsafeWindow
 // @updateURL    https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/leaderboard.user.js
 // @downloadURL  https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/leaderboard.user.js
 // ==/UserScript==
@@ -97,7 +98,7 @@ function drawLeaderboardRoom(room) {
     level.style.textAlign = 'right';
     level.appendChild(document.createTextNode(room.level));
 
-    if(room.id == w.g_GameID)
+    if(room.id == unsafeWindow.g_GameID)
     {
         item.style.color = '#d4e157';
     }
