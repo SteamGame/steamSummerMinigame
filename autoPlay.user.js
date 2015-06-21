@@ -1,5 +1,8 @@
 // ==UserScript==
 // @name [SteamDB] Monster Minigame Script
+// @author Steam Database
+// @contributor xPaw
+// @contributor Everyone at http://git.io/vLMvq
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
 // @version 5.3.2
