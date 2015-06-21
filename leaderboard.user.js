@@ -1,5 +1,8 @@
 // ==UserScript==
 // @name         Monster Minigame Leaderboard
+// @author Steam Database
+// @contributor xPaw
+// @contributor Everyone at http://git.io/vLMvq
 // @namespace    https://github.com/SteamDatabase/steamSummerMinigame
 // @version      1.0
 // @description  Display leaderboards from http://steamga.me
