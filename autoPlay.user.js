@@ -2,7 +2,7 @@
 // @name [SteamDB] Monster Minigame Script
 // @namespace https://github.com/SteamDatabase/steamSummerMinigame
 // @description A script that runs the Steam Monster Minigame for you.
-// @version 5.3.2
+// @version 5.3.3
 // @match *://steamcommunity.com/minigame/towerattack*
 // @match *://steamcommunity.com//minigame/towerattack*
 // @grant none
@@ -48,6 +48,7 @@ var autoRefreshMinutesRandomDelay = 10;
 var autoRefreshSecondsCheckLoadedDelay = 30;
 
 // DO NOT MODIFY
+var selfDestructed = false;
 var isPastFirstRun = false;
 var isAlreadyRunning = false;
 var refreshTimer = null;
@@ -441,6 +442,21 @@ function MainLoop() {
 			useAllAbilities();
 		} else {
 			useAbilities(level);
+		}
+
+		if(!selfDestructed && timeLeft <= 1) {
+			selfDestructed = true;
+
+			ShowAlertDialog('SteamDB\'s Minigame Script Alert', 'This is the final day of Steam Monster Game, make sureto delete all<br>the scripts you\'ve installed for this game after the game is over.');
+
+			if(localStorage !== 'undefined') {
+				Object.keys(localStorage).forEach(function(key) {
+					if (key.substring(0, 16) === 'steamdb-minigame') {
+						console.log('Removing localStorage item', key);
+						localStorage.removeItem(key);
+					}
+				});
+			}
 		}
 
 		updatePlayersInGame();
