@@ -447,7 +447,7 @@ function MainLoop() {
 		if(!selfDestructed && timeLeft <= 1) {
 			selfDestructed = true;
 
-			ShowAlertDialog('SteamDB\'s Minigame Script Alert', 'This is the final day of Steam Monster Game, make sureto delete all<br>the scripts you\'ve installed for this game after the game is over.');
+			ShowAlertDialog('SteamDB\'s Minigame Script Alert', 'This is the final day of Steam Monster Game, make sure to delete all<br>the scripts you\'ve installed for this game after the game is over.');
 
 			if(localStorage !== 'undefined') {
 				Object.keys(localStorage).forEach(function(key) {
