@@ -7,8 +7,6 @@
 // @match        *://steamcommunity.com//minigame/towerattack*
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
-// @updateURL    https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/leaderboard.user.js
-// @downloadURL  https://raw.githubusercontent.com/SteamDatabase/steamSummerMinigame/master/leaderboard.user.js
 // ==/UserScript==
 //NOTE: This REQUIRES the use of GreaseMonkey or TamperMonkey
 
