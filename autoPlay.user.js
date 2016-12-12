@@ -1622,7 +1622,7 @@ function useAbilities(level)
 				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
 
 				// Use Nuke on boss with >= 50% HP but only if Raining Gold is not active in the lane
-				if (enemyBossHealthPercent >= 0.5 && getActiveAbilityLaneCount(ABILITIES.RAINING_GOLD) <= 0) {
+				if (enemyBossHealthPercent >= 0.5 && enemyBossHealthPercent <= 0.85 && getActiveAbilityLaneCount(ABILITIES.RAINING_GOLD) <= 0) {
 					if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
 						advLog("Tactical Nuke is purchased, cooled down, and needed. Nuke 'em.", 2);
 						triggerAbility(ABILITIES.TACTICAL_NUKE);
