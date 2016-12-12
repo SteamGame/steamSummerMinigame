@@ -1551,47 +1551,81 @@ function useAbilities(level)
 	}
 
 	// Cluster Bomb
-	if (canUseAbility(ABILITIES.CLUSTER_BOMB)) {
-	//Check lane has monsters to explode
-		enemyCount = 0;
-		enemySpawnerExists = false;
-		//Count each slot in lane
-		for (i = 0; i < 4; i++) {
-			enemy = s().GetEnemy(currentLane, i);
-			if (enemy) {
-				enemyCount++;
-				if (enemy.m_data.type === 0) {
-					enemySpawnerExists = true;
+	if(canUseAbility(ABILITIES.CLUSTER_BOMB)) {
+		enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
+		// check whether current target is a boss
+		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+			if (level >= CONTROL.speedThreshold) { // Start nuking bosses at level CONTROL.speedThreshold
+				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+
+				// Use Cluster Bomb on boss with >= 50% HP but only if Raining Gold is not active in the lane
+				if (enemyBossHealthPercent >= 0.5 && getActiveAbilityLaneCount(ABILITIES.RAINING_GOLD) <= 0) {
+					if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
+						advLog("Cluster Bomb is purchased, cooled down, and needed. Bomb 'em.", 2);
+						triggerAbility(ABILITIES.CLUSTER_BOMB);
+					}
 				}
 			}
 		}
-		//Bombs away if spawner and 2+ other monsters
-		if (enemySpawnerExists && enemyCount >= 3) {
-			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
-				triggerAbility(ABILITIES.CLUSTER_BOMB);
+		else if (level < 10000) {
+			//Check lane has monsters to explode
+			enemyCount = 0;
+			enemySpawnerExists = false;
+			//Count each slot in lane
+			for (i = 0; i < 4; i++) {
+				enemy = s().GetEnemy(currentLane, i);
+				if (enemy) {
+					enemyCount++;
+					if (enemy.m_data.type === 0) {
+						enemySpawnerExists = true;
+					}
+				}
+			}
+			//Bombs away if spawner and 2+ other monsters
+			if (enemySpawnerExists && enemyCount >= 3) {
+				if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
+					triggerAbility(ABILITIES.CLUSTER_BOMB);
+				}
 			}
 		}
 	}
 
 	// Napalm
-	if (canUseAbility(ABILITIES.NAPALM)) {
-		//Check lane has monsters to burn
-		enemyCount = 0;
-		enemySpawnerExists = false;
-		//Count each slot in lane
-		for (i = 0; i < 4; i++) {
-			enemy = s().GetEnemy(currentLane, i);
-			if (enemy) {
-				enemyCount++;
-				if (enemy.m_data.type === 0) {
-					enemySpawnerExists = true;
+	if(canUseAbility(ABILITIES.NAPALM)) {
+		enemy = s().GetEnemy(s().m_rgPlayerData.current_lane, s().m_rgPlayerData.target);
+		// check whether current target is a boss
+		if (enemy && enemy.m_data.type == ENEMY_TYPE.BOSS) {
+			if (level >= CONTROL.speedThreshold) { // Start nuking bosses at level CONTROL.speedThreshold
+				enemyBossHealthPercent = enemy.m_flDisplayedHP / enemy.m_data.max_hp;
+
+				// Use Napalm on boss with >= 50% HP but only if Raining Gold is not active in the lane
+				if (enemyBossHealthPercent >= 0.5 && getActiveAbilityLaneCount(ABILITIES.RAINING_GOLD) <= 0) {
+					if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
+						advLog("Napalm is purchased, cooled down, and needed. Burn 'em.", 2);
+						triggerAbility(ABILITIES.NAPALM);
+					}
 				}
 			}
 		}
-		//Burn them all if spawner and 2+ other monsters
-		if (enemySpawnerExists && enemyCount >= 3) {
-			if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
-				triggerAbility(ABILITIES.NAPALM);
+		else if (level < 10000) {
+			//Check lane has monsters to explode
+			enemyCount = 0;
+			enemySpawnerExists = false;
+			//Count each slot in lane
+			for (i = 0; i < 4; i++) {
+				enemy = s().GetEnemy(currentLane, i);
+				if (enemy) {
+					enemyCount++;
+					if (enemy.m_data.type === 0) {
+						enemySpawnerExists = true;
+					}
+				}
+			}
+			//Burns away if spawner and 2+ other monsters
+			if (enemySpawnerExists && enemyCount >= 3) {
+				if (!tryUsingAbility(ABILITIES.DECREASE_COOLDOWNS, true)) {
+					triggerAbility(ABILITIES.NAPALM);
+				}
 			}
 		}
 	}
@@ -1630,7 +1664,7 @@ function useAbilities(level)
 				}
 			}
 		}
-		else {
+		else if (level < 10000) {
 			//Check that the lane has a spawner and record it's health percentage
 			//Count each slot in lane
 			for (i = 0; i < 4; i++) {
